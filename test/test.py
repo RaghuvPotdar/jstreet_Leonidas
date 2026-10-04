@@ -32,9 +32,17 @@ async def test_counter(dut):
     dut.uio_in.value = 0
 
     # clk powers up as X. Drive 0 before starting so the first edge is 0->1.
-    # Clock.start() already schedules the driver. Do not wrap it in start_soon.
+    # Clock.start() already schedules the driver, and its first action is to
+    # drive 1. Do not wrap it in start_soon.
+    #
+    # The gate netlist ties the flip-flop RESET_B pin high and applies reset
+    # through D. That D is X until rst_n has propagated through the gates.
+    # Starting the clock in the same timestep captures X, and the pin stays X.
+    # One nanosecond is enough for the zero-delay gates to settle, and it is
+    # far from the next edge of this 10 us clock.
     dut.clk.value = 0
     dut.rst_n.value = 0
+    await Timer(1, unit="ns")
     Clock(dut.clk, 10, unit="us").start()
 
     # count is X until a rising edge applies the synchronous reset.
