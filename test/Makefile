@@ -16,13 +16,26 @@ VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
 
 else
 
-# Gate level simulation:
+# Gate level simulation.
+# The PDK cell models drive flip-flop UDPs from delayed_* wires that are
+# created by specify-block timing checks. Icarus does not implement those
+# checks, so the wires stay Z and Q stays X. make_functional_stdcells.py
+# rewrites the models into zero-delay assigns before compilation.
 SIM_BUILD				= sim_build/gl
 COMPILE_ARGS    += -DGL_TEST
 COMPILE_ARGS    += -DFUNCTIONAL
 COMPILE_ARGS    += -DSIM
+STDCELL_SRC     := $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
+UDP_SRC         := $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_udp.v
+FUNCTIONAL_STDCELLS := $(SIM_BUILD)/sg13g2_stdcell_functional.v
+
+$(FUNCTIONAL_STDCELLS): $(STDCELL_SRC) make_functional_stdcells.py
+	mkdir -p $(dir $@)
+	python3 make_functional_stdcells.py $(STDCELL_SRC) $@ $(wildcard $(UDP_SRC))
+
 VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_io/verilog/sg13g2_io.v
-VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
+VERILOG_SOURCES += $(FUNCTIONAL_STDCELLS)
+CUSTOM_COMPILE_DEPS += $(FUNCTIONAL_STDCELLS)
 
 # this gets copied in by the GDS action workflow
 VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
