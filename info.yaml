@@ -32,15 +32,15 @@ pinout:
   ui[6]: ""
   ui[7]: ""
 
-  # Outputs
-  uo[0]: ""
-  uo[1]: ""
-  uo[2]: ""
-  uo[3]: ""
-  uo[4]: ""
-  uo[5]: ""
-  uo[6]: ""
-  uo[7]: ""
+  # Outputs. uo_out is the free-running count; bit 0 is the least significant bit.
+  uo[0]: "count[0]"
+  uo[1]: "count[1]"
+  uo[2]: "count[2]"
+  uo[3]: "count[3]"
+  uo[4]: "count[4]"
+  uo[5]: "count[5]"
+  uo[6]: "count[6]"
+  uo[7]: "count[7]"
 
   # Bidirectional pins
   uio[0]: ""
