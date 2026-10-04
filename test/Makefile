@@ -29,10 +29,6 @@ STDCELL_SRC     := $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2
 UDP_SRC         := $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_udp.v
 FUNCTIONAL_STDCELLS := $(SIM_BUILD)/sg13g2_stdcell_functional.v
 
-$(FUNCTIONAL_STDCELLS): $(STDCELL_SRC) make_functional_stdcells.py
-	mkdir -p $(dir $@)
-	python3 make_functional_stdcells.py $(STDCELL_SRC) $@ $(wildcard $(UDP_SRC))
-
 VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_io/verilog/sg13g2_io.v
 VERILOG_SOURCES += $(FUNCTIONAL_STDCELLS)
 CUSTOM_COMPILE_DEPS += $(FUNCTIONAL_STDCELLS)
@@ -57,3 +53,13 @@ COCOTB_TEST_MODULES = test
 
 # include cocotb's make rules to take care of the simulator setup
 include $(shell cocotb-config --makefiles)/Makefile.sim
+
+# This rule has to stay below the include. The first target in a Makefile is
+# Make's default goal. Cocotb's default goal is "all", which runs the test.
+# A rule above the include would become the default goal, so "GATES=yes make"
+# would generate the functional cells and exit 0 without ever simulating.
+ifeq ($(GATES),yes)
+$(FUNCTIONAL_STDCELLS): $(STDCELL_SRC) make_functional_stdcells.py
+	mkdir -p $(dir $@)
+	$(PYTHON_BIN) make_functional_stdcells.py $(STDCELL_SRC) $@ $(wildcard $(UDP_SRC))
+endif
