@@ -3,54 +3,55 @@
 
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import ClockCycles, ReadOnly, Timer
+from cocotb.triggers import RisingEdge, ReadOnly, Timer
+
+CLKS_PER_BIT = 16
+# LSB is 1, so the wire must go low for the start bit and then high for bit 0.
+BYTE = 0b10110001
 
 
-async def cycles(dut, n):
-    """Return uo_out after n rising edges.
-
-    ReadOnly is the phase where the nonblocking update is visible. Deposits
-    are illegal there, so step 1 ns forward before returning. The clock
-    period is 10 us, so this still lands well before the next edge.
-    """
-    await ClockCycles(dut.clk, n)
+async def pins(dut):
+    """Return (tx, busy) after the next rising edge has updated the flops."""
+    await RisingEdge(dut.clk)
     await ReadOnly()
     value = int(dut.uo_out.value)
     await Timer(1, unit="ns")
-    return value
+    return value & 1, (value >> 1) & 1
+
+
+async def expect_bit(dut, level, n, name):
+    for i in range(n):
+        tx, busy = await pins(dut)
+        assert tx == level and busy == 1, (
+            f"{name} cycle {i}: tx={tx} busy={busy}, expected tx={level} busy=1"
+        )
 
 
 @cocotb.test()
-async def test_counter(dut):
-    """Reset holds the count at 0. After release, each rising edge adds 1.
-
-    One test owns the clock for the whole run. Cocotb cancels tasks when a
-    test returns, so a second test would resume with a dead clock.
-    """
+async def test_uart_tx(dut):
+    """One byte leaves on uo_out[0]. LSB first, 16 clocks per bit, no queue."""
     dut.ena.value = 1
     dut.ui_in.value = 0
     dut.uio_in.value = 0
-
-    # clk powers up as X. Drive 0 before starting so the first edge is 0->1.
-    # Clock.start() already schedules the driver, and its first action is to
-    # drive 1. Do not wrap it in start_soon.
-    #
-    # The gate netlist ties the flip-flop RESET_B pin high and applies reset
-    # through D. That D is X until rst_n has propagated through the gates.
-    # Starting the clock in the same timestep captures X, and the pin stays X.
-    # One nanosecond is enough for the zero-delay gates to settle, and it is
-    # far from the next edge of this 10 us clock.
     dut.clk.value = 0
     dut.rst_n.value = 0
     await Timer(1, unit="ns")
     Clock(dut.clk, 10, unit="us").start()
 
-    # count is X until a rising edge applies the synchronous reset.
-    assert await cycles(dut, 1) == 0
-    assert await cycles(dut, 5) == 0
+    tx, busy = await pins(dut)
+    assert tx == 1 and busy == 0, f"after reset tx={tx} busy={busy}"
 
-    # The edge just sampled still saw rst_n low. Release reset now, and the
-    # next edge is the first one that increments.
     dut.rst_n.value = 1
-    assert await cycles(dut, 1) == 1
-    assert await cycles(dut, 9) == 10
+    dut.ui_in.value = BYTE
+    dut.uio_in.value = 1
+    tx, busy = await pins(dut)
+    assert tx == 1 and busy == 1, f"copy cycle tx={tx} busy={busy}"
+    dut.uio_in.value = 0
+
+    await expect_bit(dut, 0, CLKS_PER_BIT, "start")
+    for bit in range(8):
+        await expect_bit(dut, (BYTE >> bit) & 1, CLKS_PER_BIT, f"data[{bit}]")
+    await expect_bit(dut, 1, CLKS_PER_BIT, "stop")
+
+    tx, busy = await pins(dut)
+    assert tx == 1 and busy == 0, f"after frame tx={tx} busy={busy}"

@@ -16,17 +16,23 @@ module tt_um_RaghuvPotdar_Leonidas (
     input  wire       rst_n     // reset_n - low to reset
 );
 
-  logic [7:0] count;
+    logic tx;
+    logic busy;
 
-  always_ff @(posedge clk) begin
-      if (!rst_n)
-          count <= 8'd0;
-      else
-          count <= count + 8'd1;
-  end
+    // ui_in is the byte. uio_in[0] is send, and the pad stays an input.
+    // uo_out[0] is the serial wire. uo_out[1] is high while a frame is
+    // in progress. The other output bits are unused.
+    ff_uart uart (
+        .clk  (clk),
+        .rst_n(rst_n),
+        .data (ui_in),
+        .send (uio_in[0]),
+        .tx   (tx),
+        .busy (busy)
+    );
 
-  assign uo_out  = count;
-  assign uio_out = 8'b0;
-  assign uio_oe  = 8'b0;
+    assign uo_out  = {6'b0, busy, tx};
+    assign uio_oe  = 8'b0;
+    assign uio_out = 8'b0;
 
 endmodule

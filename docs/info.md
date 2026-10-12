@@ -9,13 +9,13 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-Leonidas is an 8-bit free-running counter. On each rising edge of `clk`, if `rst_n` is low the count is set to 0. Otherwise the count increments by 1 and wraps from 255 to 0. The count is driven on `uo_out`, with bit 0 as the least significant bit.
+Leonidas is a fixed UART transmitter with room for one byte. `ui_in` is that byte. A high level on `uio_in[0]` while the transmitter is idle copies the byte into a shift register. `uo_out[0]` then sends a start bit, the eight data bits least-significant-bit first, and a stop bit. Each bit lasts 16 `clk` cycles. `uo_out[1]` is high for the whole frame.
 
-`ui_in` and `ena` are unused. `uio_out` and `uio_oe` are tied to 0, so the bidirectional pads stay inputs.
+`uio_oe` is 0, so the bidirectional pads are inputs. There is no receive path and no byte queue. The next `send` overwrites the shift register.
 
 ## How to test
 
-Hold `rst_n` low and clock `clk`. `uo_out` is 0 on the first rising edge and stays 0 while reset is held. Release `rst_n` between edges. The next rising edge makes `uo_out` equal 1, and each later rising edge adds 1. Nine edges after the first increment, `uo_out` is 10.
+Hold `rst_n` low for one rising edge of `clk`. `uo_out[0]` is high and `uo_out[1]` is low. Put a byte on `ui_in`, raise `uio_in[0]` for one rising edge, then lower it. The following 16 cycles are low. The next 128 cycles are the data bits, 16 cycles each, bit 0 first. The next 16 cycles are high. `uo_out[1]` is low again on the cycle after the stop bit.
 
 ## External hardware
 

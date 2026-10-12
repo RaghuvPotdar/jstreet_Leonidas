@@ -6,7 +6,7 @@ SIM ?= icarus
 FST ?= -fst # Use more efficient FST format
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
-PROJECT_SOURCES = leonidas.sv
+PROJECT_SOURCES = uart.sv leonidas.sv
 
 ifneq ($(GATES),yes)
 
