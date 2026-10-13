@@ -16,23 +16,28 @@ module tt_um_RaghuvPotdar_Leonidas (
     input  wire       rst_n     // reset_n - low to reset
 );
 
-    logic tx;
-    logic busy;
+    logic        running;
+    logic        fetch_valid;
+    logic [15:0] dout;
 
-    // ui_in is the byte. uio_in[0] is send, and the pad stays an input.
-    // uo_out[0] is the serial wire. uo_out[1] is high while a frame is
-    // in progress. The other output bits are unused.
-    ff_uart uart (
-        .clk  (clk),
-        .rst_n(rst_n),
-        .data (ui_in),
-        .send (uio_in[0]),
-        .tx   (tx),
-        .busy (busy)
+    // ui_in is one byte of an instruction. uio_in[1:0] says what to do with
+    // it: 00 idle, 01 store the byte, 10 store the byte and start once the
+    // word is complete, 11 ignored. uo_out shows the low byte of word 0
+    // once that read has come back.
+    imem imem (
+        .clk        (clk),
+        .rst_n      (rst_n),
+        .byte_in    (ui_in),
+        .strobe     (uio_in[1:0]),
+        .running    (running),
+        .fetch_valid(fetch_valid),
+        .dout       (dout)
     );
 
-    assign uo_out  = {6'b0, busy, tx};
+    assign uo_out  = fetch_valid ? dout[7:0] : 8'h00;
     assign uio_oe  = 8'b0;
     assign uio_out = 8'b0;
+
+    wire _unused = &{1'b0, ena, running, dout[15:8], 1'b0};
 
 endmodule

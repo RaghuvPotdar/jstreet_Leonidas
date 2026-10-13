@@ -6,12 +6,14 @@ SIM ?= icarus
 FST ?= -fst # Use more efficient FST format
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
-PROJECT_SOURCES = uart.sv leonidas.sv
+PROJECT_SOURCES = uart.sv sram_256x16.sv imem.sv leonidas.sv
 
 ifneq ($(GATES),yes)
 
-# RTL simulation:
+# RTL simulation. SIM selects the behavioral SRAM. The GDS build does not
+# define it, so synthesis sees the black box instead of the array.
 SIM_BUILD				= sim_build/rtl
+COMPILE_ARGS    += -DSIM
 VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
 
 else

@@ -1,8 +1,6 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1791147328" />
-    <testcase name="test_counter" classname="test" file="/home/runner/work/jstreet_Leonidas/jstreet_Leonidas/test/test.py" lineno="23" time="0.04962325096130371" sim_time_ns="0.0" ratio_time="0.0">
-      <failure error_type="ValueError" error_msg="Can't convert LogicArray to int: it contains non-0/1 values" />
-    </testcase>
+    <property name="random_seed" value="1791841903" />
+    <testcase name="test_uart_tx" classname="test" file="/home/runner/work/jstreet_Leonidas/jstreet_Leonidas/test/test.py" lineno="30" time="0.09868311882019043" sim_time_ns="1620002.0" ratio_time="16416201.872903816" />
   </testsuite>
 </testsuites>

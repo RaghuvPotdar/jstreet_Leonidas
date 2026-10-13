@@ -1,21 +1,12 @@
-<!---
-
-This file is used to generate your project datasheet. Please fill in the information below and delete any unused
-sections.
-
-You can also include images in this folder and reference them in the markdown. Each image must be less than
-512 kb in size, and the combined size of all images must be less than 1 MB.
--->
-
 ## How it works
 
-Leonidas is a fixed UART transmitter with room for one byte. `ui_in` is that byte. A high level on `uio_in[0]` while the transmitter is idle copies the byte into a shift register. `uo_out[0]` then sends a start bit, the eight data bits least-significant-bit first, and a stop bit. Each bit lasts 16 `clk` cycles. `uo_out[1]` is high for the whole frame.
+Leonidas loads 16-bit instructions into a 256-word SRAM. `ui_in` carries one byte. `uio_in[1:0]` is the strobe: `00` does nothing, `01` stores the byte, `10` stores the byte and starts execution once that word is complete, and `11` does nothing. The first byte of a word is bits 7 through 0. The second byte is bits 15 through 8. The host returns the strobe to `00` between bytes.
 
-`uio_oe` is 0, so the bidirectional pads are inputs. There is no receive path and no byte queue. The next `send` overwrites the shift register.
+After start, word 0 is read. The SRAM presents the data on the following clock. `uo_out` is the low byte of that word. The fixed UART transmitter is still in the repository and is not connected to the pins.
 
 ## How to test
 
-Hold `rst_n` low for one rising edge of `clk`. `uo_out[0]` is high and `uo_out[1]` is low. Put a byte on `ui_in`, raise `uio_in[0]` for one rising edge, then lower it. The following 16 cycles are low. The next 128 cycles are the data bits, 16 cycles each, bit 0 first. The next 16 cycles are high. `uo_out[1]` is low again on the cycle after the stop bit.
+Hold `rst_n` low for one rising edge of `clk`. Drive a byte on `ui_in` and `01` on `uio_in[1:0]` for one rising edge, then return the strobe to `00`. The next byte with strobe `01` completes the first word. A later byte with strobe `10` completes the last word and starts the read of word 0. Two clocks after that start edge, `uo_out` is the low byte of word 0.
 
 ## External hardware
 

@@ -5,31 +5,25 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge, ReadOnly, Timer
 
-CLKS_PER_BIT = 16
-# LSB is 1, so the wire must go low for the start bit and then high for bit 0.
-BYTE = 0b10110001
 
-
-async def pins(dut):
-    """Return (tx, busy) after the next rising edge has updated the flops."""
+async def clock_edge(dut):
     await RisingEdge(dut.clk)
     await ReadOnly()
-    value = int(dut.uo_out.value)
     await Timer(1, unit="ns")
-    return value & 1, (value >> 1) & 1
 
 
-async def expect_bit(dut, level, n, name):
-    for i in range(n):
-        tx, busy = await pins(dut)
-        assert tx == level and busy == 1, (
-            f"{name} cycle {i}: tx={tx} busy={busy}, expected tx={level} busy=1"
-        )
+async def byte_strobe(dut, code, data):
+    """Present one byte. The strobe returns to idle before the next byte."""
+    dut.ui_in.value = data
+    dut.uio_in.value = code
+    await clock_edge(dut)
+    dut.uio_in.value = 0
+    await clock_edge(dut)
 
 
 @cocotb.test()
-async def test_uart_tx(dut):
-    """One byte leaves on uo_out[0]. LSB first, 16 clocks per bit, no queue."""
+async def test_imem_load(dut):
+    """Two words are stored. The last strobe starts a read of word 0."""
     dut.ena.value = 1
     dut.ui_in.value = 0
     dut.uio_in.value = 0
@@ -38,20 +32,51 @@ async def test_uart_tx(dut):
     await Timer(1, unit="ns")
     Clock(dut.clk, 10, unit="us").start()
 
-    tx, busy = await pins(dut)
-    assert tx == 1 and busy == 0, f"after reset tx={tx} busy={busy}"
-
+    await clock_edge(dut)
     dut.rst_n.value = 1
-    dut.ui_in.value = BYTE
-    dut.uio_in.value = 1
-    tx, busy = await pins(dut)
-    assert tx == 1 and busy == 1, f"copy cycle tx={tx} busy={busy}"
+    await clock_edge(dut)
+    assert int(dut.DUT.imem.running.value) == 0
+
+    # 16'hABCD, then 16'h1234. 10 on the last byte starts execution.
+    await byte_strobe(dut, 0b01, 0xCD)
+    await byte_strobe(dut, 0b01, 0xAB)
+    assert int(dut.DUT.imem.running.value) == 0
+    assert int(dut.DUT.imem.wr_addr.value) == 1
+
+    await byte_strobe(dut, 0b01, 0x34)
+    await byte_strobe(dut, 0b10, 0x12)
+    assert int(dut.DUT.imem.running.value) == 1
+    assert int(dut.DUT.imem.wr_addr.value) == 2
+
+    # byte_strobe already consumed the write edge and the following edge.
+    # The read data is valid on the edge after that.
+    await clock_edge(dut)
+    assert int(dut.DUT.imem.fetch_valid.value) == 1
+    assert int(dut.DUT.imem.dout.value) == 0xABCD
+    assert int(dut.uo_out.value) == 0xCD
+
+    # Holding 01 for several clocks must not store extra bytes. Reset and
+    # check a single held strobe leaves the loader waiting for the high byte.
+    dut.rst_n.value = 0
     dut.uio_in.value = 0
+    await clock_edge(dut)
+    dut.rst_n.value = 1
+    await clock_edge(dut)
 
-    await expect_bit(dut, 0, CLKS_PER_BIT, "start")
-    for bit in range(8):
-        await expect_bit(dut, (BYTE >> bit) & 1, CLKS_PER_BIT, f"data[{bit}]")
-    await expect_bit(dut, 1, CLKS_PER_BIT, "stop")
+    dut.ui_in.value = 0x55
+    dut.uio_in.value = 0b01
+    await clock_edge(dut)
+    await clock_edge(dut)
+    await clock_edge(dut)
+    assert int(dut.DUT.imem.half.value) == 1
+    assert int(dut.DUT.imem.wr_addr.value) == 0
 
-    tx, busy = await pins(dut)
-    assert tx == 1 and busy == 0, f"after frame tx={tx} busy={busy}"
+    dut.uio_in.value = 0
+    await clock_edge(dut)
+    dut.uio_in.value = 0b11
+    await clock_edge(dut)
+    dut.uio_in.value = 0
+    await clock_edge(dut)
+    assert int(dut.DUT.imem.half.value) == 1
+    assert int(dut.DUT.imem.wr_addr.value) == 0
+    assert int(dut.DUT.imem.running.value) == 0
