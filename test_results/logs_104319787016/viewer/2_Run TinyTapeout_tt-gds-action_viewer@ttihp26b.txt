@@ -1,0 +1,204 @@
+﻿2026-10-14T02:12:20.8296871Z ##[group]Run TinyTapeout/tt-gds-action/viewer@ttihp26b
+2026-10-14T02:12:20.8298305Z ##[endgroup]
+2026-10-14T02:12:20.8369946Z ##[start-action display=Download GDS artifact;id=__TinyTapeout_tt-gds-action.__actions_download-artifact]
+2026-10-14T02:12:20.8486384Z ##[group]Run actions/download-artifact@v7
+2026-10-14T02:12:20.8487049Z with:
+2026-10-14T02:12:20.8487498Z   name: tt_submission
+2026-10-14T02:12:20.8488006Z   merge-multiple: false
+2026-10-14T02:12:20.8488796Z   repository: RaghuvPotdar/jstreet_Leonidas
+2026-10-14T02:12:20.8489450Z   run-id: 38499274412
+2026-10-14T02:12:20.8489938Z ##[endgroup]
+2026-10-14T02:12:21.0005052Z Downloading single artifact
+2026-10-14T02:12:21.0858386Z Preparing to download the following artifacts:
+2026-10-14T02:12:21.0860922Z - tt_submission (ID: 11864684457, Size: 3577140, Expected Digest: sha256:f483e36e953b670e10891b7af6b592e73a047b0034b9d397237f8b55775a97b8)
+2026-10-14T02:12:21.2736473Z Redirecting to blob download url: https://productionresultssa7.blob.core.windows.net/actions-results/3a0b5852-602e-80c6-b403-9f700afa0d0f/workflow-job-run-a4df8f79-32f7-5c02-a226-5aaf145bab93/artifacts/a6af0e44e710fc652ee9cedf71e70f3e4b8573b2544ca1bf1bfd1d234fbf113f.zip
+2026-10-14T02:12:21.2741474Z Starting download of artifact to: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas
+2026-10-14T02:12:21.3576200Z (node:2217) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+2026-10-14T02:12:21.3580606Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-14T02:12:21.5018815Z SHA256 digest of downloaded artifact is f483e36e953b670e10891b7af6b592e73a047b0034b9d397237f8b55775a97b8
+2026-10-14T02:12:21.5021739Z Artifact download completed successfully.
+2026-10-14T02:12:21.5023250Z Total of 1 artifact(s) downloaded
+2026-10-14T02:12:21.5024898Z Download artifact has finished successfully
+2026-10-14T02:12:21.5210145Z ##[end-action id=__TinyTapeout_tt-gds-action.__actions_download-artifact;outcome=success;conclusion=success;duration_ms=683]
+2026-10-14T02:12:21.5215189Z ##[start-action display=Read PDK information from submission;id=__TinyTapeout_tt-gds-action.__run]
+2026-10-14T02:12:21.5255758Z ##[group]Run PDK=$(jq -r '.PDK' pdk.json)
+2026-10-14T02:12:21.5256543Z [36;1mPDK=$(jq -r '.PDK' pdk.json)[0m
+2026-10-14T02:12:21.5257251Z [36;1mecho "PDK=$PDK" >> $GITHUB_ENV[0m
+2026-10-14T02:12:21.5601712Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-14T02:12:21.5602511Z ##[endgroup]
+2026-10-14T02:12:21.5796635Z ##[end-action id=__TinyTapeout_tt-gds-action.__run;outcome=success;conclusion=success;duration_ms=57]
+2026-10-14T02:12:21.5801315Z ##[start-action display=Download gds_render (png) artifact;id=__TinyTapeout_tt-gds-action.__actions_download-artifact_2]
+2026-10-14T02:12:21.5874285Z ##[group]Run actions/download-artifact@v7
+2026-10-14T02:12:21.5874940Z with:
+2026-10-14T02:12:21.5875388Z   name: gds_render
+2026-10-14T02:12:21.5875894Z   path: gh-pages
+2026-10-14T02:12:21.5876388Z   merge-multiple: false
+2026-10-14T02:12:21.5876948Z   repository: RaghuvPotdar/jstreet_Leonidas
+2026-10-14T02:12:21.5877562Z   run-id: 38499274412
+2026-10-14T02:12:21.5878038Z env:
+2026-10-14T02:12:21.5878789Z   PDK: ihp-sg13g2
+2026-10-14T02:12:21.5879274Z ##[endgroup]
+2026-10-14T02:12:21.7320289Z Downloading single artifact
+2026-10-14T02:12:21.8273798Z Preparing to download the following artifacts:
+2026-10-14T02:12:21.8276548Z - gds_render (ID: 11865530320, Size: 1720189, Expected Digest: sha256:d46c27fa3f06e19ac36958c431360cb1b93d3413fe2c4054869682008914bf1d)
+2026-10-14T02:12:21.9971373Z Redirecting to blob download url: https://productionresultssa7.blob.core.windows.net/actions-results/3a0b5852-602e-80c6-b403-9f700afa0d0f/workflow-job-run-a4df8f79-32f7-5c02-a226-5aaf145bab93/artifacts/0e1a954b7b3f8d2236a31cdc1b2300f4a72eac2eb8cf449a0d14714be17507f8.zip
+2026-10-14T02:12:21.9975384Z Starting download of artifact to: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/gh-pages
+2026-10-14T02:12:22.0695654Z (node:2231) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+2026-10-14T02:12:22.0698935Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-14T02:12:22.1310764Z SHA256 digest of downloaded artifact is d46c27fa3f06e19ac36958c431360cb1b93d3413fe2c4054869682008914bf1d
+2026-10-14T02:12:22.1313316Z Artifact download completed successfully.
+2026-10-14T02:12:22.1314612Z Total of 1 artifact(s) downloaded
+2026-10-14T02:12:22.1315806Z Download artifact has finished successfully
+2026-10-14T02:12:22.1398957Z ##[end-action id=__TinyTapeout_tt-gds-action.__actions_download-artifact_2;outcome=success;conclusion=success;duration_ms=559]
+2026-10-14T02:12:22.1405143Z ##[start-action display=Copy OAS And GDSII;id=__TinyTapeout_tt-gds-action.__run_2]
+2026-10-14T02:12:22.1443314Z ##[group]Run cp tt_submission/*.gds gh-pages/tinytapeout.gds
+2026-10-14T02:12:22.1444856Z [36;1mcp tt_submission/*.gds gh-pages/tinytapeout.gds[0m
+2026-10-14T02:12:22.1446238Z [36;1mcp tt_submission/*.oas gh-pages/tinytapeout.oas[0m
+2026-10-14T02:12:22.1510497Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-14T02:12:22.1511667Z env:
+2026-10-14T02:12:22.1512224Z   PDK: ihp-sg13g2
+2026-10-14T02:12:22.1512853Z ##[endgroup]
+2026-10-14T02:12:22.1690326Z ##[end-action id=__TinyTapeout_tt-gds-action.__run_2;outcome=success;conclusion=success;duration_ms=28]
+2026-10-14T02:12:22.1696645Z ##[start-action display=Generate an HTML page that redirects to viewer;id=__TinyTapeout_tt-gds-action.__run_3]
+2026-10-14T02:12:22.1756267Z ##[group]Run cat << EOF >> gh-pages/index.html
+2026-10-14T02:12:22.1757377Z [36;1mcat << EOF >> gh-pages/index.html[0m
+2026-10-14T02:12:22.1758581Z [36;1m  <!DOCTYPE html>[0m
+2026-10-14T02:12:22.1759351Z [36;1m  <html lang="en">[0m
+2026-10-14T02:12:22.1760080Z [36;1m  <head>[0m
+2026-10-14T02:12:22.1760710Z [36;1m    <meta charset="UTF-8">[0m
+2026-10-14T02:12:22.1761855Z [36;1m    <meta http-equiv="X-UA-Compatible" content="IE=edge">[0m
+2026-10-14T02:12:22.1763485Z [36;1m    <meta name="viewport" content="width=device-width, initial-scale=1.0">[0m
+2026-10-14T02:12:22.1765002Z [36;1m    <title>Redirecting to 3D Viewer...</title>[0m
+2026-10-14T02:12:22.1765998Z [36;1m  </head>[0m
+2026-10-14T02:12:22.1766594Z [36;1m  <body>[0m
+2026-10-14T02:12:22.1767188Z [36;1m    <script>[0m
+2026-10-14T02:12:22.1769586Z [36;1m      location.href = "https://gds-viewer.tinytapeout.com/?pdk=ihp-sg13g2&model=" + encodeURIComponent(location.href + '/tinytapeout.oas');[0m
+2026-10-14T02:12:22.1771890Z [36;1m    </script>[0m
+2026-10-14T02:12:22.1772556Z [36;1m  </body>[0m
+2026-10-14T02:12:22.1773157Z [36;1m  </html>[0m
+2026-10-14T02:12:22.1773752Z [36;1mEOF[0m
+2026-10-14T02:12:22.1834133Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-14T02:12:22.1835253Z env:
+2026-10-14T02:12:22.1835778Z   PDK: ihp-sg13g2
+2026-10-14T02:12:22.1836394Z ##[endgroup]
+2026-10-14T02:12:22.1946029Z ##[end-action id=__TinyTapeout_tt-gds-action.__run_3;outcome=success;conclusion=success;duration_ms=24]
+2026-10-14T02:12:22.1952324Z ##[start-action display=Upload artifact;id=__TinyTapeout_tt-gds-action.__actions_upload-pages-artifact]
+2026-10-14T02:12:22.2161755Z ##[group]Run actions/upload-pages-artifact@v5
+2026-10-14T02:12:22.2162660Z with:
+2026-10-14T02:12:22.2163164Z   path: gh-pages
+2026-10-14T02:12:22.2163765Z   name: github-pages
+2026-10-14T02:12:22.2164374Z   retention-days: 1
+2026-10-14T02:12:22.2165012Z   include-hidden-files: false
+2026-10-14T02:12:22.2165718Z env:
+2026-10-14T02:12:22.2166212Z   PDK: ihp-sg13g2
+2026-10-14T02:12:22.2166779Z ##[endgroup]
+2026-10-14T02:12:22.2179070Z ##[start-action display=Archive artifact;id=__TinyTapeout_tt-gds-action.__actions_upload-pages-artifact.__run]
+2026-10-14T02:12:22.2235899Z ##[group]Run echo ::group::Archive artifact
+2026-10-14T02:12:22.2236818Z [36;1mecho ::group::Archive artifact[0m
+2026-10-14T02:12:22.2237792Z [36;1mtar \[0m
+2026-10-14T02:12:22.2238623Z [36;1m  --dereference --hard-dereference \[0m
+2026-10-14T02:12:22.2239559Z [36;1m  --directory "$INPUT_PATH" \[0m
+2026-10-14T02:12:22.2240453Z [36;1m  -cvf "$RUNNER_TEMP/artifact.tar" \[0m
+2026-10-14T02:12:22.2241320Z [36;1m  --exclude=.git \[0m
+2026-10-14T02:12:22.2242019Z [36;1m  --exclude=.github \[0m
+2026-10-14T02:12:22.2242736Z [36;1m  --exclude=.[^/]* \[0m
+2026-10-14T02:12:22.2243414Z [36;1m  .[0m
+2026-10-14T02:12:22.2243960Z [36;1mecho ::endgroup::[0m
+2026-10-14T02:12:22.2268278Z shell: /usr/bin/sh -e {0}
+2026-10-14T02:12:22.2268958Z env:
+2026-10-14T02:12:22.2269458Z   PDK: ihp-sg13g2
+2026-10-14T02:12:22.2270071Z   INPUT_PATH: gh-pages
+2026-10-14T02:12:22.2270674Z ##[endgroup]
+2026-10-14T02:12:22.2314684Z ##[group]Archive artifact
+2026-10-14T02:12:22.2326301Z ./
+2026-10-14T02:12:22.2327197Z ./gds_render.png
+2026-10-14T02:12:22.2342765Z ./tinytapeout.oas
+2026-10-14T02:12:22.2348378Z ./index.html
+2026-10-14T02:12:22.2349182Z ./tinytapeout.gds
+2026-10-14T02:12:22.2463439Z ##[endgroup]
+2026-10-14T02:12:22.2477577Z ##[end-action id=__TinyTapeout_tt-gds-action.__actions_upload-pages-artifact.__run;outcome=success;conclusion=success;duration_ms=29]
+2026-10-14T02:12:22.2484747Z ##[start-action display=Archive artifact;id=__TinyTapeout_tt-gds-action.__actions_upload-pages-artifact.__run_2]
+2026-10-14T02:12:22.2495606Z ##[end-action id=__TinyTapeout_tt-gds-action.__actions_upload-pages-artifact.__run_2;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-14T02:12:22.2502783Z ##[start-action display=Archive artifact;id=__TinyTapeout_tt-gds-action.__actions_upload-pages-artifact.__run_3]
+2026-10-14T02:12:22.2512503Z ##[end-action id=__TinyTapeout_tt-gds-action.__actions_upload-pages-artifact.__run_3;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-14T02:12:22.2518662Z ##[start-action display=Upload artifact;id=__TinyTapeout_tt-gds-action.__actions_upload-pages-artifact.upload-artifact]
+2026-10-14T02:12:22.2603733Z ##[group]Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+2026-10-14T02:12:22.2604958Z with:
+2026-10-14T02:12:22.2605465Z   name: github-pages
+2026-10-14T02:12:22.2606149Z   path: /home/runner/work/_temp/artifact.tar
+2026-10-14T02:12:22.2606989Z   retention-days: 1
+2026-10-14T02:12:22.2607595Z   if-no-files-found: error
+2026-10-14T02:12:22.2608548Z   compression-level: 6
+2026-10-14T02:12:22.2609191Z   overwrite: false
+2026-10-14T02:12:22.2609808Z   include-hidden-files: false
+2026-10-14T02:12:22.2610501Z   archive: true
+2026-10-14T02:12:22.2611029Z env:
+2026-10-14T02:12:22.2611521Z   PDK: ihp-sg13g2
+2026-10-14T02:12:22.2612072Z ##[endgroup]
+2026-10-14T02:12:22.4061233Z With the provided path, there will be 1 file uploaded
+2026-10-14T02:12:22.4147528Z Artifact name is valid!
+2026-10-14T02:12:22.4149445Z Root directory input is valid!
+2026-10-14T02:12:22.6088986Z Uploading artifact: github-pages.zip
+2026-10-14T02:12:22.6132821Z Beginning upload of artifact content to blob storage
+2026-10-14T02:12:23.1608613Z Uploaded bytes 4683972
+2026-10-14T02:12:23.1765471Z Finished uploading artifact content to blob storage!
+2026-10-14T02:12:23.1769847Z SHA256 digest of uploaded artifact is c4f5fd122259eaad32a8be7067ff2c93439427b3684a6f96057478bcd40cd116
+2026-10-14T02:12:23.1773819Z Finalizing artifact upload
+2026-10-14T02:12:23.4246420Z Artifact github-pages successfully finalized. Artifact ID 11865520396
+2026-10-14T02:12:23.4250771Z Artifact github-pages has been successfully uploaded! Final size is 4683972 bytes. Artifact ID is 11865520396
+2026-10-14T02:12:23.4256411Z Artifact download URL: https://github.com/RaghuvPotdar/jstreet_Leonidas/actions/runs/38499274412/artifacts/11865520396
+2026-10-14T02:12:23.4370072Z ##[end-action id=__TinyTapeout_tt-gds-action.__actions_upload-pages-artifact.upload-artifact;outcome=success;conclusion=success;duration_ms=1184]
+2026-10-14T02:12:23.4420802Z ##[end-action id=__TinyTapeout_tt-gds-action.__actions_upload-pages-artifact;outcome=success;conclusion=success;duration_ms=1246]
+2026-10-14T02:12:23.4430611Z ##[start-action display=Deploy to GitHub Pages;id=__TinyTapeout_tt-gds-action.deployment]
+2026-10-14T02:12:23.4559499Z ##[group]Run actions/deploy-pages@v5
+2026-10-14T02:12:23.4560716Z with:
+2026-10-14T02:12:23.4570015Z   token: ***
+2026-10-14T02:12:23.4571009Z   timeout: 600000
+2026-10-14T02:12:23.4571988Z   error_count: 10
+2026-10-14T02:12:23.4573001Z   reporting_interval: 5000
+2026-10-14T02:12:23.4574125Z   artifact_name: github-pages
+2026-10-14T02:12:23.4575279Z   preview: false
+2026-10-14T02:12:23.4576236Z env:
+2026-10-14T02:12:23.4577147Z   PDK: ihp-sg13g2
+2026-10-14T02:12:23.4578288Z ##[endgroup]
+2026-10-14T02:12:23.6500966Z (node:2265) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-14T02:12:23.6506118Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-14T02:12:23.7276829Z Fetching artifact metadata for "github-pages" in this workflow run
+2026-10-14T02:12:23.8233643Z Found 4 artifact(s)
+2026-10-14T02:12:23.8252702Z Creating Pages deployment with payload:
+2026-10-14T02:12:23.8253466Z {
+2026-10-14T02:12:23.8253922Z 	"artifact_id": 11865520396,
+2026-10-14T02:12:23.8254626Z 	"pages_build_version": "962318867abd2929027a48f004e30392af8f4914",
+2026-10-14T02:12:23.8289214Z 	"oidc_token": "***"
+2026-10-14T02:12:23.8289581Z }
+2026-10-14T02:12:24.6734083Z Created deployment for 962318867abd2929027a48f004e30392af8f4914, ID: 962318867abd2929027a48f004e30392af8f4914
+2026-10-14T02:12:29.0184795Z Getting Pages deployment status...
+2026-10-14T02:12:29.2224315Z Current status: updating_pages
+2026-10-14T02:12:37.4348021Z Getting Pages deployment status...
+2026-10-14T02:12:37.5887628Z Current status: updating_pages
+2026-10-14T02:12:49.6373755Z Getting Pages deployment status...
+2026-10-14T02:12:49.7654121Z Current status: updating_pages
+2026-10-14T02:13:04.1307218Z Getting Pages deployment status...
+2026-10-14T02:13:04.2147243Z Reported success!
+2026-10-14T02:13:04.2296231Z ##[end-action id=__TinyTapeout_tt-gds-action.deployment;outcome=success;conclusion=success;duration_ms=40786]
+2026-10-14T02:13:04.2299946Z ##[start-action display=Check for failure;id=__TinyTapeout_tt-gds-action.__run_4]
+2026-10-14T02:13:04.2305825Z ##[end-action id=__TinyTapeout_tt-gds-action.__run_4;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-14T02:13:04.2308012Z ##[start-action display=Display preview in workflow summary;id=__TinyTapeout_tt-gds-action.__run_5]
+2026-10-14T02:13:04.2330896Z ##[group]Run PAGE_URL=https://raghuvpotdar.github.io/jstreet_Leonidas/
+2026-10-14T02:13:04.2331493Z [36;1mPAGE_URL=https://raghuvpotdar.github.io/jstreet_Leonidas/[0m
+2026-10-14T02:13:04.2331965Z [36;1mPAGE_URL=$(echo "$PAGE_URL" | sed -e 's/\/$//')[0m
+2026-10-14T02:13:04.2332331Z [36;1mcat << EOF >> $GITHUB_STEP_SUMMARY[0m
+2026-10-14T02:13:04.2332635Z [36;1m# 3D Viewer[0m
+2026-10-14T02:13:04.2333100Z [36;1m[Open 3D viewer](https://gds-viewer.tinytapeout.com/?model=$PAGE_URL/tinytapeout.oas&pdk=$PDK)[0m
+2026-10-14T02:13:04.2333633Z [36;1m[0m
+2026-10-14T02:13:04.2333851Z [36;1m# Tiny Tapeout Explorer[0m
+2026-10-14T02:13:04.2334455Z [36;1m[Open in Tiny Tapeout Explorer](https://gds-explorer.tinytapeout.com/viewer?file=$PAGE_URL/tinytapeout.oas&pdk=$PDK)[0m
+2026-10-14T02:13:04.2335058Z [36;1m[0m
+2026-10-14T02:13:04.2335260Z [36;1m# 2D Preview[0m
+2026-10-14T02:13:04.2335529Z [36;1m![png]($PAGE_URL/gds_render.png)[0m
+2026-10-14T02:13:04.2335822Z [36;1mEOF[0m
+2026-10-14T02:13:04.2401922Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-14T02:13:04.2402308Z env:
+2026-10-14T02:13:04.2402524Z   PDK: ihp-sg13g2
+2026-10-14T02:13:04.2402761Z ##[endgroup]
+2026-10-14T02:13:04.2531378Z ##[end-action id=__TinyTapeout_tt-gds-action.__run_5;outcome=success;conclusion=success;duration_ms=22]

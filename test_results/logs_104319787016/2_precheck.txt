@@ -1,0 +1,1654 @@
+﻿2026-10-14T02:12:19.7408676Z Current runner version: '2.337.0'
+2026-10-14T02:12:19.7430051Z ##[group]Runner Image Provisioner
+2026-10-14T02:12:19.7430842Z Hosted Compute Agent
+2026-10-14T02:12:19.7431372Z Version: 20261002.596
+2026-10-14T02:12:19.7431908Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+2026-10-14T02:12:19.7432512Z Build Date: 2026-10-02T22:28:27Z
+2026-10-14T02:12:19.7433079Z Worker ID: {513e9eff-e0c0-48c8-833e-10c90d771027}
+2026-10-14T02:12:19.7433761Z Region: westus3
+2026-10-14T02:12:19.7434217Z Cloud: Azure
+2026-10-14T02:12:19.7434891Z ##[endgroup]
+2026-10-14T02:12:19.7436138Z ##[group]Operating System
+2026-10-14T02:12:19.7436661Z Ubuntu
+2026-10-14T02:12:19.7437180Z 24.04.5
+2026-10-14T02:12:19.7437607Z LTS
+2026-10-14T02:12:19.7438016Z ##[endgroup]
+2026-10-14T02:12:19.7438532Z ##[group]Runner Image
+2026-10-14T02:12:19.7439023Z Image: ubuntu-24.04
+2026-10-14T02:12:19.7439591Z Version: 20261004.327.1
+2026-10-14T02:12:19.7440591Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261004.327/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-14T02:12:19.7441890Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261004.327
+2026-10-14T02:12:19.7442677Z ##[endgroup]
+2026-10-14T02:12:19.7443747Z ##[group]GITHUB_TOKEN Permissions
+2026-10-14T02:12:19.7445447Z Contents: read
+2026-10-14T02:12:19.7446037Z Metadata: read
+2026-10-14T02:12:19.7446505Z Packages: read
+2026-10-14T02:12:19.7446949Z ##[endgroup]
+2026-10-14T02:12:19.7448701Z Secret source: Actions
+2026-10-14T02:12:19.7449450Z Cache mode: write
+2026-10-14T02:12:19.7450095Z Prepare workflow directory
+2026-10-14T02:12:19.7724854Z Prepare all required actions
+2026-10-14T02:12:19.7779903Z Getting action download info
+2026-10-14T02:12:20.0817193Z Download action repository 'TinyTapeout/tt-gds-action@ttihp26b' (SHA:7ef3d03f2ca2e4550306636a7b762fe128b09995)
+2026-10-14T02:12:20.5564734Z Getting action download info
+2026-10-14T02:12:20.7608262Z Download action repository 'actions/checkout@v6' (SHA:d23441a48e516b6c34aea4fa41551a30e30af803)
+2026-10-14T02:12:20.8022771Z Download action repository 'actions/download-artifact@v7' (SHA:37930b1c2abaa49bbe596cd826c3c89aef350131)
+2026-10-14T02:12:21.5487868Z Download action repository 'actions/setup-python@v6' (SHA:ece7cb06caefa5fff74198d8649806c4678c61a1)
+2026-10-14T02:12:22.0688430Z Download action repository 'TinyTapeout/ciel-action@v1' (SHA:11703802099012722109e39b7e353eae0fea88bb)
+2026-10-14T02:12:22.3258800Z Download action repository 'rikhuijzer/cache-install@c46c673b14b0780c6749d7a45f26ebc07c8c7388' (SHA:c46c673b14b0780c6749d7a45f26ebc07c8c7388)
+2026-10-14T02:12:22.5684821Z Download action repository 'test-summary/action@v2.6' (SHA:37b508cfee6d4d080eedd00b5bb240a6a784a6a5)
+2026-10-14T02:12:22.8980093Z Download action repository 'actions/upload-artifact@v7' (SHA:cf430e030ddbb5b0abf93d22962f4752f3646cd9)
+2026-10-14T02:12:23.7682396Z Getting action download info
+2026-10-14T02:12:23.8764695Z Download action repository 'actions/cache@v5' (SHA:caa296126883cff596d87d8935842f9db880ef25)
+2026-10-14T02:12:24.1067560Z Getting action download info
+2026-10-14T02:12:24.2558795Z Complete job name: precheck
+2026-10-14T02:12:24.3213615Z ##[group]Run TinyTapeout/tt-gds-action/precheck@ttihp26b
+2026-10-14T02:12:24.3214107Z with:
+2026-10-14T02:12:24.3214320Z   tools-repo: TinyTapeout/tt-support-tools
+2026-10-14T02:12:24.3214737Z   tools-ref: main
+2026-10-14T02:12:24.3215035Z ##[endgroup]
+2026-10-14T02:12:24.3269286Z ##[start-action display=Checkout tt-support-tools repo;id=__TinyTapeout_tt-gds-action.__actions_checkout]
+2026-10-14T02:12:24.3372436Z ##[group]Run actions/checkout@v6
+2026-10-14T02:12:24.3372675Z with:
+2026-10-14T02:12:24.3372878Z   repository: TinyTapeout/tt-support-tools
+2026-10-14T02:12:24.3373118Z   path: tt
+2026-10-14T02:12:24.3373273Z   ref: main
+2026-10-14T02:12:24.3375589Z   token: ***
+2026-10-14T02:12:24.3375767Z   ssh-strict: true
+2026-10-14T02:12:24.3375952Z   ssh-user: git
+2026-10-14T02:12:24.3376135Z   persist-credentials: true
+2026-10-14T02:12:24.3376341Z   clean: true
+2026-10-14T02:12:24.3376744Z   sparse-checkout-cone-mode: true
+2026-10-14T02:12:24.3376956Z   fetch-depth: 1
+2026-10-14T02:12:24.3377190Z   fetch-tags: false
+2026-10-14T02:12:24.3377395Z   show-progress: true
+2026-10-14T02:12:24.3377570Z   lfs: false
+2026-10-14T02:12:24.3377730Z   submodules: false
+2026-10-14T02:12:24.3377906Z   set-safe-directory: true
+2026-10-14T02:12:24.3378112Z   allow-unsafe-pr-checkout: false
+2026-10-14T02:12:24.3378326Z ##[endgroup]
+2026-10-14T02:12:24.4192612Z Syncing repository: TinyTapeout/tt-support-tools
+2026-10-14T02:12:24.4193853Z ##[group]Getting Git version info
+2026-10-14T02:12:24.4194263Z Working directory is '/home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt'
+2026-10-14T02:12:24.4194927Z [command]/usr/bin/git version
+2026-10-14T02:12:24.4689534Z git version 2.55.0
+2026-10-14T02:12:24.4708566Z ##[endgroup]
+2026-10-14T02:12:24.4720713Z Temporarily overriding HOME='/home/runner/work/_temp/b48a3ff1-6386-4e12-8dff-50faa8a26166' before making global git config changes
+2026-10-14T02:12:24.4722044Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-14T02:12:24.4725629Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt
+2026-10-14T02:12:24.4775919Z ##[group]Determining repository object format
+2026-10-14T02:12:24.8406130Z ##[endgroup]
+2026-10-14T02:12:24.8406716Z ##[group]Initializing the repository
+2026-10-14T02:12:24.8409149Z [command]/usr/bin/git init /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt
+2026-10-14T02:12:24.9280069Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-14T02:12:24.9280821Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-14T02:12:24.9281324Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-14T02:12:24.9281648Z hint: call:
+2026-10-14T02:12:24.9281809Z hint:
+2026-10-14T02:12:24.9282046Z hint: 	git config --global init.defaultBranch <name>
+2026-10-14T02:12:24.9282424Z hint:
+2026-10-14T02:12:24.9282801Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-14T02:12:24.9283413Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-14T02:12:24.9283856Z hint:
+2026-10-14T02:12:24.9284110Z hint: 	git branch -m <name>
+2026-10-14T02:12:24.9284531Z hint:
+2026-10-14T02:12:24.9284939Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-14T02:12:24.9285857Z Initialized empty Git repository in /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt/.git/
+2026-10-14T02:12:24.9293622Z [command]/usr/bin/git remote add origin https://github.com/TinyTapeout/tt-support-tools
+2026-10-14T02:12:24.9343595Z ##[endgroup]
+2026-10-14T02:12:24.9344138Z ##[group]Disabling automatic garbage collection
+2026-10-14T02:12:24.9347929Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-14T02:12:24.9380004Z ##[endgroup]
+2026-10-14T02:12:24.9380441Z ##[group]Setting up auth
+2026-10-14T02:12:24.9381531Z Removing SSH command configuration
+2026-10-14T02:12:24.9386912Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-14T02:12:24.9419289Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-14T02:12:24.9843532Z Removing HTTP extra header
+2026-10-14T02:12:24.9849599Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-14T02:12:24.9885785Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-14T02:12:25.0080888Z Removing includeIf entries pointing to credentials config files
+2026-10-14T02:12:25.0087266Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-14T02:12:25.0122898Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-14T02:12:25.0330583Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-24730779-fd46-4fd7-a17a-ec8b66a5c47b.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-14T02:12:25.0380029Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt/.git.path /home/runner/work/_temp/git-credentials-24730779-fd46-4fd7-a17a-ec8b66a5c47b.config
+2026-10-14T02:12:25.0416107Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-24730779-fd46-4fd7-a17a-ec8b66a5c47b.config
+2026-10-14T02:12:25.0452942Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/tt/.git.path /github/runner_temp/git-credentials-24730779-fd46-4fd7-a17a-ec8b66a5c47b.config
+2026-10-14T02:12:25.0486002Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/tt/.git/worktrees/*.path /github/runner_temp/git-credentials-24730779-fd46-4fd7-a17a-ec8b66a5c47b.config
+2026-10-14T02:12:25.0516216Z ##[endgroup]
+2026-10-14T02:12:25.0516659Z ##[group]Fetching the repository
+2026-10-14T02:12:25.0524651Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +refs/heads/main*:refs/remotes/origin/main* +refs/tags/main*:refs/tags/main*
+2026-10-14T02:12:26.2891425Z From https://github.com/TinyTapeout/tt-support-tools
+2026-10-14T02:12:26.2891852Z  * [new branch]      main       -> origin/main
+2026-10-14T02:12:26.2897153Z ##[endgroup]
+2026-10-14T02:12:26.2897493Z ##[group]Determining the checkout info
+2026-10-14T02:12:26.2901788Z [command]/usr/bin/git branch --list --remote origin/main
+2026-10-14T02:12:26.2931127Z   origin/main
+2026-10-14T02:12:26.2933336Z ##[endgroup]
+2026-10-14T02:12:26.2938322Z [command]/usr/bin/git sparse-checkout disable
+2026-10-14T02:12:26.2993672Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-14T02:12:26.3019604Z ##[group]Checking out the ref
+2026-10-14T02:12:26.3022393Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-10-14T02:12:26.3710047Z Switched to a new branch 'main'
+2026-10-14T02:12:26.3715333Z branch 'main' set up to track 'origin/main'.
+2026-10-14T02:12:26.3721034Z ##[endgroup]
+2026-10-14T02:12:26.3775664Z [command]/usr/bin/git log -1 --format=%H
+2026-10-14T02:12:26.3799368Z 01d5d2814fa9dd61e9d211e0b235a4a592a9316a
+2026-10-14T02:12:26.3947317Z ##[end-action id=__TinyTapeout_tt-gds-action.__actions_checkout;outcome=success;conclusion=success;duration_ms=2067]
+2026-10-14T02:12:26.3949919Z ##[start-action display=Download GDS artifact;id=__TinyTapeout_tt-gds-action.__actions_download-artifact]
+2026-10-14T02:12:26.3983034Z ##[group]Run actions/download-artifact@v7
+2026-10-14T02:12:26.3983269Z with:
+2026-10-14T02:12:26.3983435Z   name: tt_submission
+2026-10-14T02:12:26.3983642Z   merge-multiple: false
+2026-10-14T02:12:26.3984030Z   repository: RaghuvPotdar/jstreet_Leonidas
+2026-10-14T02:12:26.3984260Z   run-id: 38499274412
+2026-10-14T02:12:26.3984704Z ##[endgroup]
+2026-10-14T02:12:26.5143241Z Downloading single artifact
+2026-10-14T02:12:26.7673711Z Preparing to download the following artifacts:
+2026-10-14T02:12:26.7674285Z - tt_submission (ID: 11864684457, Size: 3577140, Expected Digest: sha256:f483e36e953b670e10891b7af6b592e73a047b0034b9d397237f8b55775a97b8)
+2026-10-14T02:12:27.2303463Z Redirecting to blob download url: https://productionresultssa7.blob.core.windows.net/actions-results/3a0b5852-602e-80c6-b403-9f700afa0d0f/workflow-job-run-a4df8f79-32f7-5c02-a226-5aaf145bab93/artifacts/a6af0e44e710fc652ee9cedf71e70f3e4b8573b2544ca1bf1bfd1d234fbf113f.zip
+2026-10-14T02:12:27.2305174Z Starting download of artifact to: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas
+2026-10-14T02:12:27.4761165Z (node:2176) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+2026-10-14T02:12:27.4762775Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-14T02:12:28.0697432Z SHA256 digest of downloaded artifact is f483e36e953b670e10891b7af6b592e73a047b0034b9d397237f8b55775a97b8
+2026-10-14T02:12:28.0698187Z Artifact download completed successfully.
+2026-10-14T02:12:28.0698580Z Total of 1 artifact(s) downloaded
+2026-10-14T02:12:28.0701755Z Download artifact has finished successfully
+2026-10-14T02:12:28.0782147Z ##[end-action id=__TinyTapeout_tt-gds-action.__actions_download-artifact;outcome=success;conclusion=success;duration_ms=1683]
+2026-10-14T02:12:28.0784887Z ##[start-action display=Set up environment variables;id=__TinyTapeout_tt-gds-action.__run]
+2026-10-14T02:12:28.0812295Z ##[group]Run # Defaults
+2026-10-14T02:12:28.0812569Z [36;1m# Defaults[0m
+2026-10-14T02:12:28.0812790Z [36;1mPDK=$(jq -r '.PDK' pdk.json)[0m
+2026-10-14T02:12:28.0813052Z [36;1mPDK_ROOT=/home/runner/pdk[0m
+2026-10-14T02:12:28.0813277Z [36;1m[0m
+2026-10-14T02:12:28.0813459Z [36;1mif [ "$PDK" == "gf180mcuD" ]; then[0m
+2026-10-14T02:12:28.0813771Z [36;1m  PDK_VERSION="e8daeda73ca8f5814dbc0b11d1d05802251a3750"[0m
+2026-10-14T02:12:28.0814085Z [36;1melif [ "$PDK" == "ihp-sg13g2" ]; then[0m
+2026-10-14T02:12:28.0814606Z [36;1m  PDK_VERSION="22f43352dd8219f9007eb659e422e0d5fe28c5fb"[0m
+2026-10-14T02:12:28.0814915Z [36;1melif [ "$PDK" == "sky130A" ]; then[0m
+2026-10-14T02:12:28.0815203Z [36;1m  PDK_VERSION="0536d02d875c8f67dd7cca3902ac457e62f20005"[0m
+2026-10-14T02:12:28.0815467Z [36;1mfi[0m
+2026-10-14T02:12:28.0815624Z [36;1m[0m
+2026-10-14T02:12:28.0815786Z [36;1mcat << __EOF >> $GITHUB_ENV[0m
+2026-10-14T02:12:28.0815998Z [36;1mPDK=$PDK[0m
+2026-10-14T02:12:28.0816174Z [36;1mPDK_ROOT=$PDK_ROOT[0m
+2026-10-14T02:12:28.0816383Z [36;1mPDK_VERSION=$PDK_VERSION[0m
+2026-10-14T02:12:28.0816573Z [36;1m__EOF[0m
+2026-10-14T02:12:28.1687596Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-14T02:12:28.1687956Z ##[endgroup]
+2026-10-14T02:12:28.1857714Z ##[end-action id=__TinyTapeout_tt-gds-action.__run;outcome=success;conclusion=success;duration_ms=107]
+2026-10-14T02:12:28.1859854Z ##[start-action display=Set up Python;id=__TinyTapeout_tt-gds-action.__actions_setup-python]
+2026-10-14T02:12:28.1911324Z ##[group]Run actions/setup-python@v6
+2026-10-14T02:12:28.1911550Z with:
+2026-10-14T02:12:28.1911717Z   python-version: 3.11
+2026-10-14T02:12:28.1911899Z   cache: pip
+2026-10-14T02:12:28.1912069Z   check-latest: false
+2026-10-14T02:12:28.1914247Z   token: ***
+2026-10-14T02:12:28.1914688Z   update-environment: true
+2026-10-14T02:12:28.1914998Z   allow-prereleases: false
+2026-10-14T02:12:28.1915305Z   freethreaded: false
+2026-10-14T02:12:28.1915496Z env:
+2026-10-14T02:12:28.1915657Z   PDK: ihp-sg13g2
+2026-10-14T02:12:28.1915840Z   PDK_ROOT: /home/runner/pdk
+2026-10-14T02:12:28.1916085Z   PDK_VERSION: 22f43352dd8219f9007eb659e422e0d5fe28c5fb
+2026-10-14T02:12:28.1916349Z ##[endgroup]
+2026-10-14T02:12:28.2954217Z ##[group]Installed versions
+2026-10-14T02:12:28.3031630Z Successfully set up CPython (3.11.17)
+2026-10-14T02:12:28.3032225Z ##[endgroup]
+2026-10-14T02:12:28.3555937Z [command]/opt/hostedtoolcache/Python/3.11.17/x64/bin/pip cache dir
+2026-10-14T02:12:29.0611222Z /home/runner/.cache/pip
+2026-10-14T02:12:29.2996816Z Cache hit for: setup-python-Linux-x64-24.04-Ubuntu-python-3.11.17-pip-6042522863102a9ff38b8ca0cb6bcbdfceae80ab695e967ee078d3b388eb1895
+2026-10-14T02:12:30.5091735Z Received 33554432 of 154612181 (21.7%), 32.0 MBs/sec
+2026-10-14T02:12:31.2539215Z Received 154612181 of 154612181 (100.0%), 84.7 MBs/sec
+2026-10-14T02:12:31.2539678Z Cache Size: ~147 MB (154612181 B)
+2026-10-14T02:12:31.2582130Z [command]/usr/bin/tar -xf /home/runner/work/_temp/271ea86e-b3a6-4a75-8951-e35c5d821c5b/cache.tzst -P -C /home/runner/work/jstreet_Leonidas/jstreet_Leonidas --use-compress-program unzstd
+2026-10-14T02:12:31.4631196Z Cache restored successfully
+2026-10-14T02:12:31.4694999Z Cache restored from key: setup-python-Linux-x64-24.04-Ubuntu-python-3.11.17-pip-6042522863102a9ff38b8ca0cb6bcbdfceae80ab695e967ee078d3b388eb1895
+2026-10-14T02:12:31.4819881Z ##[end-action id=__TinyTapeout_tt-gds-action.__actions_setup-python;outcome=success;conclusion=success;duration_ms=3295]
+2026-10-14T02:12:31.4822228Z ##[start-action display=Install dependencies;id=__TinyTapeout_tt-gds-action.__run_2]
+2026-10-14T02:12:31.4839031Z ##[group]Run pip install -r requirements.txt
+2026-10-14T02:12:31.4839336Z [36;1mpip install -r requirements.txt[0m
+2026-10-14T02:12:31.4898557Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-14T02:12:31.4898847Z env:
+2026-10-14T02:12:31.4899027Z   PDK: ihp-sg13g2
+2026-10-14T02:12:31.4899224Z   PDK_ROOT: /home/runner/pdk
+2026-10-14T02:12:31.4899480Z   PDK_VERSION: 22f43352dd8219f9007eb659e422e0d5fe28c5fb
+2026-10-14T02:12:31.4899828Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:31.4900210Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-14T02:12:31.4900587Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:31.4900898Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:31.4901203Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:31.4901506Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-14T02:12:31.4901769Z ##[endgroup]
+2026-10-14T02:12:32.6614860Z Collecting click==8.3.1 (from -r requirements.txt (line 7))
+2026-10-14T02:12:32.6629844Z   Using cached click-8.3.1-py3-none-any.whl.metadata (2.6 kB)
+2026-10-14T02:12:32.7119344Z Collecting gdstk==0.9.52 (from -r requirements.txt (line 9))
+2026-10-14T02:12:32.7133069Z   Using cached gdstk-0.9.52-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (8.7 kB)
+2026-10-14T02:12:32.7208062Z Collecting iniconfig==2.0.0 (from -r requirements.txt (line 11))
+2026-10-14T02:12:32.7220258Z   Using cached iniconfig-2.0.0-py3-none-any.whl.metadata (2.6 kB)
+2026-10-14T02:12:32.7483440Z Collecting klayout==0.30.8 (from -r requirements.txt (line 13))
+2026-10-14T02:12:32.7497132Z   Using cached klayout-0.30.8-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (867 bytes)
+2026-10-14T02:12:32.8778863Z Collecting numpy==1.26.4 (from -r requirements.txt (line 15))
+2026-10-14T02:12:32.8792983Z   Using cached numpy-1.26.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (61 kB)
+2026-10-14T02:12:32.8957520Z Collecting packaging==24.1 (from -r requirements.txt (line 19))
+2026-10-14T02:12:32.8969100Z   Using cached packaging-24.1-py3-none-any.whl.metadata (3.2 kB)
+2026-10-14T02:12:32.9073212Z Collecting platformdirs==4.9.4 (from -r requirements.txt (line 21))
+2026-10-14T02:12:32.9084769Z   Using cached platformdirs-4.9.4-py3-none-any.whl.metadata (4.7 kB)
+2026-10-14T02:12:32.9153885Z Collecting pluggy==1.5.0 (from -r requirements.txt (line 23))
+2026-10-14T02:12:32.9165351Z   Using cached pluggy-1.5.0-py3-none-any.whl.metadata (4.8 kB)
+2026-10-14T02:12:32.9320511Z Collecting pytest==8.2.2 (from -r requirements.txt (line 25))
+2026-10-14T02:12:32.9332527Z   Using cached pytest-8.2.2-py3-none-any.whl.metadata (7.6 kB)
+2026-10-14T02:12:33.0074738Z Collecting pyyaml==6.0.1 (from -r requirements.txt (line 27))
+2026-10-14T02:12:33.0088494Z   Using cached PyYAML-6.0.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (2.1 kB)
+2026-10-14T02:12:33.0369230Z Collecting wasmtime==42.0.0 (from -r requirements.txt (line 29))
+2026-10-14T02:12:33.0381561Z   Using cached wasmtime-42.0.0-py3-none-manylinux1_x86_64.whl.metadata (5.1 kB)
+2026-10-14T02:12:33.0482523Z Collecting yowasp-runtime==1.88 (from -r requirements.txt (line 31))
+2026-10-14T02:12:33.0493693Z   Using cached yowasp_runtime-1.88-py3-none-any.whl.metadata (2.4 kB)
+2026-10-14T02:12:33.1481792Z Collecting yowasp-yosys==0.63.0.0.post1107 (from -r requirements.txt (line 33))
+2026-10-14T02:12:33.1494582Z   Using cached yowasp_yosys-0.63.0.0.post1107-py3-none-any.whl.metadata (2.5 kB)
+2026-10-14T02:12:33.1559891Z Using cached click-8.3.1-py3-none-any.whl (108 kB)
+2026-10-14T02:12:33.1571366Z Using cached gdstk-0.9.52-cp311-cp311-manylinux_2_28_x86_64.whl (530 kB)
+2026-10-14T02:12:33.1583314Z Using cached iniconfig-2.0.0-py3-none-any.whl (5.9 kB)
+2026-10-14T02:12:33.1593988Z Using cached klayout-0.30.8-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (27.1 MB)
+2026-10-14T02:12:33.1679874Z Using cached numpy-1.26.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (18.3 MB)
+2026-10-14T02:12:33.1740484Z Using cached packaging-24.1-py3-none-any.whl (53 kB)
+2026-10-14T02:12:33.1750983Z Using cached platformdirs-4.9.4-py3-none-any.whl (21 kB)
+2026-10-14T02:12:33.1761641Z Using cached pluggy-1.5.0-py3-none-any.whl (20 kB)
+2026-10-14T02:12:33.1772492Z Using cached pytest-8.2.2-py3-none-any.whl (339 kB)
+2026-10-14T02:12:33.1783907Z Using cached PyYAML-6.0.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (757 kB)
+2026-10-14T02:12:33.1796712Z Using cached wasmtime-42.0.0-py3-none-manylinux1_x86_64.whl (7.7 MB)
+2026-10-14T02:12:33.1828217Z Using cached yowasp_runtime-1.88-py3-none-any.whl (5.2 kB)
+2026-10-14T02:12:33.1838895Z Using cached yowasp_yosys-0.63.0.0.post1107-py3-none-any.whl (12.2 MB)
+2026-10-14T02:12:33.7958425Z Installing collected packages: klayout, wasmtime, pyyaml, pluggy, platformdirs, packaging, numpy, iniconfig, click, yowasp-runtime, pytest, gdstk, yowasp-yosys
+2026-10-14T02:12:36.6016991Z 
+2026-10-14T02:12:36.6028669Z Successfully installed click-8.3.1 gdstk-0.9.52 iniconfig-2.0.0 klayout-0.30.8 numpy-1.26.4 packaging-24.1 platformdirs-4.9.4 pluggy-1.5.0 pytest-8.2.2 pyyaml-6.0.1 wasmtime-42.0.0 yowasp-runtime-1.88 yowasp-yosys-0.63.0.0.post1107
+2026-10-14T02:12:36.6692656Z ##[end-action id=__TinyTapeout_tt-gds-action.__run_2;outcome=success;conclusion=success;duration_ms=5186]
+2026-10-14T02:12:36.6717011Z ##[start-action display=Install ihp-sg13g2 PDK;id=__TinyTapeout_tt-gds-action.__TinyTapeout_ciel-action]
+2026-10-14T02:12:36.6754123Z ##[group]Run TinyTapeout/ciel-action@v1
+2026-10-14T02:12:36.6754536Z with:
+2026-10-14T02:12:36.6754748Z   pdk_name: ihp-sg13g2
+2026-10-14T02:12:36.6754984Z   pdk_version: 22f43352dd8219f9007eb659e422e0d5fe28c5fb
+2026-10-14T02:12:36.6755250Z   pdk_root: /home/runner/pdk
+2026-10-14T02:12:36.6755453Z env:
+2026-10-14T02:12:36.6755613Z   PDK: ihp-sg13g2
+2026-10-14T02:12:36.6755795Z   PDK_ROOT: /home/runner/pdk
+2026-10-14T02:12:36.6756025Z   PDK_VERSION: 22f43352dd8219f9007eb659e422e0d5fe28c5fb
+2026-10-14T02:12:36.6756318Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:36.6756666Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-14T02:12:36.6757008Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:36.6757316Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:36.6757630Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:36.6757938Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-14T02:12:36.6758218Z ##[endgroup]
+2026-10-14T02:12:36.6761716Z ##[start-action display=Cache;id=__TinyTapeout_tt-gds-action.__TinyTapeout_ciel-action.cache-pdk]
+2026-10-14T02:12:36.6791083Z ##[group]Run actions/cache@v5
+2026-10-14T02:12:36.6791297Z with:
+2026-10-14T02:12:36.6791488Z   path: /home/runner/pdk
+2026-10-14T02:12:36.6791774Z   key: Linux-pdk-ihp-sg13g2-22f43352dd8219f9007eb659e422e0d5fe28c5fb
+2026-10-14T02:12:36.6792091Z   enableCrossOsArchive: false
+2026-10-14T02:12:36.6792308Z   fail-on-cache-miss: false
+2026-10-14T02:12:36.6792512Z   lookup-only: false
+2026-10-14T02:12:36.6792692Z   save-always: false
+2026-10-14T02:12:36.6792860Z env:
+2026-10-14T02:12:36.6793025Z   PDK: ihp-sg13g2
+2026-10-14T02:12:36.6793205Z   PDK_ROOT: /home/runner/pdk
+2026-10-14T02:12:36.6793440Z   PDK_VERSION: 22f43352dd8219f9007eb659e422e0d5fe28c5fb
+2026-10-14T02:12:36.6793753Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:36.6794096Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-14T02:12:36.6794931Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:36.6795398Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:36.6795709Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:36.6796034Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-14T02:12:36.6796335Z ##[endgroup]
+2026-10-14T02:12:36.9840776Z Cache hit for: Linux-pdk-ihp-sg13g2-22f43352dd8219f9007eb659e422e0d5fe28c5fb
+2026-10-14T02:12:38.2001041Z Received 33554432 of 466258684 (7.2%), 32.0 MBs/sec
+2026-10-14T02:12:39.2003040Z Received 171966464 of 466258684 (36.9%), 81.9 MBs/sec
+2026-10-14T02:12:40.2010653Z Received 348127232 of 466258684 (74.7%), 110.6 MBs/sec
+2026-10-14T02:12:41.1147933Z Received 466258684 of 466258684 (100.0%), 113.5 MBs/sec
+2026-10-14T02:12:41.1149547Z Cache Size: ~445 MB (466258684 B)
+2026-10-14T02:12:41.1180724Z [command]/usr/bin/tar -xf /home/runner/work/_temp/041abf4a-0ce5-4a81-b120-15bbcd7f410f/cache.tzst -P -C /home/runner/work/jstreet_Leonidas/jstreet_Leonidas --use-compress-program unzstd
+2026-10-14T02:12:42.3150521Z Cache restored successfully
+2026-10-14T02:12:42.3386900Z Cache restored from key: Linux-pdk-ihp-sg13g2-22f43352dd8219f9007eb659e422e0d5fe28c5fb
+2026-10-14T02:12:42.3526787Z ##[end-action id=__TinyTapeout_tt-gds-action.__TinyTapeout_ciel-action.cache-pdk;outcome=success;conclusion=success;duration_ms=5676]
+2026-10-14T02:12:42.3533860Z ##[start-action display=Install ihp-sg13g2 PDK;id=__TinyTapeout_tt-gds-action.__TinyTapeout_ciel-action.__run]
+2026-10-14T02:12:42.3542877Z ##[end-action id=__TinyTapeout_tt-gds-action.__TinyTapeout_ciel-action.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-14T02:12:42.3552922Z ##[end-action id=__TinyTapeout_tt-gds-action.__TinyTapeout_ciel-action;outcome=success;conclusion=success;duration_ms=5683]
+2026-10-14T02:12:42.3555065Z ##[start-action display=Install Nix;id=__TinyTapeout_tt-gds-action.__rikhuijzer_cache-install]
+2026-10-14T02:12:42.4986541Z ##[group]Run rikhuijzer/cache-install@c46c673b14b0780c6749d7a45f26ebc07c8c7388
+2026-10-14T02:12:42.4986883Z with:
+2026-10-14T02:12:42.4987048Z   key: nix-
+2026-10-14T02:12:42.4987238Z   nix_file: tt/precheck/default.nix
+2026-10-14T02:12:42.4987468Z   nix_version: nixos-unstable
+2026-10-14T02:12:42.4987766Z   nix_install_url: https://releases.nixos.org/nix/nix-2.19.1/install
+2026-10-14T02:12:42.4988053Z env:
+2026-10-14T02:12:42.4988222Z   PDK: ihp-sg13g2
+2026-10-14T02:12:42.4988408Z   PDK_ROOT: /home/runner/pdk
+2026-10-14T02:12:42.4988654Z   PDK_VERSION: 22f43352dd8219f9007eb659e422e0d5fe28c5fb
+2026-10-14T02:12:42.4988956Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:42.4989305Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-14T02:12:42.4989656Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:42.4989964Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:42.4990289Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:42.4990768Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-14T02:12:42.4991050Z ##[endgroup]
+2026-10-14T02:12:42.4997410Z ##[start-action display=Prepare for restoring cache;id=__TinyTapeout_tt-gds-action.__rikhuijzer_cache-install.__run]
+2026-10-14T02:12:42.5012896Z ##[group]Run $GITHUB_ACTION_PATH/src/core.sh "prepare-restore"
+2026-10-14T02:12:42.5013292Z [36;1m$GITHUB_ACTION_PATH/src/core.sh "prepare-restore"[0m
+2026-10-14T02:12:42.5070349Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-14T02:12:42.5070638Z env:
+2026-10-14T02:12:42.5070817Z   PDK: ihp-sg13g2
+2026-10-14T02:12:42.5071012Z   PDK_ROOT: /home/runner/pdk
+2026-10-14T02:12:42.5071266Z   PDK_VERSION: 22f43352dd8219f9007eb659e422e0d5fe28c5fb
+2026-10-14T02:12:42.5071568Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:42.5071910Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-14T02:12:42.5072421Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:42.5072747Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:42.5073061Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:42.5073366Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-14T02:12:42.5073640Z ##[endgroup]
+2026-10-14T02:12:42.5157588Z Running prepare from core.sh
+2026-10-14T02:12:42.5216923Z mkdir: created directory '/nix'
+2026-10-14T02:12:42.5293989Z changed ownership of '/nix' from root:root to runner:runner
+2026-10-14T02:12:42.5386274Z ##[end-action id=__TinyTapeout_tt-gds-action.__rikhuijzer_cache-install.__run;outcome=success;conclusion=success;duration_ms=38]
+2026-10-14T02:12:42.5388807Z ##[start-action display=Pass USER to GitHub Action;id=__TinyTapeout_tt-gds-action.__rikhuijzer_cache-install.user]
+2026-10-14T02:12:42.5405638Z ##[group]Run echo "USER=$USER" >> $GITHUB_ENV
+2026-10-14T02:12:42.5405962Z [36;1mecho "USER=$USER" >> $GITHUB_ENV[0m
+2026-10-14T02:12:42.5461931Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-14T02:12:42.5462225Z env:
+2026-10-14T02:12:42.5462400Z   PDK: ihp-sg13g2
+2026-10-14T02:12:42.5462615Z   PDK_ROOT: /home/runner/pdk
+2026-10-14T02:12:42.5462863Z   PDK_VERSION: 22f43352dd8219f9007eb659e422e0d5fe28c5fb
+2026-10-14T02:12:42.5463183Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:42.5463540Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-14T02:12:42.5463889Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:42.5464205Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:42.5464624Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:42.5464944Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-14T02:12:42.5465211Z ##[endgroup]
+2026-10-14T02:12:42.5541311Z ##[end-action id=__TinyTapeout_tt-gds-action.__rikhuijzer_cache-install.user;outcome=success;conclusion=success;duration_ms=15]
+2026-10-14T02:12:42.5543344Z ##[start-action display=Restore cache;id=__TinyTapeout_tt-gds-action.__rikhuijzer_cache-install.cache]
+2026-10-14T02:12:42.5571326Z ##[group]Run actions/cache/restore@v5
+2026-10-14T02:12:42.5571566Z with:
+2026-10-14T02:12:42.5572231Z   path: /nix/store/
+/nix/var/nix/db/db.sqlite
+/nix/var/nix/db/schema
+/nix/var/nix/profiles/per-user/runner/profile/bin/
+/nix/var/nix/profiles/default/bin/
+/nix/var/nix/profiles/per-user/root/channels/
+/home/runner/.nix-profile/bin/
+
+2026-10-14T02:12:42.5572922Z   key: nix-
+2026-10-14T02:12:42.5573116Z   enableCrossOsArchive: false
+2026-10-14T02:12:42.5573339Z   fail-on-cache-miss: false
+2026-10-14T02:12:42.5573549Z   lookup-only: false
+2026-10-14T02:12:42.5573729Z env:
+2026-10-14T02:12:42.5573899Z   PDK: ihp-sg13g2
+2026-10-14T02:12:42.5574087Z   PDK_ROOT: /home/runner/pdk
+2026-10-14T02:12:42.5574335Z   PDK_VERSION: 22f43352dd8219f9007eb659e422e0d5fe28c5fb
+2026-10-14T02:12:42.5574881Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:42.5575400Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-14T02:12:42.5575749Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:42.5576068Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:42.5576377Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:42.5576693Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-14T02:12:42.5576966Z   USER: runner
+2026-10-14T02:12:42.5577149Z ##[endgroup]
+2026-10-14T02:12:42.8751349Z Cache hit for: nix-
+2026-10-14T02:12:44.0877191Z Received 33554432 of 710555003 (4.7%), 32.0 MBs/sec
+2026-10-14T02:12:45.0877203Z Received 201326592 of 710555003 (28.3%), 96.0 MBs/sec
+2026-10-14T02:12:46.0925619Z Received 352321536 of 710555003 (49.6%), 112.0 MBs/sec
+2026-10-14T02:12:47.0936376Z Received 486539264 of 710555003 (68.5%), 115.9 MBs/sec
+2026-10-14T02:12:48.0957136Z Received 583008256 of 710555003 (82.0%), 111.1 MBs/sec
+2026-10-14T02:12:48.9073376Z Received 710555003 of 710555003 (100.0%), 116.5 MBs/sec
+2026-10-14T02:12:48.9073835Z Cache Size: ~678 MB (710555003 B)
+2026-10-14T02:12:48.9127637Z [command]/usr/bin/tar -xf /home/runner/work/_temp/a077b648-59fb-41eb-8512-e9ff982d4cfc/cache.tzst -P -C /home/runner/work/jstreet_Leonidas/jstreet_Leonidas --use-compress-program unzstd
+2026-10-14T02:12:56.9137236Z Cache restored successfully
+2026-10-14T02:12:56.9470311Z Cache restored from key: nix-
+2026-10-14T02:12:56.9573756Z ##[end-action id=__TinyTapeout_tt-gds-action.__rikhuijzer_cache-install.cache;outcome=success;conclusion=success;duration_ms=14402]
+2026-10-14T02:12:56.9576648Z ##[start-action display=Install with cache;id=__TinyTapeout_tt-gds-action.__rikhuijzer_cache-install.__run_2]
+2026-10-14T02:12:57.0235714Z ##[group]Run $GITHUB_ACTION_PATH/src/core.sh "install-from-cache"
+2026-10-14T02:12:57.0236159Z [36;1m$GITHUB_ACTION_PATH/src/core.sh "install-from-cache"[0m
+2026-10-14T02:12:57.0293694Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-14T02:12:57.0294000Z env:
+2026-10-14T02:12:57.0294186Z   PDK: ihp-sg13g2
+2026-10-14T02:12:57.0294474Z   PDK_ROOT: /home/runner/pdk
+2026-10-14T02:12:57.0294737Z   PDK_VERSION: 22f43352dd8219f9007eb659e422e0d5fe28c5fb
+2026-10-14T02:12:57.0295062Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:57.0295413Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-14T02:12:57.0295766Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:57.0296086Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:57.0296402Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:57.0296730Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-14T02:12:57.0297010Z   USER: runner
+2026-10-14T02:12:57.0297186Z ##[endgroup]
+2026-10-14T02:12:57.0458286Z Running set_nix_path from core.sh
+2026-10-14T02:12:57.0458832Z Running set_paths from core.sh
+2026-10-14T02:12:57.0459265Z Running set_nix_profile_symlink from core.sh
+2026-10-14T02:12:57.0469040Z '/home/runner/.nix-profile' -> '/nix/var/nix/profiles/per-user/runner/profile'
+2026-10-14T02:12:57.0480670Z ##[end-action id=__TinyTapeout_tt-gds-action.__rikhuijzer_cache-install.__run_2;outcome=success;conclusion=success;duration_ms=90]
+2026-10-14T02:12:57.0485454Z ##[start-action display=Install without cache;id=__TinyTapeout_tt-gds-action.__rikhuijzer_cache-install.__run_3]
+2026-10-14T02:12:57.0492019Z ##[end-action id=__TinyTapeout_tt-gds-action.__rikhuijzer_cache-install.__run_3;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-14T02:12:57.0493871Z ##[start-action display=Save cache;id=__TinyTapeout_tt-gds-action.__rikhuijzer_cache-install.__actions_cache]
+2026-10-14T02:12:57.0497873Z ##[end-action id=__TinyTapeout_tt-gds-action.__rikhuijzer_cache-install.__actions_cache;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-14T02:12:57.0499870Z ##[start-action display=Set cache-hit output;id=__TinyTapeout_tt-gds-action.__rikhuijzer_cache-install.hit]
+2026-10-14T02:12:57.2029260Z ##[group]Run echo "cache-hit=true" >> $GITHUB_OUTPUT
+2026-10-14T02:12:57.2029599Z [36;1mecho "cache-hit=true" >> $GITHUB_OUTPUT[0m
+2026-10-14T02:12:57.2087897Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-14T02:12:57.2088197Z env:
+2026-10-14T02:12:57.2088385Z   PDK: ihp-sg13g2
+2026-10-14T02:12:57.2088598Z   PDK_ROOT: /home/runner/pdk
+2026-10-14T02:12:57.2088855Z   PDK_VERSION: 22f43352dd8219f9007eb659e422e0d5fe28c5fb
+2026-10-14T02:12:57.2089184Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:57.2089544Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-14T02:12:57.2089887Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:57.2090210Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:57.2090549Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:57.2091058Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-14T02:12:57.2091334Z   USER: runner
+2026-10-14T02:12:57.2091529Z   NIX_PATH: nixpkgs=channel:
+2026-10-14T02:12:57.2091740Z ##[endgroup]
+2026-10-14T02:12:57.2176369Z ##[end-action id=__TinyTapeout_tt-gds-action.__rikhuijzer_cache-install.hit;outcome=success;conclusion=success;duration_ms=167]
+2026-10-14T02:12:57.2198984Z ##[end-action id=__TinyTapeout_tt-gds-action.__rikhuijzer_cache-install;outcome=success;conclusion=success;duration_ms=14864]
+2026-10-14T02:12:57.2200960Z ##[start-action display=Build Nix packages;id=__TinyTapeout_tt-gds-action.__run_3]
+2026-10-14T02:12:57.2240618Z ##[group]Run nix-build
+2026-10-14T02:12:57.2240952Z [36;1mnix-build[0m
+2026-10-14T02:12:57.2302580Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-14T02:12:57.2302878Z env:
+2026-10-14T02:12:57.2303048Z   PDK: ihp-sg13g2
+2026-10-14T02:12:57.2303242Z   PDK_ROOT: /home/runner/pdk
+2026-10-14T02:12:57.2303499Z   PDK_VERSION: 22f43352dd8219f9007eb659e422e0d5fe28c5fb
+2026-10-14T02:12:57.2303831Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:57.2304185Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-14T02:12:57.2304701Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:57.2305021Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:57.2305330Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:12:57.2305644Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-14T02:12:57.2305914Z   USER: runner
+2026-10-14T02:12:57.2306110Z   NIX_PATH: nixpkgs=channel:
+2026-10-14T02:12:57.2306330Z ##[endgroup]
+2026-10-14T02:13:52.2713653Z /nix/store/xl5pdbkcsjjkl0l8v6iczhxrlfk9i6c7-nix-shell
+2026-10-14T02:13:52.2812289Z ##[end-action id=__TinyTapeout_tt-gds-action.__run_3;outcome=success;conclusion=success;duration_ms=55061]
+2026-10-14T02:13:52.2815712Z ##[start-action display=Run precheck;id=__TinyTapeout_tt-gds-action.__run_4]
+2026-10-14T02:13:52.2841192Z ##[group]Run nix-shell --run "python precheck.py --gds /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt_submission/*.gds* --tech ihp-sg13g2"
+2026-10-14T02:13:52.2842580Z [36;1mnix-shell --run "python precheck.py --gds /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt_submission/*.gds* --tech ihp-sg13g2"[0m
+2026-10-14T02:13:52.2903338Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-14T02:13:52.2903647Z env:
+2026-10-14T02:13:52.2903835Z   PDK: ihp-sg13g2
+2026-10-14T02:13:52.2904045Z   PDK_ROOT: /home/runner/pdk
+2026-10-14T02:13:52.2904306Z   PDK_VERSION: 22f43352dd8219f9007eb659e422e0d5fe28c5fb
+2026-10-14T02:13:52.2904833Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:13:52.2905200Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-14T02:13:52.2905556Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:13:52.2905897Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:13:52.2906405Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:13:52.2906750Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-14T02:13:52.2907033Z   USER: runner
+2026-10-14T02:13:52.2907229Z   NIX_PATH: nixpkgs=channel:
+2026-10-14T02:13:52.2907440Z ##[endgroup]
+2026-10-14T02:13:54.1742725Z warning: Nix search path entry 'channel:' cannot be downloaded, ignoring
+2026-10-14T02:13:54.1743287Z error:
+2026-10-14T02:13:54.1743872Z        … while calling the 'import' builtin
+2026-10-14T02:13:54.1744176Z 
+2026-10-14T02:13:54.1744518Z          at «string»:1:2:
+2026-10-14T02:13:54.1744805Z 
+2026-10-14T02:13:54.1744967Z             1| (import <nixpkgs> {}).bashInteractive
+2026-10-14T02:13:54.1745276Z              |  ^
+2026-10-14T02:13:54.1745429Z 
+2026-10-14T02:13:54.1745586Z        … while realising the context of a path
+2026-10-14T02:13:54.1745880Z 
+2026-10-14T02:13:54.1746091Z        … while calling the 'findFile' builtin
+2026-10-14T02:13:54.1746996Z 
+2026-10-14T02:13:54.1747201Z          at «string»:1:9:
+2026-10-14T02:13:54.1747412Z 
+2026-10-14T02:13:54.1747535Z             1| (import <nixpkgs> {}).bashInteractive
+2026-10-14T02:13:54.1747799Z              |         ^
+2026-10-14T02:13:54.1747924Z 
+2026-10-14T02:13:54.1748250Z        error: file 'nixpkgs' was not found in the Nix search path (add it using $NIX_PATH or -I)
+2026-10-14T02:13:54.1748741Z will use bash from your environment
+2026-10-14T02:13:54.5067851Z INFO: PDK_ROOT: /home/runner/pdk
+2026-10-14T02:13:54.5068325Z INFO: Tech: ihp-sg13g2
+2026-10-14T02:13:54.5089967Z INFO: using def template ../tech/ihp-sg13g2/def/tt_block_6x4_pgvdd.def
+2026-10-14T02:13:54.5090658Z INFO: Running klayout pin_label_purposes_overlapping_drawing on /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt_submission/tt_um_RaghuvPotdar_Leonidas.gds
+2026-10-14T02:13:55.6034524Z Running pin_label_purposes_overlapping_drawing.rb.drc on file=/home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt_submission/tt_um_RaghuvPotdar_Leonidas.gds, topcell=, output to /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt/precheck/reports/drc_pin_label_purposes_overlapping_drawing.xml
+2026-10-14T02:13:55.6035560Z   deep:true tiled:false threads:4
+2026-10-14T02:13:55.8626183Z --- #err|description, table for cell: 
+2026-10-14T02:13:55.8626846Z NO-Check ----        pwell:64/44/EMP   122/16/EMP    64/59/EMP    44/16/EMP     44/5/EMP
+2026-10-14T02:13:55.8627430Z          ----        nwell:64/20/EMP    64/16/EMP     64/5/EMP
+2026-10-14T02:13:55.8627882Z          ----         diff:65/20/EMP    65/16/EMP     65/6/EMP
+2026-10-14T02:13:55.8628313Z          ----          tap:65/44/EMP    65/48/EMP     65/5/EMP
+2026-10-14T02:13:55.8628733Z          ----         poly:66/20/EMP    66/16/EMP     66/5/EMP
+2026-10-14T02:13:55.8629153Z          ----       licon1:66/44/EMP    66/58/EMP
+2026-10-14T02:13:55.8629445Z          ----          li1:67/20/EMP    67/16/EMP     67/5/EMP
+2026-10-14T02:13:55.8629758Z          ----         mcon:67/44/EMP    67/48/EMP
+2026-10-14T02:13:55.8630042Z          ----         met1:68/20/EMP    68/16/EMP     68/5/EMP
+2026-10-14T02:13:55.8630301Z          ----          via:68/44/EMP    68/58/EMP
+2026-10-14T02:13:55.8630552Z          ----         met2:69/20/EMP    69/16/EMP     69/5/EMP
+2026-10-14T02:13:55.8630814Z          ----         via2:69/44/EMP    69/58/EMP
+2026-10-14T02:13:55.8631079Z          ----         met3:70/20/EMP    70/16/EMP     70/5/EMP
+2026-10-14T02:13:55.8631340Z          ----         via3:70/44/EMP    70/48/EMP
+2026-10-14T02:13:55.8631601Z          ----         met4:71/20/EMP    71/16/EMP     71/5/EMP
+2026-10-14T02:13:55.8631858Z          ----         via4:71/44/EMP    71/48/EMP
+2026-10-14T02:13:55.8632106Z          ----         met5:72/20/EMP    72/16/EMP     72/5/EMP
+2026-10-14T02:13:55.8632380Z          ----          pad:76/20/EMP     76/5/EMP    76/16/EMP
+2026-10-14T02:13:55.8632645Z          ----          pnp:82/44/EMP    82/59/EMP
+2026-10-14T02:13:55.8632890Z          ----          npn:82/20/EMP     82/5/EMP
+2026-10-14T02:13:55.8633752Z          ----          rdl:74/20/EMP    74/16/EMP     74/5/EMP
+2026-10-14T02:13:55.8634120Z          ----     inductor:82/24/EMP    82/25/EMP
+2026-10-14T02:13:55.8634670Z        0 total error(s) among 0 error type(s), 33 checks, cell: 
+2026-10-14T02:13:55.8635062Z Writing report...
+2026-10-14T02:13:55.8635315Z VmPeak:	 1068988 kB
+2026-10-14T02:13:55.8635561Z VmHWM:	  458236 kB
+2026-10-14T02:13:56.0549222Z INFO: Running klayout sg13g2 on /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt_submission/tt_um_RaghuvPotdar_Leonidas.gds
+2026-10-14T02:13:57.1881860Z 2026-10-14 02:13:57 +0000: Memory Usage (410508K) : Starting running IHP-SG13G2 KLayout DRC runset on /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt_submission/tt_um_RaghuvPotdar_Leonidas.gds
+2026-10-14T02:13:57.1883092Z 2026-10-14 02:13:57 +0000: Memory Usage (410508K) : Ruby Version for klayout: 3.4.9
+2026-10-14T02:13:57.3368815Z 2026-10-14 02:13:57 +0000: Memory Usage (455596K) : Loading database to memory is complete.
+2026-10-14T02:13:57.3370399Z 2026-10-14 02:13:57 +0000: Memory Usage (455596K) : IHP-SG13G2 KLayout DRC runset output at: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt/precheck/reports/drc_sg13g2.xml
+2026-10-14T02:13:57.3371429Z 2026-10-14 02:13:57 +0000: Memory Usage (455596K) : Evaluate switches.
+2026-10-14T02:13:57.3371983Z 2026-10-14 02:13:57 +0000: Memory Usage (455596K) : tables selected: main
+2026-10-14T02:13:57.3372625Z 2026-10-14 02:13:57 +0000: Memory Usage (455596K) : KLayout will use 4 thread(s) in tiling mode.
+2026-10-14T02:13:57.3373270Z 2026-10-14 02:13:57 +0000: Memory Usage (455596K) : deep mode is enabled.
+2026-10-14T02:13:57.3373815Z 2026-10-14 02:13:57 +0000: Memory Usage (455596K) : FEOL enabled: true
+2026-10-14T02:13:57.3374326Z 2026-10-14 02:13:57 +0000: Memory Usage (455596K) : BEOL enabled: true
+2026-10-14T02:13:57.3375079Z 2026-10-14 02:13:57 +0000: Memory Usage (455596K) : OFFGRID enabled: true
+2026-10-14T02:13:57.3375598Z 2026-10-14 02:13:57 +0000: Memory Usage (455596K) : ANGLE enabled: true
+2026-10-14T02:13:57.3376103Z 2026-10-14 02:13:57 +0000: Memory Usage (455596K) : PIN enabled: true
+2026-10-14T02:13:57.3376659Z 2026-10-14 02:13:57 +0000: Memory Usage (455596K) : FORBIDDEN enabled: true
+2026-10-14T02:13:57.3377241Z 2026-10-14 02:13:57 +0000: Memory Usage (455596K) : RECOMMENDED enabled: true
+2026-10-14T02:13:57.3377846Z 2026-10-14 02:13:57 +0000: Memory Usage (455596K) : PreCheck DRC enabled: false
+2026-10-14T02:13:57.3378474Z 2026-10-14 02:13:57 +0000: Memory Usage (455596K) : CONNECTIVITY_RULES enabled: true.
+2026-10-14T02:13:57.3378880Z 2026-10-14 02:13:57 +0000: Memory Usage (455596K) : Read in polygons from layers.
+2026-10-14T02:13:57.3652325Z 2026-10-14 02:13:57 +0000: Memory Usage (460588K) : activ_drw has 341512 polygons
+2026-10-14T02:13:57.3709834Z 2026-10-14 02:13:57 +0000: Memory Usage (460588K) : activ_pin has 0 polygons
+2026-10-14T02:13:57.3764509Z 2026-10-14 02:13:57 +0000: Memory Usage (460588K) : activ_mask has 0 polygons
+2026-10-14T02:13:57.3816209Z 2026-10-14 02:13:57 +0000: Memory Usage (460588K) : activ_filler has 0 polygons
+2026-10-14T02:13:57.3868993Z 2026-10-14 02:13:57 +0000: Memory Usage (460588K) : activ_nofill has 0 polygons
+2026-10-14T02:13:57.3921093Z 2026-10-14 02:13:57 +0000: Memory Usage (460588K) : activ_opc has 0 polygons
+2026-10-14T02:13:57.3972738Z 2026-10-14 02:13:57 +0000: Memory Usage (460716K) : activ_iopc has 0 polygons
+2026-10-14T02:13:57.4024242Z 2026-10-14 02:13:57 +0000: Memory Usage (460716K) : activ_noqrc has 0 polygons
+2026-10-14T02:13:57.4075654Z 2026-10-14 02:13:57 +0000: Memory Usage (460716K) : biwind_drw has 0 polygons
+2026-10-14T02:13:57.4126996Z 2026-10-14 02:13:57 +0000: Memory Usage (460716K) : biwind_opc has 0 polygons
+2026-10-14T02:13:57.4178176Z 2026-10-14 02:13:57 +0000: Memory Usage (460716K) : pemwind_drw has 0 polygons
+2026-10-14T02:13:57.4376063Z 2026-10-14 02:13:57 +0000: Memory Usage (460716K) : gatpoly_drw has 263380 polygons
+2026-10-14T02:13:57.4429636Z 2026-10-14 02:13:57 +0000: Memory Usage (460716K) : gatpoly_pin has 0 polygons
+2026-10-14T02:13:57.4482264Z 2026-10-14 02:13:57 +0000: Memory Usage (460716K) : gatpoly_filler has 0 polygons
+2026-10-14T02:13:57.4534957Z 2026-10-14 02:13:57 +0000: Memory Usage (460716K) : gatpoly_nofill has 0 polygons
+2026-10-14T02:13:57.4587164Z 2026-10-14 02:13:57 +0000: Memory Usage (460716K) : gatpoly_opc has 0 polygons
+2026-10-14T02:13:57.4639289Z 2026-10-14 02:13:57 +0000: Memory Usage (460716K) : gatpoly_iopc has 0 polygons
+2026-10-14T02:13:57.4691210Z 2026-10-14 02:13:57 +0000: Memory Usage (460716K) : gatpoly_noqrc has 0 polygons
+2026-10-14T02:13:57.4890678Z 2026-10-14 02:13:57 +0000: Memory Usage (460844K) : cont_drw has 2154582 polygons
+2026-10-14T02:13:57.4944097Z 2026-10-14 02:13:57 +0000: Memory Usage (460844K) : cont_opc has 0 polygons
+2026-10-14T02:13:57.4996819Z 2026-10-14 02:13:57 +0000: Memory Usage (460844K) : nsd_drw has 0 polygons
+2026-10-14T02:13:57.5050544Z 2026-10-14 02:13:57 +0000: Memory Usage (460972K) : nsd_block has 0 polygons
+2026-10-14T02:13:57.5263801Z 2026-10-14 02:13:57 +0000: Memory Usage (461996K) : metal1_drw has 326247 polygons
+2026-10-14T02:13:57.5456130Z 2026-10-14 02:13:57 +0000: Memory Usage (461996K) : metal1_pin has 142230 polygons
+2026-10-14T02:13:57.5509946Z 2026-10-14 02:13:57 +0000: Memory Usage (461996K) : metal1_mask has 0 polygons
+2026-10-14T02:13:57.5564961Z 2026-10-14 02:13:57 +0000: Memory Usage (461996K) : metal1_filler has 0 polygons
+2026-10-14T02:13:57.5617232Z 2026-10-14 02:13:57 +0000: Memory Usage (461996K) : metal1_nofill has 0 polygons
+2026-10-14T02:13:57.5669314Z 2026-10-14 02:13:57 +0000: Memory Usage (461996K) : metal1_slit has 0 polygons
+2026-10-14T02:13:57.5859509Z 2026-10-14 02:13:57 +0000: Memory Usage (462252K) : metal1_text has 138007 polygons
+2026-10-14T02:13:57.5913714Z 2026-10-14 02:13:57 +0000: Memory Usage (462252K) : metal1_opc has 0 polygons
+2026-10-14T02:13:57.5966331Z 2026-10-14 02:13:57 +0000: Memory Usage (462252K) : metal1_noqrc has 0 polygons
+2026-10-14T02:13:57.6198433Z 2026-10-14 02:13:57 +0000: Memory Usage (462252K) : metal1_res has 15 polygons
+2026-10-14T02:13:57.6252728Z 2026-10-14 02:13:57 +0000: Memory Usage (462252K) : metal1_iprobe has 0 polygons
+2026-10-14T02:13:57.6305536Z 2026-10-14 02:13:57 +0000: Memory Usage (462252K) : metal1_diffprb has 0 polygons
+2026-10-14T02:13:57.6358095Z 2026-10-14 02:13:57 +0000: Memory Usage (462252K) : passiv_drw has 0 polygons
+2026-10-14T02:13:57.6410271Z 2026-10-14 02:13:57 +0000: Memory Usage (462252K) : passiv_pin has 0 polygons
+2026-10-14T02:13:57.6463874Z 2026-10-14 02:13:57 +0000: Memory Usage (462380K) : passiv_sbump has 0 polygons
+2026-10-14T02:13:57.6516295Z 2026-10-14 02:13:57 +0000: Memory Usage (462380K) : passiv_pillar has 0 polygons
+2026-10-14T02:13:57.6569247Z 2026-10-14 02:13:57 +0000: Memory Usage (462380K) : passiv_pdl has 0 polygons
+2026-10-14T02:13:57.6827599Z 2026-10-14 02:13:57 +0000: Memory Usage (462764K) : metal2_drw has 59893 polygons
+2026-10-14T02:13:57.7271334Z 2026-10-14 02:13:57 +0000: Memory Usage (462892K) : metal2_pin has 46668 polygons
+2026-10-14T02:13:57.7327665Z 2026-10-14 02:13:57 +0000: Memory Usage (462892K) : metal2_mask has 0 polygons
+2026-10-14T02:13:57.7380293Z 2026-10-14 02:13:57 +0000: Memory Usage (462892K) : metal2_filler has 0 polygons
+2026-10-14T02:13:57.7432731Z 2026-10-14 02:13:57 +0000: Memory Usage (462892K) : metal2_nofill has 0 polygons
+2026-10-14T02:13:57.7485813Z 2026-10-14 02:13:57 +0000: Memory Usage (462892K) : metal2_slit has 0 polygons
+2026-10-14T02:13:57.7697416Z 2026-10-14 02:13:57 +0000: Memory Usage (462892K) : metal2_text has 30140 polygons
+2026-10-14T02:13:57.7752492Z 2026-10-14 02:13:57 +0000: Memory Usage (462892K) : metal2_opc has 0 polygons
+2026-10-14T02:13:57.7805472Z 2026-10-14 02:13:57 +0000: Memory Usage (462892K) : metal2_noqrc has 0 polygons
+2026-10-14T02:13:57.8038255Z 2026-10-14 02:13:57 +0000: Memory Usage (462892K) : metal2_res has 8200 polygons
+2026-10-14T02:13:57.8093727Z 2026-10-14 02:13:57 +0000: Memory Usage (462892K) : metal2_iprobe has 0 polygons
+2026-10-14T02:13:57.8147265Z 2026-10-14 02:13:57 +0000: Memory Usage (462892K) : metal2_diffprb has 0 polygons
+2026-10-14T02:13:57.8199274Z 2026-10-14 02:13:57 +0000: Memory Usage (462892K) : baspoly_drw has 0 polygons
+2026-10-14T02:13:57.8251817Z 2026-10-14 02:13:57 +0000: Memory Usage (462892K) : baspoly_pin has 0 polygons
+2026-10-14T02:13:57.8451192Z 2026-10-14 02:13:57 +0000: Memory Usage (462892K) : psd_drw has 149034 polygons
+2026-10-14T02:13:57.8507032Z 2026-10-14 02:13:57 +0000: Memory Usage (462892K) : nldb_drw has 0 polygons
+2026-10-14T02:13:57.8751364Z 2026-10-14 02:13:57 +0000: Memory Usage (462892K) : digibnd_drw has 6088 polygons
+2026-10-14T02:13:57.9091579Z 2026-10-14 02:13:57 +0000: Memory Usage (463660K) : via1_drw has 73098 polygons
+2026-10-14T02:13:57.9148225Z 2026-10-14 02:13:57 +0000: Memory Usage (463660K) : backmetal1_drw has 0 polygons
+2026-10-14T02:13:57.9201606Z 2026-10-14 02:13:57 +0000: Memory Usage (463660K) : backmetal1_pin has 0 polygons
+2026-10-14T02:13:57.9254987Z 2026-10-14 02:13:57 +0000: Memory Usage (463660K) : backmetal1_mask has 0 polygons
+2026-10-14T02:13:57.9306936Z 2026-10-14 02:13:57 +0000: Memory Usage (463660K) : backmetal1_filler has 0 polygons
+2026-10-14T02:13:57.9359486Z 2026-10-14 02:13:57 +0000: Memory Usage (463660K) : backmetal1_nofill has 0 polygons
+2026-10-14T02:13:57.9411922Z 2026-10-14 02:13:57 +0000: Memory Usage (463660K) : backmetal1_slit has 0 polygons
+2026-10-14T02:13:57.9439765Z 2026-10-14 02:13:57 +0000: Memory Usage (463660K) : backmetal1_text has 0 polygons
+2026-10-14T02:13:57.9492245Z 2026-10-14 02:13:57 +0000: Memory Usage (463660K) : backmetal1_opc has 0 polygons
+2026-10-14T02:13:57.9544943Z 2026-10-14 02:13:57 +0000: Memory Usage (463660K) : backmetal1_noqrc has 0 polygons
+2026-10-14T02:13:57.9597581Z 2026-10-14 02:13:57 +0000: Memory Usage (463660K) : backmetal1_res has 0 polygons
+2026-10-14T02:13:57.9649810Z 2026-10-14 02:13:57 +0000: Memory Usage (463660K) : backmetal1_iprobe has 0 polygons
+2026-10-14T02:13:57.9702622Z 2026-10-14 02:13:57 +0000: Memory Usage (463660K) : backmetal1_diffprb has 0 polygons
+2026-10-14T02:13:57.9754763Z 2026-10-14 02:13:57 +0000: Memory Usage (463660K) : backpassiv_drw has 0 polygons
+2026-10-14T02:13:57.9806529Z 2026-10-14 02:13:57 +0000: Memory Usage (463660K) : res_drw has 0 polygons
+2026-10-14T02:13:58.0040283Z 2026-10-14 02:13:58 +0000: Memory Usage (463660K) : sram_drw has 4896 polygons
+2026-10-14T02:13:58.0095351Z 2026-10-14 02:13:58 +0000: Memory Usage (463660K) : trans_drw has 0 polygons
+2026-10-14T02:13:58.0148521Z 2026-10-14 02:13:58 +0000: Memory Usage (463660K) : ind_drw has 0 polygons
+2026-10-14T02:13:58.0201155Z 2026-10-14 02:13:58 +0000: Memory Usage (463660K) : ind_pin has 0 polygons
+2026-10-14T02:13:58.0228983Z 2026-10-14 02:13:58 +0000: Memory Usage (463660K) : ind_text has 0 polygons
+2026-10-14T02:13:58.0281438Z 2026-10-14 02:13:58 +0000: Memory Usage (463660K) : salblock_drw has 0 polygons
+2026-10-14T02:13:58.0621459Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : via2_drw has 48926 polygons
+2026-10-14T02:13:58.0874862Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : metal3_drw has 27531 polygons
+2026-10-14T02:13:58.1120189Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : metal3_pin has 22834 polygons
+2026-10-14T02:13:58.1176267Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : metal3_mask has 0 polygons
+2026-10-14T02:13:58.1229309Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : metal3_filler has 0 polygons
+2026-10-14T02:13:58.1281827Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : metal3_nofill has 0 polygons
+2026-10-14T02:13:58.1334565Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : metal3_slit has 0 polygons
+2026-10-14T02:13:58.1546713Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : metal3_text has 13266 polygons
+2026-10-14T02:13:58.1602148Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : metal3_opc has 0 polygons
+2026-10-14T02:13:58.1655478Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : metal3_noqrc has 0 polygons
+2026-10-14T02:13:58.1892701Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : metal3_res has 4192 polygons
+2026-10-14T02:13:58.1947058Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : metal3_iprobe has 0 polygons
+2026-10-14T02:13:58.1999875Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : metal3_diffprb has 0 polygons
+2026-10-14T02:13:58.2202633Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : nwell_drw has 78905 polygons
+2026-10-14T02:13:58.2430214Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : nwell_pin has 0 polygons
+2026-10-14T02:13:58.2485933Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : nbulay_drw has 0 polygons
+2026-10-14T02:13:58.2539312Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : nbulay_pin has 0 polygons
+2026-10-14T02:13:58.2592844Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : nbulay_block has 0 polygons
+2026-10-14T02:13:58.2647423Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : emwind_drw has 0 polygons
+2026-10-14T02:13:58.2701896Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : emwind_opc has 0 polygons
+2026-10-14T02:13:58.2758723Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : deepco_drw has 0 polygons
+2026-10-14T02:13:58.2812192Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : deepco_drw has 0 polygons
+2026-10-14T02:13:58.2865385Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : mim_drw has 0 polygons
+2026-10-14T02:13:58.2918142Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : edgeseal_drw has 0 polygons
+2026-10-14T02:13:58.2970977Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : edgeseal_bound has 0 polygons
+2026-10-14T02:13:58.3023866Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : substrate_drw has 0 polygons
+2026-10-14T02:13:58.3053082Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : substrate_text has 0 polygons
+2026-10-14T02:13:58.3105741Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : dfpad_drw has 0 polygons
+2026-10-14T02:13:58.3158668Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : dfpad_pillar has 0 polygons
+2026-10-14T02:13:58.3213242Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : dfpad_sbump has 0 polygons
+2026-10-14T02:13:58.3269051Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : thickgateox_drw has 0 polygons
+2026-10-14T02:13:58.3324992Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : pldb_drw has 0 polygons
+2026-10-14T02:13:58.3379060Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : pwell_drw has 0 polygons
+2026-10-14T02:13:58.3432046Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : pwell_pin has 0 polygons
+2026-10-14T02:13:58.3484805Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : pwell_block has 0 polygons
+2026-10-14T02:13:58.3537704Z 2026-10-14 02:13:58 +0000: Memory Usage (464172K) : ic_drw has 0 polygons
+2026-10-14T02:13:58.3863069Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : via3_drw has 38778 polygons
+2026-10-14T02:13:58.4102256Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal4_drw has 7284 polygons
+2026-10-14T02:13:58.4311642Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal4_pin has 99 polygons
+2026-10-14T02:13:58.4367502Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal4_mask has 0 polygons
+2026-10-14T02:13:58.4420754Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal4_filler has 0 polygons
+2026-10-14T02:13:58.4473738Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal4_nofill has 0 polygons
+2026-10-14T02:13:58.4526367Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal4_slit has 0 polygons
+2026-10-14T02:13:58.4733269Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal4_text has 99 polygons
+2026-10-14T02:13:58.4788916Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal4_opc has 0 polygons
+2026-10-14T02:13:58.4842193Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal4_noqrc has 0 polygons
+2026-10-14T02:13:58.4895257Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal4_res has 0 polygons
+2026-10-14T02:13:58.4948126Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal4_iprobe has 0 polygons
+2026-10-14T02:13:58.5001411Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal4_diffprb has 0 polygons
+2026-10-14T02:13:58.5053810Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : heattrans_drw has 0 polygons
+2026-10-14T02:13:58.5106571Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : heatres_drw has 0 polygons
+2026-10-14T02:13:58.5159341Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : pempoly_drw has 0 polygons
+2026-10-14T02:13:58.5212173Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : fbe_drw has 0 polygons
+2026-10-14T02:13:58.5265344Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : empoly_drw has 0 polygons
+2026-10-14T02:13:58.5317795Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : ldmos_drw has 0 polygons
+2026-10-14T02:13:58.5371088Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : pbiwind_drw has 0 polygons
+2026-10-14T02:13:58.5423599Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : digisub_drw has 0 polygons
+2026-10-14T02:13:58.5476393Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : nodrc_drw has 0 polygons
+2026-10-14T02:13:58.5689361Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : text_drw has 50558 polygons
+2026-10-14T02:13:58.5950494Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : via4_drw has 28460 polygons
+2026-10-14T02:13:58.6102505Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal5_drw has 5033 polygons
+2026-10-14T02:13:58.6156781Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal5_pin has 0 polygons
+2026-10-14T02:13:58.6209971Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal5_mask has 0 polygons
+2026-10-14T02:13:58.6263173Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal5_filler has 0 polygons
+2026-10-14T02:13:58.6316631Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal5_nofill has 0 polygons
+2026-10-14T02:13:58.6369689Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal5_slit has 0 polygons
+2026-10-14T02:13:58.6398331Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal5_text has 0 polygons
+2026-10-14T02:13:58.6451267Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal5_opc has 0 polygons
+2026-10-14T02:13:58.6504003Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal5_noqrc has 0 polygons
+2026-10-14T02:13:58.6557365Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal5_res has 0 polygons
+2026-10-14T02:13:58.6610406Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal5_iprobe has 0 polygons
+2026-10-14T02:13:58.6663514Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : metal5_diffprb has 0 polygons
+2026-10-14T02:13:58.6716966Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : radhard_drw has 0 polygons
+2026-10-14T02:13:58.6770772Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : memcap_drw has 0 polygons
+2026-10-14T02:13:58.6824884Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : varicap_drw has 0 polygons
+2026-10-14T02:13:58.6878065Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : flash_drw has 0 polygons
+2026-10-14T02:13:58.6931113Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : intbondvia_drw has 0 polygons
+2026-10-14T02:13:58.6984075Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : intbondmet_drw has 0 polygons
+2026-10-14T02:13:58.7036859Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : devbondvia_drw has 0 polygons
+2026-10-14T02:13:58.7089673Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : devbondmet_drw has 0 polygons
+2026-10-14T02:13:58.7141716Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : devtrench_drw has 0 polygons
+2026-10-14T02:13:58.7194563Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : redist_drw has 0 polygons
+2026-10-14T02:13:58.7247107Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : graphbot_drw has 0 polygons
+2026-10-14T02:13:58.7299543Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : graphtop_drw has 0 polygons
+2026-10-14T02:13:58.7352031Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : antvia1_drw has 0 polygons
+2026-10-14T02:13:58.7404924Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : antmetal2_drw has 0 polygons
+2026-10-14T02:13:58.7629247Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : graphcont_drw has 0 polygons
+2026-10-14T02:13:58.7682750Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : siwg_drw has 0 polygons
+2026-10-14T02:13:58.7735706Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : siwg_filler has 0 polygons
+2026-10-14T02:13:58.7788237Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : siwg_nofill has 0 polygons
+2026-10-14T02:13:58.7840791Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : sigrating_drw has 0 polygons
+2026-10-14T02:13:58.7893802Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : singrating_drw has 0 polygons
+2026-10-14T02:13:58.7946621Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : graphpas_drw has 0 polygons
+2026-10-14T02:13:58.7998820Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : emwind3_drw has 0 polygons
+2026-10-14T02:13:58.8051183Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : emwihv3_drw has 0 polygons
+2026-10-14T02:13:58.8104028Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : redbulay_drw has 0 polygons
+2026-10-14T02:13:58.8156805Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : smos_drw has 0 polygons
+2026-10-14T02:13:58.8209493Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : graphpad_drw has 0 polygons
+2026-10-14T02:13:58.8262244Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : polimide_drw has 0 polygons
+2026-10-14T02:13:58.8316965Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : polimide_pin has 0 polygons
+2026-10-14T02:13:58.8370024Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : recog_drw has 0 polygons
+2026-10-14T02:13:58.8423275Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : recog_pin has 0 polygons
+2026-10-14T02:13:58.8476425Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : recog_esd has 0 polygons
+2026-10-14T02:13:58.8529172Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : recog_diode has 0 polygons
+2026-10-14T02:13:58.8582173Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : recog_tsv has 0 polygons
+2026-10-14T02:13:58.8635371Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : recog_iprobe has 0 polygons
+2026-10-14T02:13:58.8688008Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : recog_diffprb has 0 polygons
+2026-10-14T02:13:58.8740416Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : recog_pillar has 0 polygons
+2026-10-14T02:13:58.8792908Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : recog_sbump has 0 polygons
+2026-10-14T02:13:58.8845798Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : recog_otp has 0 polygons
+2026-10-14T02:13:58.8898366Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : recog_pdiode has 0 polygons
+2026-10-14T02:13:58.8951059Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : recog_mom has 0 polygons
+2026-10-14T02:13:58.9003656Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : recog_momf has 0 polygons
+2026-10-14T02:13:58.9056484Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : recog_pcm has 0 polygons
+2026-10-14T02:13:58.9109202Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : colopen_drw has 0 polygons
+2026-10-14T02:13:58.9161863Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : graphmetal1_drw has 0 polygons
+2026-10-14T02:13:58.9214801Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : graphmetal1_filler has 0 polygons
+2026-10-14T02:13:58.9267593Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : graphmetal1_nofill has 0 polygons
+2026-10-14T02:13:58.9320066Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : graphmetal1_slit has 0 polygons
+2026-10-14T02:13:58.9372852Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : graphmetal1_opc has 0 polygons
+2026-10-14T02:13:58.9425496Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : graphmet1l_drw has 0 polygons
+2026-10-14T02:13:58.9478380Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : graphmet1l_filler has 0 polygons
+2026-10-14T02:13:58.9531456Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : graphmet1l_nofill has 0 polygons
+2026-10-14T02:13:58.9583837Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : graphmet1l_slit has 0 polygons
+2026-10-14T02:13:58.9636673Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : graphmet1l_opc has 0 polygons
+2026-10-14T02:13:58.9689277Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : extblock_drw has 0 polygons
+2026-10-14T02:13:58.9742037Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : nldd_drw has 0 polygons
+2026-10-14T02:13:58.9794808Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : pldd_drw has 0 polygons
+2026-10-14T02:13:58.9847826Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : next_drw has 0 polygons
+2026-10-14T02:13:58.9900604Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : pext_drw has 0 polygons
+2026-10-14T02:13:58.9953531Z 2026-10-14 02:13:58 +0000: Memory Usage (464684K) : nexthv_drw has 0 polygons
+2026-10-14T02:13:59.0006638Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : pexthv_drw has 0 polygons
+2026-10-14T02:13:59.0059697Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : graphgate_drw has 0 polygons
+2026-10-14T02:13:59.0113102Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : sinwg_drw has 0 polygons
+2026-10-14T02:13:59.0166168Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : sinwg_filler has 0 polygons
+2026-10-14T02:13:59.0219148Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : sinwg_nofill has 0 polygons
+2026-10-14T02:13:59.0271773Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : mempad_drw has 0 polygons
+2026-10-14T02:13:59.0445048Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topvia1_drw has 10845 polygons
+2026-10-14T02:13:59.0569895Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal1_drw has 58 polygons
+2026-10-14T02:13:59.0699316Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal1_pin has 56 polygons
+2026-10-14T02:13:59.0755613Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal1_mask has 0 polygons
+2026-10-14T02:13:59.0809045Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal1_filler has 0 polygons
+2026-10-14T02:13:59.0862320Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal1_nofill has 0 polygons
+2026-10-14T02:13:59.0915278Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal1_slit has 0 polygons
+2026-10-14T02:13:59.1041255Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal1_text has 56 polygons
+2026-10-14T02:13:59.1095450Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal1_noqrc has 0 polygons
+2026-10-14T02:13:59.1148611Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal1_res has 0 polygons
+2026-10-14T02:13:59.1201305Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal1_iprobe has 0 polygons
+2026-10-14T02:13:59.1253967Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal1_diffprb has 0 polygons
+2026-10-14T02:13:59.1306996Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : inldpwl_drw has 0 polygons
+2026-10-14T02:13:59.1359613Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : polyres_drw has 0 polygons
+2026-10-14T02:13:59.1412270Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : polyres_pin has 0 polygons
+2026-10-14T02:13:59.1465425Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : vmim_drw has 0 polygons
+2026-10-14T02:13:59.1518720Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : nbulaycut_drw has 0 polygons
+2026-10-14T02:13:59.1571022Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : antmetal1_drw has 0 polygons
+2026-10-14T02:13:59.1623373Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topvia2_drw has 0 polygons
+2026-10-14T02:13:59.1676768Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal2_drw has 0 polygons
+2026-10-14T02:13:59.1729518Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal2_pin has 0 polygons
+2026-10-14T02:13:59.1782202Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal2_mask has 0 polygons
+2026-10-14T02:13:59.1834964Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal2_filler has 0 polygons
+2026-10-14T02:13:59.1887527Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal2_nofill has 0 polygons
+2026-10-14T02:13:59.1940675Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal2_slit has 0 polygons
+2026-10-14T02:13:59.1969167Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal2_text has 0 polygons
+2026-10-14T02:13:59.2021900Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal2_noqrc has 0 polygons
+2026-10-14T02:13:59.2077370Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal2_res has 0 polygons
+2026-10-14T02:13:59.2128528Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal2_iprobe has 0 polygons
+2026-10-14T02:13:59.2181028Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : topmetal2_diffprb has 0 polygons
+2026-10-14T02:13:59.2233451Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : snsring_drw has 0 polygons
+2026-10-14T02:13:59.2286329Z 2026-10-14 02:13:59 +0000: Memory Usage (464684K) : sensor_drw has 0 polygons
+2026-10-14T02:13:59.2338994Z 2026-10-14 02:13:59 +0000: Memory Usage (464812K) : snsarms_drw has 0 polygons
+2026-10-14T02:13:59.2391929Z 2026-10-14 02:13:59 +0000: Memory Usage (464812K) : snscmosvia_drw has 0 polygons
+2026-10-14T02:13:59.2444781Z 2026-10-14 02:13:59 +0000: Memory Usage (464812K) : colwind_drw has 0 polygons
+2026-10-14T02:13:59.2497709Z 2026-10-14 02:13:59 +0000: Memory Usage (464940K) : flm_drw has 0 polygons
+2026-10-14T02:13:59.2550478Z 2026-10-14 02:13:59 +0000: Memory Usage (464940K) : hafniumox_drw has 0 polygons
+2026-10-14T02:13:59.2602832Z 2026-10-14 02:13:59 +0000: Memory Usage (464940K) : memvia_drw has 0 polygons
+2026-10-14T02:13:59.2819997Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : thinfilmres_drw has 0 polygons
+2026-10-14T02:13:59.2873537Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : rfmem_drw has 0 polygons
+2026-10-14T02:13:59.2926247Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_drw has 0 polygons
+2026-10-14T02:13:59.2978738Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_m2m3 has 0 polygons
+2026-10-14T02:13:59.3031092Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_m2m4 has 0 polygons
+2026-10-14T02:13:59.3083382Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_m2m5 has 0 polygons
+2026-10-14T02:13:59.3135641Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_m2tm1 has 0 polygons
+2026-10-14T02:13:59.3188071Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_m2tm2 has 0 polygons
+2026-10-14T02:13:59.3240618Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_m3m4 has 0 polygons
+2026-10-14T02:13:59.3293019Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_m3m5 has 0 polygons
+2026-10-14T02:13:59.3347601Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_m3tm1 has 0 polygons
+2026-10-14T02:13:59.3400319Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_m3tm2 has 0 polygons
+2026-10-14T02:13:59.3453105Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_m4m5 has 0 polygons
+2026-10-14T02:13:59.3505935Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_m4tm1 has 0 polygons
+2026-10-14T02:13:59.3558445Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_m4tm2 has 0 polygons
+2026-10-14T02:13:59.3610924Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_m5tm1 has 0 polygons
+2026-10-14T02:13:59.3663672Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_m5tm2 has 0 polygons
+2026-10-14T02:13:59.3715871Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_tm1tm2 has 0 polygons
+2026-10-14T02:13:59.3768046Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_m1sub has 0 polygons
+2026-10-14T02:13:59.3820050Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_m2sub has 0 polygons
+2026-10-14T02:13:59.3872515Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_m3sub has 0 polygons
+2026-10-14T02:13:59.3925148Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_m4sub has 0 polygons
+2026-10-14T02:13:59.3977698Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_m5sub has 0 polygons
+2026-10-14T02:13:59.4029752Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_tm1sub has 0 polygons
+2026-10-14T02:13:59.4082482Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : norcx_tm2sub has 0 polygons
+2026-10-14T02:13:59.4134571Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : snsbotvia_drw has 0 polygons
+2026-10-14T02:13:59.4186365Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : snstopvia_drw has 0 polygons
+2026-10-14T02:13:59.4238502Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : deepvia_drw has 0 polygons
+2026-10-14T02:13:59.4290532Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : fgetch_drw has 0 polygons
+2026-10-14T02:13:59.4342890Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : ctrgat_drw has 0 polygons
+2026-10-14T02:13:59.4395557Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : fgimp_drw has 0 polygons
+2026-10-14T02:13:59.4448416Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : emwihv_drw has 0 polygons
+2026-10-14T02:13:59.4501533Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : lbe_drw has 0 polygons
+2026-10-14T02:13:59.4554239Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : alcustop_drw has 0 polygons
+2026-10-14T02:13:59.4606922Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : nometfiller_drw has 0 polygons
+2026-10-14T02:13:59.4659686Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : prboundary_drw has 0 polygons
+2026-10-14T02:13:59.4712470Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : exchange0_drw has 0 polygons
+2026-10-14T02:13:59.4765096Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : exchange0_pin has 0 polygons
+2026-10-14T02:13:59.4793088Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : exchange0_text has 0 polygons
+2026-10-14T02:13:59.4845946Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : exchange1_drw has 0 polygons
+2026-10-14T02:13:59.4898785Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : exchange1_pin has 0 polygons
+2026-10-14T02:13:59.4926485Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : exchange1_text has 0 polygons
+2026-10-14T02:13:59.4979722Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : exchange2_drw has 0 polygons
+2026-10-14T02:13:59.5032683Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : exchange2_pin has 0 polygons
+2026-10-14T02:13:59.5060305Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : exchange2_text has 0 polygons
+2026-10-14T02:13:59.5113154Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : exchange3_drw has 0 polygons
+2026-10-14T02:13:59.5166498Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : exchange3_pin has 0 polygons
+2026-10-14T02:13:59.5193856Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : exchange3_text has 0 polygons
+2026-10-14T02:13:59.5246581Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : exchange4_drw has 0 polygons
+2026-10-14T02:13:59.5299278Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : exchange4_pin has 0 polygons
+2026-10-14T02:13:59.5326980Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : exchange4_text has 0 polygons
+2026-10-14T02:13:59.5380314Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : isonwell_drw has 0 polygons
+2026-10-14T02:13:59.5381015Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : Total no. of polygons in the design is 4080970
+2026-10-14T02:13:59.5387346Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : Loaded TECH DRC rules values from /home/runner/pdk/ihp-sg13g2/libs.tech/klayout/python/sg13g2_pycell_lib/sg13g2_tech_mod.json
+2026-10-14T02:13:59.5388859Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : Loaded default DRC rules values from /home/runner/pdk/ihp-sg13g2/libs.tech/klayout/tech/drc/rule_decks/sg13g2_tech_default.json
+2026-10-14T02:13:59.5390193Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) : The following rules values were missing in tech json and default values were used:
+2026-10-14T02:13:59.5390961Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) :   - NW_f1_digibnd
+2026-10-14T02:13:59.5391538Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) :   - Cnt_c_digibnd
+2026-10-14T02:13:59.5392076Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) :   - Cnt_c_sram
+2026-10-14T02:13:59.5392933Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) :   - Sdiod_b
+2026-10-14T02:13:59.5393451Z 2026-10-14 02:13:59 +0000: Memory Usage (465068K) :   - Sdiod_c
+2026-10-14T02:13:59.5805355Z 2026-10-14 02:13:59 +0000: Memory Usage (472236K) : Total area of the design is 916213.9391999999 um^2.
+2026-10-14T02:13:59.5806559Z 2026-10-14 02:13:59 +0000: Memory Usage (472236K) : The design dimensions are 1289.28 µm * 710.64 µm.
+2026-10-14T02:13:59.5807327Z 2026-10-14 02:13:59 +0000: Memory Usage (472236K) : Starting general IHP-SG13G2 derivations.
+2026-10-14T02:13:59.5808005Z 2026-10-14 02:13:59 +0000: Memory Usage (472236K) : Starting Pwell derivations
+2026-10-14T02:14:00.5134279Z 2026-10-14 02:14:00 +0000: Memory Usage (526892K) : Starting n-Activ derivations
+2026-10-14T02:14:01.4462278Z 2026-10-14 02:14:01 +0000: Memory Usage (569436K) : Starting p-Activ derivations
+2026-10-14T02:14:02.3399723Z 2026-10-14 02:14:02 +0000: Memory Usage (569564K) : Starting ptap derivations
+2026-10-14T02:14:02.7310871Z 2026-10-14 02:14:02 +0000: Memory Usage (601180K) : Starting ntap derivations
+2026-10-14T02:14:03.6304776Z 2026-10-14 02:14:03 +0000: Memory Usage (611420K) : Starting pact FET derivations
+2026-10-14T02:14:04.1741859Z 2026-10-14 02:14:04 +0000: Memory Usage (611420K) : Starting nact FET derivations
+2026-10-14T02:14:04.5600159Z 2026-10-14 02:14:04 +0000: Memory Usage (612060K) : Starting Gate derivations
+2026-10-14T02:14:05.2638089Z 2026-10-14 02:14:05 +0000: Memory Usage (611932K) : Starting cont/contbar general derivations
+2026-10-14T02:14:10.6544705Z 2026-10-14 02:14:10 +0000: Memory Usage (967132K) : Starting pad general derivations
+2026-10-14T02:14:10.6976387Z 2026-10-14 02:14:10 +0000: Memory Usage (967132K) : Starting schottky_nbl general derivations
+2026-10-14T02:14:11.2220292Z 2026-10-14 02:14:11 +0000: Memory Usage (967132K) : Starting SVaricap general derivations
+2026-10-14T02:14:11.6039271Z 2026-10-14 02:14:11 +0000: Memory Usage (967132K) : Starting HBT general derivations
+2026-10-14T02:14:11.6634877Z 2026-10-14 02:14:11 +0000: Memory Usage (967132K) : Starting IHP-SG13G2 DRC connectivity related derivations.
+2026-10-14T02:14:12.0618515Z 2026-10-14 02:14:12 +0000: Memory Usage (968284K) : Starting IHP-SG13G2 DRC connectivity setup
+2026-10-14T02:14:19.6079342Z 2026-10-14 02:14:19 +0000: Memory Usage (968668K) : Starting IHP-SG13G2 DRC rules.
+2026-10-14T02:14:19.6079980Z 2026-10-14 02:14:19 +0000: Memory Usage (968668K) : Running all FEOL rules
+2026-10-14T02:14:19.6080519Z 2026-10-14 02:14:19 +0000: Memory Usage (968668K) : Running all BEOL rules
+2026-10-14T02:14:19.6081028Z 2026-10-14 02:14:19 +0000: Memory Usage (968668K) : Running all PIN rules
+2026-10-14T02:14:19.6081578Z 2026-10-14 02:14:19 +0000: Memory Usage (968668K) : Running all FORBIDDEN rules
+2026-10-14T02:14:19.6082170Z 2026-10-14 02:14:19 +0000: Memory Usage (968668K) : Starting 5.1 NWell table
+2026-10-14T02:14:19.6082527Z 2026-10-14 02:14:19 +0000: Memory Usage (968668K) : Executing rule NW.b
+2026-10-14T02:14:21.0316831Z 2026-10-14 02:14:21 +0000: Memory Usage (993508K) : Executing rule NW.b1
+2026-10-14T02:14:21.3755635Z 2026-10-14 02:14:21 +0000: Memory Usage (993668K) : Executing rule NW.f1
+2026-10-14T02:14:21.4051097Z 2026-10-14 02:14:21 +0000: Memory Usage (993668K) : Executing rule NW.f1.digibnd
+2026-10-14T02:14:21.4233557Z 2026-10-14 02:14:21 +0000: Memory Usage (993668K) : Starting 5.2 PWell:block
+2026-10-14T02:14:21.4234216Z 2026-10-14 02:14:21 +0000: Memory Usage (993668K) : Executing rule PWB.e
+2026-10-14T02:14:21.4651542Z 2026-10-14 02:14:21 +0000: Memory Usage (993668K) : Executing rule PWB.e1
+2026-10-14T02:14:21.4943186Z 2026-10-14 02:14:21 +0000: Memory Usage (993668K) : Executing rule PWB.f
+2026-10-14T02:14:21.5243252Z 2026-10-14 02:14:21 +0000: Memory Usage (993668K) : Executing rule PWB.f1
+2026-10-14T02:14:21.5739292Z 2026-10-14 02:14:21 +0000: Memory Usage (993668K) : Starting 5.3 nBuLay table
+2026-10-14T02:14:21.7660547Z 2026-10-14 02:14:21 +0000: Memory Usage (993668K) : Executing rule NBL.b
+2026-10-14T02:14:21.7966829Z 2026-10-14 02:14:21 +0000: Memory Usage (993668K) : Executing rule NBL.c
+2026-10-14T02:14:21.8528553Z 2026-10-14 02:14:21 +0000: Memory Usage (993668K) : Executing rule NBL.d
+2026-10-14T02:14:21.9662161Z 2026-10-14 02:14:21 +0000: Memory Usage (999940K) : Executing rule NBL.e
+2026-10-14T02:14:22.0962503Z 2026-10-14 02:14:22 +0000: Memory Usage (1002116K) : Executing rule NBL.f
+2026-10-14T02:14:22.1434143Z 2026-10-14 02:14:22 +0000: Memory Usage (1002116K) : Starting 5.5. Activ table
+2026-10-14T02:14:22.1434847Z 2026-10-14 02:14:22 +0000: Memory Usage (1002116K) : Executing rule Act.a
+2026-10-14T02:14:23.0269767Z 2026-10-14 02:14:23 +0000: Memory Usage (1002116K) : Executing rule Act.b
+2026-10-14T02:14:24.3533521Z 2026-10-14 02:14:24 +0000: Memory Usage (1014276K) : Starting 5.6 Activ:filler table
+2026-10-14T02:14:24.3839727Z 2026-10-14 02:14:24 +0000: Memory Usage (1014276K) : Executing rule AFil.c1
+2026-10-14T02:14:24.4087274Z 2026-10-14 02:14:24 +0000: Memory Usage (1014276K) : Executing rule AFil.c
+2026-10-14T02:14:24.4215395Z 2026-10-14 02:14:24 +0000: Memory Usage (1014276K) : Executing rule AFil.d
+2026-10-14T02:14:24.4670405Z 2026-10-14 02:14:24 +0000: Memory Usage (1014276K) : Executing rule AFil.e
+2026-10-14T02:14:24.4901386Z 2026-10-14 02:14:24 +0000: Memory Usage (1014276K) : Executing rule AFil.j
+2026-10-14T02:14:24.5233673Z 2026-10-14 02:14:24 +0000: Memory Usage (1014276K) : Starting 5.7. ThickGateOx table
+2026-10-14T02:14:24.5234134Z 2026-10-14 02:14:24 +0000: Memory Usage (1014276K) : Executing rule TGO.f
+2026-10-14T02:14:24.5355324Z 2026-10-14 02:14:24 +0000: Memory Usage (1014276K) : Starting 5.8. GatPoly table
+2026-10-14T02:14:24.5355778Z 2026-10-14 02:14:24 +0000: Memory Usage (1014276K) : Executing rule Gat.a
+2026-10-14T02:14:24.5995099Z 2026-10-14 02:14:24 +0000: Memory Usage (1014276K) : Executing rule Gat.b
+2026-10-14T02:14:24.9929872Z 2026-10-14 02:14:24 +0000: Memory Usage (1014276K) : Executing rule Gat.d
+2026-10-14T02:14:25.3447399Z 2026-10-14 02:14:25 +0000: Memory Usage (1014276K) : Executing rule Gat.a1
+2026-10-14T02:14:26.4610175Z 2026-10-14 02:14:26 +0000: Memory Usage (1059076K) : Executing rule Gat.a2
+2026-10-14T02:14:27.5586174Z 2026-10-14 02:14:27 +0000: Memory Usage (1059076K) : Executing rule Gat.g
+2026-10-14T02:14:27.6435699Z 2026-10-14 02:14:27 +0000: Memory Usage (1059076K) : Starting 5.9 GatPoly:filler
+2026-10-14T02:14:27.8169685Z 2026-10-14 02:14:27 +0000: Memory Usage (1059076K) : Executing rule GFil.d
+2026-10-14T02:14:27.8487430Z 2026-10-14 02:14:27 +0000: Memory Usage (1059076K) : Executing rule GFil.e
+2026-10-14T02:14:27.8789143Z 2026-10-14 02:14:27 +0000: Memory Usage (1059076K) : Executing rule GFil.i
+2026-10-14T02:14:27.8898148Z 2026-10-14 02:14:27 +0000: Memory Usage (1059076K) : Starting 5.10 pSD table
+2026-10-14T02:14:27.8898789Z 2026-10-14 02:14:27 +0000: Memory Usage (1059076K) : Executing rule pSD.c1
+2026-10-14T02:14:29.2685669Z 2026-10-14 02:14:29 +0000: Memory Usage (1079300K) : Starting 5.14. Cont table
+2026-10-14T02:14:29.4473130Z 2026-10-14 02:14:29 +0000: Memory Usage (1079300K) : Executing rule Cnt.a
+2026-10-14T02:14:34.5172498Z 2026-10-14 02:14:34 +0000: Memory Usage (1172356K) : Executing rule Cnt.b
+2026-10-14T02:14:35.2104579Z 2026-10-14 02:14:35 +0000: Memory Usage (1177092K) : Executing rule Cnt.c
+2026-10-14T02:14:43.6660065Z 2026-10-14 02:14:43 +0000: Memory Usage (1278980K) : Executing rule Cnt.c.digibnd
+2026-10-14T02:14:43.9059410Z 2026-10-14 02:14:43 +0000: Memory Usage (1280388K) : Executing rule Cnt.c.SRAM
+2026-10-14T02:14:44.0121327Z 2026-10-14 02:14:44 +0000: Memory Usage (1280388K) : Executing rule Cnt.d
+2026-10-14T02:14:44.6385558Z 2026-10-14 02:14:44 +0000: Memory Usage (1281284K) : Executing rule Cnt.e
+2026-10-14T02:14:45.4323941Z 2026-10-14 02:14:45 +0000: Memory Usage (1281284K) : Executing rule Cnt.g1
+2026-10-14T02:14:48.9619131Z 2026-10-14 02:14:48 +0000: Memory Usage (1281156K) : Executing rule Cnt.g2
+2026-10-14T02:14:53.7849365Z 2026-10-14 02:14:53 +0000: Memory Usage (1300868K) : Starting 5.15. ContBar table
+2026-10-14T02:14:53.7850559Z 2026-10-14 02:14:53 +0000: Memory Usage (1300868K) : Executing rule CntB.a
+2026-10-14T02:14:59.6847929Z 2026-10-14 02:14:59 +0000: Memory Usage (1310852K) : Executing rule CntB.a1
+2026-10-14T02:14:59.6991244Z 2026-10-14 02:14:59 +0000: Memory Usage (1310852K) : Executing rule CntB.b1
+2026-10-14T02:14:59.7240348Z 2026-10-14 02:14:59 +0000: Memory Usage (1310980K) : Executing rule CntB.h1
+2026-10-14T02:14:59.8218284Z 2026-10-14 02:14:59 +0000: Memory Usage (1311108K) : Starting 6.1.3 NPN Substrate-Tie table
+2026-10-14T02:14:59.8218788Z 2026-10-14 02:14:59 +0000: Memory Usage (1311108K) : Executing rule npn13G2.bR 
+2026-10-14T02:14:59.8477144Z 2026-10-14 02:14:59 +0000: Memory Usage (1311108K) : Executing rule npn13G2L.cR 
+2026-10-14T02:14:59.8687568Z 2026-10-14 02:14:59 +0000: Memory Usage (1311108K) : Executing rule npn13G2V.cR 
+2026-10-14T02:14:59.8895267Z 2026-10-14 02:14:59 +0000: Memory Usage (1311108K) : Starting 6.7 Schottky diode table
+2026-10-14T02:14:59.9068320Z 2026-10-14 02:14:59 +0000: Memory Usage (1311108K) : Executing rule Sdiod.b
+2026-10-14T02:14:59.9385740Z 2026-10-14 02:14:59 +0000: Memory Usage (1311108K) : Executing rule Sdiod.c
+2026-10-14T02:14:59.9694336Z 2026-10-14 02:14:59 +0000: Memory Usage (1311108K) : Executing rule Sdiod.d
+2026-10-14T02:14:59.9803160Z 2026-10-14 02:14:59 +0000: Memory Usage (1311108K) : Executing rule Sdiod.e
+2026-10-14T02:14:59.9912702Z 2026-10-14 02:14:59 +0000: Memory Usage (1311108K) : Starting 7.2 Latch-up table
+2026-10-14T02:14:59.9913202Z 2026-10-14 02:14:59 +0000: Memory Usage (1311108K) : Executing rule LU.b
+2026-10-14T02:15:02.1482434Z 2026-10-14 02:15:02 +0000: Memory Usage (1304804K) : Starting 5.16. Metal1 table
+2026-10-14T02:15:02.1483067Z 2026-10-14 02:15:02 +0000: Memory Usage (1304804K) : Executing rule M1.a
+2026-10-14T02:15:06.0242191Z 2026-10-14 02:15:06 +0000: Memory Usage (1304804K) : Executing rule M1.b
+2026-10-14T02:15:16.2364153Z 2026-10-14 02:15:16 +0000: Memory Usage (1348196K) : Executing rule M1.e
+2026-10-14T02:15:23.4447068Z 2026-10-14 02:15:23 +0000: Memory Usage (1348196K) : Executing rule M1.f
+2026-10-14T02:15:28.3411176Z 2026-10-14 02:15:28 +0000: Memory Usage (1348196K) : Executing rule M1.g
+2026-10-14T02:15:28.6674527Z 2026-10-14 02:15:28 +0000: Memory Usage (1393124K) : Executing rule M1.i
+2026-10-14T02:15:29.3398399Z 2026-10-14 02:15:29 +0000: Memory Usage (1414760K) : Starting 5.17 Metaln table
+2026-10-14T02:15:29.3399099Z 2026-10-14 02:15:29 +0000: Memory Usage (1414760K) : Executing rule M2.a
+2026-10-14T02:15:29.4711548Z 2026-10-14 02:15:29 +0000: Memory Usage (1414760K) : Executing rule M2.b
+2026-10-14T02:15:29.6583191Z 2026-10-14 02:15:29 +0000: Memory Usage (1369804K) : Executing rule M2.e
+2026-10-14T02:15:29.7637099Z 2026-10-14 02:15:29 +0000: Memory Usage (1369804K) : Executing rule M2.f
+2026-10-14T02:15:29.8327878Z 2026-10-14 02:15:29 +0000: Memory Usage (1369804K) : Executing rule M2.g
+2026-10-14T02:15:29.8910857Z 2026-10-14 02:15:29 +0000: Memory Usage (1369804K) : Executing rule M2.i
+2026-10-14T02:15:29.9773550Z 2026-10-14 02:15:29 +0000: Memory Usage (1369804K) : Executing rule M3.a
+2026-10-14T02:15:30.1117196Z 2026-10-14 02:15:30 +0000: Memory Usage (1369804K) : Executing rule M3.b
+2026-10-14T02:15:30.2422493Z 2026-10-14 02:15:30 +0000: Memory Usage (1369804K) : Executing rule M3.e
+2026-10-14T02:15:30.3514669Z 2026-10-14 02:15:30 +0000: Memory Usage (1369932K) : Executing rule M3.f
+2026-10-14T02:15:30.4148077Z 2026-10-14 02:15:30 +0000: Memory Usage (1369932K) : Executing rule M3.g
+2026-10-14T02:15:30.4707146Z 2026-10-14 02:15:30 +0000: Memory Usage (1369932K) : Executing rule M3.i
+2026-10-14T02:15:30.5439361Z 2026-10-14 02:15:30 +0000: Memory Usage (1369932K) : Executing rule M4.a
+2026-10-14T02:15:30.6168497Z 2026-10-14 02:15:30 +0000: Memory Usage (1369932K) : Executing rule M4.b
+2026-10-14T02:15:30.6835879Z 2026-10-14 02:15:30 +0000: Memory Usage (1369932K) : Executing rule M4.e
+2026-10-14T02:15:30.7871736Z 2026-10-14 02:15:30 +0000: Memory Usage (1369932K) : Executing rule M4.f
+2026-10-14T02:15:30.8364582Z 2026-10-14 02:15:30 +0000: Memory Usage (1369932K) : Executing rule M4.g
+2026-10-14T02:15:30.8839694Z 2026-10-14 02:15:30 +0000: Memory Usage (1369932K) : Executing rule M4.i
+2026-10-14T02:15:30.9467287Z 2026-10-14 02:15:30 +0000: Memory Usage (1370060K) : Executing rule M5.a
+2026-10-14T02:15:31.0071539Z 2026-10-14 02:15:31 +0000: Memory Usage (1370060K) : Executing rule M5.b
+2026-10-14T02:15:31.0475968Z 2026-10-14 02:15:31 +0000: Memory Usage (1369932K) : Executing rule M5.e
+2026-10-14T02:15:31.1319036Z 2026-10-14 02:15:31 +0000: Memory Usage (1369932K) : Executing rule M5.f
+2026-10-14T02:15:31.1745480Z 2026-10-14 02:15:31 +0000: Memory Usage (1369932K) : Executing rule M5.g
+2026-10-14T02:15:31.2146084Z 2026-10-14 02:15:31 +0000: Memory Usage (1369932K) : Executing rule M5.i
+2026-10-14T02:15:31.3046987Z 2026-10-14 02:15:31 +0000: Memory Usage (1369932K) : Starting 5.18 Metaln:filler table
+2026-10-14T02:15:31.3047631Z 2026-10-14 02:15:31 +0000: Memory Usage (1369932K) : Executing rule M1Fil.c
+2026-10-14T02:15:31.3162061Z 2026-10-14 02:15:31 +0000: Memory Usage (1369932K) : Executing rule M1Fil.a2
+2026-10-14T02:15:31.3273943Z 2026-10-14 02:15:31 +0000: Memory Usage (1369932K) : Executing rule M2Fil.c
+2026-10-14T02:15:31.3382985Z 2026-10-14 02:15:31 +0000: Memory Usage (1369932K) : Executing rule M2Fil.a2
+2026-10-14T02:15:31.3494551Z 2026-10-14 02:15:31 +0000: Memory Usage (1369932K) : Executing rule M3Fil.c
+2026-10-14T02:15:31.3603154Z 2026-10-14 02:15:31 +0000: Memory Usage (1369932K) : Executing rule M3Fil.a2
+2026-10-14T02:15:31.3713001Z 2026-10-14 02:15:31 +0000: Memory Usage (1369932K) : Executing rule M4Fil.c
+2026-10-14T02:15:31.3821172Z 2026-10-14 02:15:31 +0000: Memory Usage (1369932K) : Executing rule M4Fil.a2
+2026-10-14T02:15:31.3933448Z 2026-10-14 02:15:31 +0000: Memory Usage (1369932K) : Executing rule M5Fil.c
+2026-10-14T02:15:31.4041210Z 2026-10-14 02:15:31 +0000: Memory Usage (1369932K) : Executing rule M5Fil.a2
+2026-10-14T02:15:31.4151701Z 2026-10-14 02:15:31 +0000: Memory Usage (1369932K) : Starting 5.19. Via1 table
+2026-10-14T02:15:31.4152433Z 2026-10-14 02:15:31 +0000: Memory Usage (1369932K) : Starting 5.19. Via1 table derivations
+2026-10-14T02:15:31.4222866Z 2026-10-14 02:15:31 +0000: Memory Usage (1369932K) : Executing rule V1.a
+2026-10-14T02:15:31.6645271Z 2026-10-14 02:15:31 +0000: Memory Usage (1369932K) : Executing rule V1.b
+2026-10-14T02:15:31.7506936Z 2026-10-14 02:15:31 +0000: Memory Usage (1369800K) : Executing rule V1.c
+2026-10-14T02:15:32.2945738Z 2026-10-14 02:15:32 +0000: Memory Usage (1369800K) : Starting 5.20. Vian table
+2026-10-14T02:15:32.3014790Z 2026-10-14 02:15:32 +0000: Memory Usage (1369800K) : Executing rule V2.a
+2026-10-14T02:15:32.5147299Z 2026-10-14 02:15:32 +0000: Memory Usage (1369800K) : Executing rule V2.b
+2026-10-14T02:15:32.5779368Z 2026-10-14 02:15:32 +0000: Memory Usage (1369800K) : Executing rule V2.c
+2026-10-14T02:15:32.8390122Z 2026-10-14 02:15:32 +0000: Memory Usage (1369800K) : Executing rule V3.a
+2026-10-14T02:15:33.0206085Z 2026-10-14 02:15:33 +0000: Memory Usage (1369800K) : Executing rule V3.b
+2026-10-14T02:15:33.0813290Z 2026-10-14 02:15:33 +0000: Memory Usage (1369796K) : Executing rule V3.c
+2026-10-14T02:15:33.2786038Z 2026-10-14 02:15:33 +0000: Memory Usage (1369796K) : Executing rule V4.a
+2026-10-14T02:15:33.4950831Z 2026-10-14 02:15:33 +0000: Memory Usage (1369796K) : Executing rule V4.b
+2026-10-14T02:15:33.5591730Z 2026-10-14 02:15:33 +0000: Memory Usage (1369796K) : Executing rule V4.c
+2026-10-14T02:15:33.7663716Z 2026-10-14 02:15:33 +0000: Memory Usage (1369796K) : Starting 5.21. TopVia1 table
+2026-10-14T02:15:33.7715333Z 2026-10-14 02:15:33 +0000: Memory Usage (1369796K) : Executing rule TV1.a
+2026-10-14T02:15:33.8815961Z 2026-10-14 02:15:33 +0000: Memory Usage (1369796K) : Executing rule TV1.b
+2026-10-14T02:15:33.9179918Z 2026-10-14 02:15:33 +0000: Memory Usage (1369796K) : Executing rule TV1.c
+2026-10-14T02:15:33.9565582Z 2026-10-14 02:15:33 +0000: Memory Usage (1369796K) : Executing rule TV1.d
+2026-10-14T02:15:34.0210259Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Starting 5.22. TopMetal1 table
+2026-10-14T02:15:34.0210738Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule TM1.a
+2026-10-14T02:15:34.0555046Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule TM1.b
+2026-10-14T02:15:34.0921170Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Starting 5.23 TopMetal1:filler table
+2026-10-14T02:15:34.0921761Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule TM1Fil.c
+2026-10-14T02:15:34.1031931Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule TM1Fil.a1
+2026-10-14T02:15:34.1144232Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Starting 5.24. TopVia2 table
+2026-10-14T02:15:34.1195199Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule TV2.a
+2026-10-14T02:15:34.1401748Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule TV2.b
+2026-10-14T02:15:34.1519431Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule TV2.c
+2026-10-14T02:15:34.1627869Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule TV2.d
+2026-10-14T02:15:34.1736768Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Starting 5.25. TopMetal2 table
+2026-10-14T02:15:34.1846361Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule TM2.a
+2026-10-14T02:15:34.1846968Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule TM2.b
+2026-10-14T02:15:34.2004861Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule TM2.bR
+2026-10-14T02:15:34.2259608Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Starting 5.26 TopMetal2:filler table
+2026-10-14T02:15:34.2260323Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule TM2Fil.c
+2026-10-14T02:15:34.2367309Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule TM2Fil.a1
+2026-10-14T02:15:34.2477028Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Starting 5.27. Passiv table
+2026-10-14T02:15:34.2477489Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Pas.a
+2026-10-14T02:15:34.2584912Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Pas.b
+2026-10-14T02:15:34.2692398Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Pas.c
+2026-10-14T02:15:34.3006503Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Starting 6.9.2 Copper Pillar table
+2026-10-14T02:15:34.3006952Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Padc.a
+2026-10-14T02:15:34.3218041Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Padc.b
+2026-10-14T02:15:34.3325203Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Padc.c
+2026-10-14T02:15:34.3585512Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Padb.f
+2026-10-14T02:15:34.3901304Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Starting 6.9 Pad table
+2026-10-14T02:15:34.3901728Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Pad.m
+2026-10-14T02:15:34.4155391Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Pad.fR_M1
+2026-10-14T02:15:34.4614751Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Pad.fR_M2
+2026-10-14T02:15:34.5380231Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Pad.fR_M3
+2026-10-14T02:15:34.5838252Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Pad.fR_M4
+2026-10-14T02:15:34.6292868Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Pad.fR_M5
+2026-10-14T02:15:34.6762840Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Pad.fR_TM1
+2026-10-14T02:15:34.7221578Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Pad.fR_TM2
+2026-10-14T02:15:34.7677922Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Pad.i
+2026-10-14T02:15:34.7788346Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Starting 6.9.1 Solder Bump
+2026-10-14T02:15:34.7788782Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Padb.a
+2026-10-14T02:15:34.8003703Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Padb.b
+2026-10-14T02:15:34.8112494Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Padb.c
+2026-10-14T02:15:34.8371176Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Padb.f
+2026-10-14T02:15:34.8978477Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Padb.d
+2026-10-14T02:15:34.9087814Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Starting 6.10 Sealring table
+2026-10-14T02:15:34.9088472Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Seal.l
+2026-10-14T02:15:34.9182753Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule Seal.n
+2026-10-14T02:15:34.9390347Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule seal.b_metal1
+2026-10-14T02:15:34.9546653Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule seal.b_metal2
+2026-10-14T02:15:34.9703731Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule seal.b_metal3
+2026-10-14T02:15:34.9859755Z 2026-10-14 02:15:34 +0000: Memory Usage (1369924K) : Executing rule seal.b_metal4
+2026-10-14T02:15:35.0201470Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule seal.b_metal5
+2026-10-14T02:15:35.0366216Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule seal.b_topmetal1
+2026-10-14T02:15:35.0525731Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule seal.b_topmetal2
+2026-10-14T02:15:35.0685513Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule seal.b_activ
+2026-10-14T02:15:35.0843596Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule seal.b_psd
+2026-10-14T02:15:35.1002133Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule Seal.k
+2026-10-14T02:15:35.1326239Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule Seal.m
+2026-10-14T02:15:35.1486547Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Starting 6.11 MIM table
+2026-10-14T02:15:35.1487261Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule MIM.c
+2026-10-14T02:15:35.1705777Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule MIM.d
+2026-10-14T02:15:35.1815126Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule MIM.gR
+2026-10-14T02:15:35.1862031Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Starting 7.3 Metal Slits table
+2026-10-14T02:15:35.1862711Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule Slt.e1_M1
+2026-10-14T02:15:35.1972782Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule Slt.e1_M2
+2026-10-14T02:15:35.2081963Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule Slt.e1_M3
+2026-10-14T02:15:35.2191735Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule Slt.e1_M4
+2026-10-14T02:15:35.2301643Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule Slt.e1_M5
+2026-10-14T02:15:35.2412213Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule Slt.e1_TM1
+2026-10-14T02:15:35.2521528Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule Slt.e1_TM2
+2026-10-14T02:15:35.2629648Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Starting 9.1. LBE table
+2026-10-14T02:15:35.2727011Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule LBE.a
+2026-10-14T02:15:35.2837050Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule LBE.b
+2026-10-14T02:15:35.2947113Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule LBE.b1
+2026-10-14T02:15:35.3056432Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule LBE.c
+2026-10-14T02:15:35.3164858Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule LBE.d
+2026-10-14T02:15:35.3274028Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule LBE.h
+2026-10-14T02:15:35.3430144Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Starting 7.4. PIN table
+2026-10-14T02:15:35.3431067Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule Pin.a
+2026-10-14T02:15:35.3541955Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule Pin.b
+2026-10-14T02:15:35.3651040Z 2026-10-14 02:15:35 +0000: Memory Usage (1369924K) : Executing rule Pin.e
+2026-10-14T02:15:36.7380748Z 2026-10-14 02:15:36 +0000: Memory Usage (1363124K) : Executing rule Pin.f_M2
+2026-10-14T02:15:36.7985588Z 2026-10-14 02:15:36 +0000: Memory Usage (1362988K) : Executing rule Pin.f_M3
+2026-10-14T02:15:36.8556710Z 2026-10-14 02:15:36 +0000: Memory Usage (1362988K) : Executing rule Pin.f_M4
+2026-10-14T02:15:36.9218677Z 2026-10-14 02:15:36 +0000: Memory Usage (1362988K) : Executing rule Pin.f_M5
+2026-10-14T02:15:36.9332230Z 2026-10-14 02:15:36 +0000: Memory Usage (1362988K) : Executing rule Pin.g
+2026-10-14T02:15:36.9404825Z 2026-10-14 02:15:36 +0000: Memory Usage (1362988K) : Executing rule Pin.h
+2026-10-14T02:15:36.9515165Z 2026-10-14 02:15:36 +0000: Memory Usage (1362988K) : Starting 3.1. offgrid table
+2026-10-14T02:15:36.9516060Z 2026-10-14 02:15:36 +0000: Memory Usage (1362988K) : Executing rule activ_drw_Offgrid
+2026-10-14T02:15:37.8668376Z 2026-10-14 02:15:37 +0000: Memory Usage (1362988K) : Executing rule activ_mask_Offgrid
+2026-10-14T02:15:37.8988527Z 2026-10-14 02:15:37 +0000: Memory Usage (1362988K) : Executing rule activ_filler_Offgrid
+2026-10-14T02:15:37.9313990Z 2026-10-14 02:15:37 +0000: Memory Usage (1362988K) : Executing rule activ_opc_Offgrid
+2026-10-14T02:15:37.9637982Z 2026-10-14 02:15:37 +0000: Memory Usage (1362988K) : Executing rule activ_iopc_Offgrid
+2026-10-14T02:15:37.9959244Z 2026-10-14 02:15:37 +0000: Memory Usage (1362988K) : Executing rule biwind_drw_Offgrid
+2026-10-14T02:15:38.0273842Z 2026-10-14 02:15:38 +0000: Memory Usage (1362988K) : Executing rule biwind_opc_Offgrid
+2026-10-14T02:15:38.0588521Z 2026-10-14 02:15:38 +0000: Memory Usage (1362988K) : Executing rule pemwind_drw_Offgrid
+2026-10-14T02:15:38.0911814Z 2026-10-14 02:15:38 +0000: Memory Usage (1362988K) : Executing rule gatpoly_drw_Offgrid
+2026-10-14T02:15:38.2255206Z 2026-10-14 02:15:38 +0000: Memory Usage (1362988K) : Executing rule gatpoly_filler_Offgrid
+2026-10-14T02:15:38.2570778Z 2026-10-14 02:15:38 +0000: Memory Usage (1362988K) : Executing rule gatpoly_opc_Offgrid
+2026-10-14T02:15:38.2884537Z 2026-10-14 02:15:38 +0000: Memory Usage (1362988K) : Executing rule gatpoly_iopc_Offgrid
+2026-10-14T02:15:38.3198949Z 2026-10-14 02:15:38 +0000: Memory Usage (1362988K) : Executing rule gatpoly_noqrc_Offgrid
+2026-10-14T02:15:38.3512176Z 2026-10-14 02:15:38 +0000: Memory Usage (1362988K) : Executing rule cont_drw_Offgrid
+2026-10-14T02:15:52.9289338Z 2026-10-14 02:15:52 +0000: Memory Usage (1394220K) : Executing rule cont_opc_Offgrid
+2026-10-14T02:15:52.9616270Z 2026-10-14 02:15:52 +0000: Memory Usage (1394220K) : Executing rule nsd_drw_Offgrid
+2026-10-14T02:15:52.9933480Z 2026-10-14 02:15:52 +0000: Memory Usage (1394220K) : Executing rule nsd_block_Offgrid
+2026-10-14T02:15:53.0247518Z 2026-10-14 02:15:53 +0000: Memory Usage (1394220K) : Executing rule metal1_drw_Offgrid
+2026-10-14T02:15:55.7184142Z 2026-10-14 02:15:55 +0000: Memory Usage (1394220K) : Executing rule metal1_mask_Offgrid
+2026-10-14T02:15:55.7505381Z 2026-10-14 02:15:55 +0000: Memory Usage (1394220K) : Executing rule metal1_filler_Offgrid
+2026-10-14T02:15:55.7816928Z 2026-10-14 02:15:55 +0000: Memory Usage (1394220K) : Executing rule metal1_slit_Offgrid
+2026-10-14T02:15:55.8140422Z 2026-10-14 02:15:55 +0000: Memory Usage (1394220K) : Executing rule metal1_opc_Offgrid
+2026-10-14T02:15:55.8458419Z 2026-10-14 02:15:55 +0000: Memory Usage (1394220K) : Executing rule metal1_noqrc_Offgrid
+2026-10-14T02:15:55.8783028Z 2026-10-14 02:15:55 +0000: Memory Usage (1394220K) : Executing rule metal1_res_Offgrid
+2026-10-14T02:15:56.0026264Z 2026-10-14 02:15:56 +0000: Memory Usage (1394220K) : Executing rule metal1_iprobe_Offgrid
+2026-10-14T02:15:56.0350353Z 2026-10-14 02:15:56 +0000: Memory Usage (1394220K) : Executing rule metal1_diffprb_Offgrid
+2026-10-14T02:15:56.0666803Z 2026-10-14 02:15:56 +0000: Memory Usage (1394220K) : Executing rule passiv_drw_Offgrid
+2026-10-14T02:15:56.0984159Z 2026-10-14 02:15:56 +0000: Memory Usage (1394220K) : Executing rule passiv_pillar_Offgrid
+2026-10-14T02:15:56.1362873Z 2026-10-14 02:15:56 +0000: Memory Usage (1394220K) : Executing rule passiv_sbump_Offgrid
+2026-10-14T02:15:56.1778434Z 2026-10-14 02:15:56 +0000: Memory Usage (1394220K) : Executing rule passiv_pdl_Offgrid
+2026-10-14T02:15:56.2910231Z 2026-10-14 02:15:56 +0000: Memory Usage (1394220K) : Executing rule metal2_drw_Offgrid
+2026-10-14T02:15:56.4857803Z 2026-10-14 02:15:56 +0000: Memory Usage (1394220K) : Executing rule metal2_mask_Offgrid
+2026-10-14T02:15:56.5173672Z 2026-10-14 02:15:56 +0000: Memory Usage (1394220K) : Executing rule metal2_filler_Offgrid
+2026-10-14T02:15:56.5486556Z 2026-10-14 02:15:56 +0000: Memory Usage (1394220K) : Executing rule metal2_slit_Offgrid
+2026-10-14T02:15:56.5801797Z 2026-10-14 02:15:56 +0000: Memory Usage (1394220K) : Executing rule metal2_opc_Offgrid
+2026-10-14T02:15:56.6114217Z 2026-10-14 02:15:56 +0000: Memory Usage (1394220K) : Executing rule metal2_noqrc_Offgrid
+2026-10-14T02:15:56.6432459Z 2026-10-14 02:15:56 +0000: Memory Usage (1394220K) : Executing rule metal2_res_Offgrid
+2026-10-14T02:15:56.8097234Z 2026-10-14 02:15:56 +0000: Memory Usage (1394220K) : Executing rule metal2_iprobe_Offgrid
+2026-10-14T02:15:56.8418044Z 2026-10-14 02:15:56 +0000: Memory Usage (1394220K) : Executing rule metal2_diffprb_Offgrid
+2026-10-14T02:15:56.8732331Z 2026-10-14 02:15:56 +0000: Memory Usage (1394220K) : Executing rule baspoly_drw_Offgrid
+2026-10-14T02:15:56.9047474Z 2026-10-14 02:15:56 +0000: Memory Usage (1394220K) : Executing rule psd_drw_Offgrid
+2026-10-14T02:15:58.5955710Z 2026-10-14 02:15:58 +0000: Memory Usage (1394220K) : Executing rule nldb_drw_Offgrid
+2026-10-14T02:15:58.6281059Z 2026-10-14 02:15:58 +0000: Memory Usage (1394220K) : Executing rule via1_drw_Offgrid
+2026-10-14T02:15:59.2090412Z 2026-10-14 02:15:59 +0000: Memory Usage (1394220K) : Executing rule backmetal1_drw_Offgrid
+2026-10-14T02:15:59.2423408Z 2026-10-14 02:15:59 +0000: Memory Usage (1394220K) : Executing rule backmetal1_mask_Offgrid
+2026-10-14T02:15:59.2740729Z 2026-10-14 02:15:59 +0000: Memory Usage (1394220K) : Executing rule backmetal1_filler_Offgrid
+2026-10-14T02:15:59.3062101Z 2026-10-14 02:15:59 +0000: Memory Usage (1394220K) : Executing rule backmetal1_slit_Offgrid
+2026-10-14T02:15:59.3394348Z 2026-10-14 02:15:59 +0000: Memory Usage (1394220K) : Executing rule backmetal1_opc_Offgrid
+2026-10-14T02:15:59.3714021Z 2026-10-14 02:15:59 +0000: Memory Usage (1394220K) : Executing rule backmetal1_noqrc_Offgrid
+2026-10-14T02:15:59.4026933Z 2026-10-14 02:15:59 +0000: Memory Usage (1394220K) : Executing rule backmetal1_res_Offgrid
+2026-10-14T02:15:59.4345990Z 2026-10-14 02:15:59 +0000: Memory Usage (1394220K) : Executing rule backmetal1_iprobe_Offgrid
+2026-10-14T02:15:59.4659781Z 2026-10-14 02:15:59 +0000: Memory Usage (1394220K) : Executing rule backmetal1_diffprb_Offgrid
+2026-10-14T02:15:59.4974656Z 2026-10-14 02:15:59 +0000: Memory Usage (1394220K) : Executing rule backpassiv_drw_Offgrid
+2026-10-14T02:15:59.5288354Z 2026-10-14 02:15:59 +0000: Memory Usage (1394220K) : Executing rule salblock_drw_Offgrid
+2026-10-14T02:15:59.5601049Z 2026-10-14 02:15:59 +0000: Memory Usage (1394220K) : Executing rule via2_drw_Offgrid
+2026-10-14T02:15:59.9654627Z 2026-10-14 02:15:59 +0000: Memory Usage (1394220K) : Executing rule metal3_drw_Offgrid
+2026-10-14T02:16:00.1394947Z 2026-10-14 02:16:00 +0000: Memory Usage (1394220K) : Executing rule metal3_mask_Offgrid
+2026-10-14T02:16:00.1718676Z 2026-10-14 02:16:00 +0000: Memory Usage (1394220K) : Executing rule metal3_filler_Offgrid
+2026-10-14T02:16:00.2032810Z 2026-10-14 02:16:00 +0000: Memory Usage (1394220K) : Executing rule metal3_slit_Offgrid
+2026-10-14T02:16:00.2834190Z 2026-10-14 02:16:00 +0000: Memory Usage (1394220K) : Executing rule metal3_opc_Offgrid
+2026-10-14T02:16:00.3153027Z 2026-10-14 02:16:00 +0000: Memory Usage (1394220K) : Executing rule metal3_noqrc_Offgrid
+2026-10-14T02:16:00.3467277Z 2026-10-14 02:16:00 +0000: Memory Usage (1394220K) : Executing rule metal3_res_Offgrid
+2026-10-14T02:16:00.4661509Z 2026-10-14 02:16:00 +0000: Memory Usage (1394220K) : Executing rule metal3_iprobe_Offgrid
+2026-10-14T02:16:00.4980773Z 2026-10-14 02:16:00 +0000: Memory Usage (1394220K) : Executing rule metal3_diffprb_Offgrid
+2026-10-14T02:16:00.5295126Z 2026-10-14 02:16:00 +0000: Memory Usage (1394220K) : Executing rule nwell_drw_Offgrid
+2026-10-14T02:16:01.1256454Z 2026-10-14 02:16:01 +0000: Memory Usage (1394220K) : Executing rule nbulay_drw_Offgrid
+2026-10-14T02:16:01.1585253Z 2026-10-14 02:16:01 +0000: Memory Usage (1394220K) : Executing rule nbulay_block_Offgrid
+2026-10-14T02:16:01.1903082Z 2026-10-14 02:16:01 +0000: Memory Usage (1394220K) : Executing rule pwell_drw_Offgrid
+2026-10-14T02:16:01.2220056Z 2026-10-14 02:16:01 +0000: Memory Usage (1394220K) : Executing rule pwell_block_Offgrid
+2026-10-14T02:16:01.2532685Z 2026-10-14 02:16:01 +0000: Memory Usage (1394220K) : Executing rule emwind_drw_Offgrid
+2026-10-14T02:16:01.2846377Z 2026-10-14 02:16:01 +0000: Memory Usage (1394220K) : Executing rule emwind_opc_Offgrid
+2026-10-14T02:16:01.3158837Z 2026-10-14 02:16:01 +0000: Memory Usage (1394220K) : Executing rule deepco_drw_Offgrid
+2026-10-14T02:16:01.3478783Z 2026-10-14 02:16:01 +0000: Memory Usage (1394220K) : Executing rule mim_drw_Offgrid
+2026-10-14T02:16:01.3797222Z 2026-10-14 02:16:01 +0000: Memory Usage (1394220K) : Executing rule substrate_drw_Offgrid
+2026-10-14T02:16:01.4115192Z 2026-10-14 02:16:01 +0000: Memory Usage (1394220K) : Executing rule ic_drw_Offgrid
+2026-10-14T02:16:01.4434558Z 2026-10-14 02:16:01 +0000: Memory Usage (1394220K) : Executing rule via3_drw_Offgrid
+2026-10-14T02:16:01.7969526Z 2026-10-14 02:16:01 +0000: Memory Usage (1394220K) : Executing rule pldb_drw_Offgrid
+2026-10-14T02:16:01.8294345Z 2026-10-14 02:16:01 +0000: Memory Usage (1394220K) : Executing rule metal4_drw_Offgrid
+2026-10-14T02:16:01.9515379Z 2026-10-14 02:16:01 +0000: Memory Usage (1394220K) : Executing rule metal4_mask_Offgrid
+2026-10-14T02:16:01.9833393Z 2026-10-14 02:16:01 +0000: Memory Usage (1394220K) : Executing rule metal4_filler_Offgrid
+2026-10-14T02:16:02.0152121Z 2026-10-14 02:16:02 +0000: Memory Usage (1394220K) : Executing rule metal4_slit_Offgrid
+2026-10-14T02:16:02.0468243Z 2026-10-14 02:16:02 +0000: Memory Usage (1394220K) : Executing rule metal4_opc_Offgrid
+2026-10-14T02:16:02.0788975Z 2026-10-14 02:16:02 +0000: Memory Usage (1394220K) : Executing rule metal4_noqrc_Offgrid
+2026-10-14T02:16:02.1105843Z 2026-10-14 02:16:02 +0000: Memory Usage (1394220K) : Executing rule metal4_res_Offgrid
+2026-10-14T02:16:02.1419287Z 2026-10-14 02:16:02 +0000: Memory Usage (1394220K) : Executing rule metal4_iprobe_Offgrid
+2026-10-14T02:16:02.1742264Z 2026-10-14 02:16:02 +0000: Memory Usage (1394220K) : Executing rule metal4_diffprb_Offgrid
+2026-10-14T02:16:02.2061815Z 2026-10-14 02:16:02 +0000: Memory Usage (1394220K) : Executing rule via4_drw_Offgrid
+2026-10-14T02:16:02.5227829Z 2026-10-14 02:16:02 +0000: Memory Usage (1394220K) : Executing rule metal5_drw_Offgrid
+2026-10-14T02:16:02.6138027Z 2026-10-14 02:16:02 +0000: Memory Usage (1394220K) : Executing rule metal5_mask_Offgrid
+2026-10-14T02:16:02.6464017Z 2026-10-14 02:16:02 +0000: Memory Usage (1394220K) : Executing rule metal5_filler_Offgrid
+2026-10-14T02:16:02.6790186Z 2026-10-14 02:16:02 +0000: Memory Usage (1394220K) : Executing rule metal5_slit_Offgrid
+2026-10-14T02:16:02.7107116Z 2026-10-14 02:16:02 +0000: Memory Usage (1394220K) : Executing rule metal5_opc_Offgrid
+2026-10-14T02:16:02.7423054Z 2026-10-14 02:16:02 +0000: Memory Usage (1394220K) : Executing rule metal5_noqrc_Offgrid
+2026-10-14T02:16:02.7741996Z 2026-10-14 02:16:02 +0000: Memory Usage (1394220K) : Executing rule metal5_res_Offgrid
+2026-10-14T02:16:02.8070661Z 2026-10-14 02:16:02 +0000: Memory Usage (1394220K) : Executing rule metal5_iprobe_Offgrid
+2026-10-14T02:16:02.8788958Z 2026-10-14 02:16:02 +0000: Memory Usage (1394220K) : Executing rule metal5_diffprb_Offgrid
+2026-10-14T02:16:02.9108317Z 2026-10-14 02:16:02 +0000: Memory Usage (1394220K) : Executing rule prboundary_drw_Offgrid
+2026-10-14T02:16:02.9425193Z 2026-10-14 02:16:02 +0000: Memory Usage (1394220K) : Executing rule exchange0_drw_Offgrid
+2026-10-14T02:16:02.9738699Z 2026-10-14 02:16:02 +0000: Memory Usage (1394220K) : Executing rule exchange1_drw_Offgrid
+2026-10-14T02:16:03.0051456Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule exchange2_drw_Offgrid
+2026-10-14T02:16:03.0370386Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule exchange3_drw_Offgrid
+2026-10-14T02:16:03.0689990Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule exchange4_drw_Offgrid
+2026-10-14T02:16:03.1010057Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule isonwell_drw_Offgrid
+2026-10-14T02:16:03.1325928Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule thickgateox_drw_Offgrid
+2026-10-14T02:16:03.1648967Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule pempoly_drw_Offgrid
+2026-10-14T02:16:03.1966307Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule fbe_drw_Offgrid
+2026-10-14T02:16:03.2296017Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule empoly_drw_Offgrid
+2026-10-14T02:16:03.2628084Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule ldmos_drw_Offgrid
+2026-10-14T02:16:03.2957257Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule pbiwind_drw_Offgrid
+2026-10-14T02:16:03.3282373Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule colopen_drw_Offgrid
+2026-10-14T02:16:03.3810654Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule extblock_drw_Offgrid
+2026-10-14T02:16:03.4130322Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule nldd_drw_Offgrid
+2026-10-14T02:16:03.4444739Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule pldd_drw_Offgrid
+2026-10-14T02:16:03.4759280Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule next_drw_Offgrid
+2026-10-14T02:16:03.5073790Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule pext_drw_Offgrid
+2026-10-14T02:16:03.5389485Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule nexthv_drw_Offgrid
+2026-10-14T02:16:03.5710339Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule pexthv_drw_Offgrid
+2026-10-14T02:16:03.6031236Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule graphgate_drw_Offgrid
+2026-10-14T02:16:03.6348990Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule mempad_drw_Offgrid
+2026-10-14T02:16:03.6663487Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule topvia1_drw_Offgrid
+2026-10-14T02:16:03.9452255Z 2026-10-14 02:16:03 +0000: Memory Usage (1394220K) : Executing rule topmetal1_drw_Offgrid
+2026-10-14T02:16:04.0154236Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule topmetal1_mask_Offgrid
+2026-10-14T02:16:04.0472078Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule topmetal1_filler_Offgrid
+2026-10-14T02:16:04.0789946Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule topmetal1_slit_Offgrid
+2026-10-14T02:16:04.1112234Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule topmetal1_noqrc_Offgrid
+2026-10-14T02:16:04.1432792Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule topmetal1_res_Offgrid
+2026-10-14T02:16:04.1748623Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule topmetal1_iprobe_Offgrid
+2026-10-14T02:16:04.2067818Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule topmetal1_diffprb_Offgrid
+2026-10-14T02:16:04.2384668Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule inldpwl_drw_Offgrid
+2026-10-14T02:16:04.2709076Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule polyres_drw_Offgrid
+2026-10-14T02:16:04.3023859Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule vmim_drw_Offgrid
+2026-10-14T02:16:04.3338820Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule nbulaycut_drw_Offgrid
+2026-10-14T02:16:04.3661647Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule antmetal1_drw_Offgrid
+2026-10-14T02:16:04.3980805Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule topvia2_drw_Offgrid
+2026-10-14T02:16:04.4666553Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule topmetal2_drw_Offgrid
+2026-10-14T02:16:04.4980436Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule topmetal2_mask_Offgrid
+2026-10-14T02:16:04.5293588Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule topmetal2_filler_Offgrid
+2026-10-14T02:16:04.5605850Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule topmetal2_slit_Offgrid
+2026-10-14T02:16:04.5920119Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule topmetal2_noqrc_Offgrid
+2026-10-14T02:16:04.6236777Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule topmetal2_res_Offgrid
+2026-10-14T02:16:04.6564322Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule topmetal2_iprobe_Offgrid
+2026-10-14T02:16:04.6896517Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule topmetal2_diffprb_Offgrid
+2026-10-14T02:16:04.7217383Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule snsring_drw_Offgrid
+2026-10-14T02:16:04.7538068Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule sensor_drw_Offgrid
+2026-10-14T02:16:04.7857571Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule snsarms_drw_Offgrid
+2026-10-14T02:16:04.8175956Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule snscmosvia_drw_Offgrid
+2026-10-14T02:16:04.8495794Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule colwind_drw_Offgrid
+2026-10-14T02:16:04.8811457Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule flm_drw_Offgrid
+2026-10-14T02:16:04.9130595Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule hafniumox_drw_Offgrid
+2026-10-14T02:16:04.9638680Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule memvia_drw_Offgrid
+2026-10-14T02:16:04.9967268Z 2026-10-14 02:16:04 +0000: Memory Usage (1394220K) : Executing rule thinfilmres_drw_Offgrid
+2026-10-14T02:16:05.0291876Z 2026-10-14 02:16:05 +0000: Memory Usage (1394220K) : Executing rule rfmem_drw_Offgrid
+2026-10-14T02:16:05.0617296Z 2026-10-14 02:16:05 +0000: Memory Usage (1394220K) : Executing rule snsbotvia_drw_Offgrid
+2026-10-14T02:16:05.0941592Z 2026-10-14 02:16:05 +0000: Memory Usage (1394220K) : Executing rule snstopvia_drw_Offgrid
+2026-10-14T02:16:05.1260752Z 2026-10-14 02:16:05 +0000: Memory Usage (1394220K) : Executing rule deepvia_drw_Offgrid
+2026-10-14T02:16:05.1585054Z 2026-10-14 02:16:05 +0000: Memory Usage (1394220K) : Executing rule fgetch_drw_Offgrid
+2026-10-14T02:16:05.1902184Z 2026-10-14 02:16:05 +0000: Memory Usage (1394220K) : Executing rule ctrgat_drw_Offgrid
+2026-10-14T02:16:05.2221452Z 2026-10-14 02:16:05 +0000: Memory Usage (1394220K) : Executing rule fgimp_drw_Offgrid
+2026-10-14T02:16:05.2540206Z 2026-10-14 02:16:05 +0000: Memory Usage (1394220K) : Executing rule emwihv_drw_Offgrid
+2026-10-14T02:16:05.2865006Z 2026-10-14 02:16:05 +0000: Memory Usage (1394220K) : Executing rule lbe_drw_Offgrid
+2026-10-14T02:16:05.3186757Z 2026-10-14 02:16:05 +0000: Memory Usage (1394220K) : Executing rule alcustop_drw_Offgrid
+2026-10-14T02:16:05.3509847Z 2026-10-14 02:16:05 +0000: Memory Usage (1394220K) : Starting 3.2. angle table
+2026-10-14T02:16:05.3510544Z 2026-10-14 02:16:05 +0000: Memory Usage (1394220K) : Executing rule activ_drw_Acute
+2026-10-14T02:16:06.2923371Z 2026-10-14 02:16:06 +0000: Memory Usage (1394220K) : Executing rule activ_pin_Acute
+2026-10-14T02:16:06.3301956Z 2026-10-14 02:16:06 +0000: Memory Usage (1394220K) : Executing rule activ_mask_Acute
+2026-10-14T02:16:06.3675550Z 2026-10-14 02:16:06 +0000: Memory Usage (1394220K) : Executing rule activ_filler_Acute
+2026-10-14T02:16:06.4050104Z 2026-10-14 02:16:06 +0000: Memory Usage (1394220K) : Executing rule activ_nofill_Acute
+2026-10-14T02:16:06.4421622Z 2026-10-14 02:16:06 +0000: Memory Usage (1394220K) : Executing rule activ_opc_Acute
+2026-10-14T02:16:06.4793218Z 2026-10-14 02:16:06 +0000: Memory Usage (1394220K) : Executing rule activ_iopc_Acute
+2026-10-14T02:16:06.5164001Z 2026-10-14 02:16:06 +0000: Memory Usage (1394220K) : Executing rule activ_noqrc_Acute
+2026-10-14T02:16:06.5540258Z 2026-10-14 02:16:06 +0000: Memory Usage (1394220K) : Executing rule biwind_drw_Acute
+2026-10-14T02:16:06.5915454Z 2026-10-14 02:16:06 +0000: Memory Usage (1394220K) : Executing rule biwind_opc_Acute
+2026-10-14T02:16:06.6289197Z 2026-10-14 02:16:06 +0000: Memory Usage (1394220K) : Executing rule pemwind_drw_Acute
+2026-10-14T02:16:06.6670222Z 2026-10-14 02:16:06 +0000: Memory Usage (1394220K) : Executing rule gatpoly_drw_Acute
+2026-10-14T02:16:06.8329170Z 2026-10-14 02:16:06 +0000: Memory Usage (1394220K) : Executing rule gatpoly_pin_Acute
+2026-10-14T02:16:06.8709766Z 2026-10-14 02:16:06 +0000: Memory Usage (1394220K) : Executing rule gatpoly_filler_Acute
+2026-10-14T02:16:06.9083135Z 2026-10-14 02:16:06 +0000: Memory Usage (1394220K) : Executing rule gatpoly_nofill_Acute
+2026-10-14T02:16:06.9453949Z 2026-10-14 02:16:06 +0000: Memory Usage (1394220K) : Executing rule gatpoly_opc_Acute
+2026-10-14T02:16:06.9825717Z 2026-10-14 02:16:06 +0000: Memory Usage (1394220K) : Executing rule gatpoly_iopc_Acute
+2026-10-14T02:16:07.0197636Z 2026-10-14 02:16:07 +0000: Memory Usage (1394220K) : Executing rule gatpoly_noqrc_Acute
+2026-10-14T02:16:07.0570624Z 2026-10-14 02:16:07 +0000: Memory Usage (1394220K) : Executing rule cont_drw_Acute
+2026-10-14T02:16:16.5667756Z 2026-10-14 02:16:16 +0000: Memory Usage (1404680K) : Executing rule cont_opc_Acute
+2026-10-14T02:16:16.6168930Z 2026-10-14 02:16:16 +0000: Memory Usage (1404680K) : Executing rule nsd_drw_Acute
+2026-10-14T02:16:16.6571462Z 2026-10-14 02:16:16 +0000: Memory Usage (1404680K) : Executing rule nsd_block_Acute
+2026-10-14T02:16:16.6973104Z 2026-10-14 02:16:16 +0000: Memory Usage (1404680K) : Executing rule metal1_drw_Acute
+2026-10-14T02:16:19.3949532Z 2026-10-14 02:16:19 +0000: Memory Usage (1404680K) : Executing rule metal1_pin_Acute
+2026-10-14T02:16:21.2699289Z 2026-10-14 02:16:21 +0000: Memory Usage (1404680K) : Executing rule metal1_mask_Acute
+2026-10-14T02:16:21.3092249Z 2026-10-14 02:16:21 +0000: Memory Usage (1404680K) : Executing rule metal1_filler_Acute
+2026-10-14T02:16:21.3475327Z 2026-10-14 02:16:21 +0000: Memory Usage (1404680K) : Executing rule metal1_nofill_Acute
+2026-10-14T02:16:21.3852524Z 2026-10-14 02:16:21 +0000: Memory Usage (1404680K) : Executing rule metal1_slit_Acute
+2026-10-14T02:16:21.4226712Z 2026-10-14 02:16:21 +0000: Memory Usage (1404680K) : Executing rule metal1_opc_Acute
+2026-10-14T02:16:21.4600129Z 2026-10-14 02:16:21 +0000: Memory Usage (1404680K) : Executing rule metal1_noqrc_Acute
+2026-10-14T02:16:21.4970658Z 2026-10-14 02:16:21 +0000: Memory Usage (1404680K) : Executing rule metal1_res_Acute
+2026-10-14T02:16:21.5953974Z 2026-10-14 02:16:21 +0000: Memory Usage (1404680K) : Executing rule metal1_iprobe_Acute
+2026-10-14T02:16:21.6336364Z 2026-10-14 02:16:21 +0000: Memory Usage (1404680K) : Executing rule metal1_diffprb_Acute
+2026-10-14T02:16:21.6713392Z 2026-10-14 02:16:21 +0000: Memory Usage (1404680K) : Executing rule passiv_drw_Acute
+2026-10-14T02:16:21.7101761Z 2026-10-14 02:16:21 +0000: Memory Usage (1404680K) : Executing rule passiv_pin_Acute
+2026-10-14T02:16:21.8032552Z 2026-10-14 02:16:21 +0000: Memory Usage (1404680K) : Executing rule passiv_pillar_Acute
+2026-10-14T02:16:21.8405192Z 2026-10-14 02:16:21 +0000: Memory Usage (1404680K) : Executing rule passiv_sbump_Acute
+2026-10-14T02:16:21.8782387Z 2026-10-14 02:16:21 +0000: Memory Usage (1404680K) : Executing rule passiv_pdl_Acute
+2026-10-14T02:16:21.9154133Z 2026-10-14 02:16:21 +0000: Memory Usage (1404680K) : Executing rule metal2_drw_Acute
+2026-10-14T02:16:22.0954337Z 2026-10-14 02:16:22 +0000: Memory Usage (1404680K) : Executing rule metal2_pin_Acute
+2026-10-14T02:16:22.2588674Z 2026-10-14 02:16:22 +0000: Memory Usage (1404680K) : Executing rule metal2_mask_Acute
+2026-10-14T02:16:22.3472723Z 2026-10-14 02:16:22 +0000: Memory Usage (1404680K) : Executing rule metal2_filler_Acute
+2026-10-14T02:16:22.3849151Z 2026-10-14 02:16:22 +0000: Memory Usage (1404680K) : Executing rule metal2_nofill_Acute
+2026-10-14T02:16:22.4225362Z 2026-10-14 02:16:22 +0000: Memory Usage (1404680K) : Executing rule metal2_slit_Acute
+2026-10-14T02:16:22.4598679Z 2026-10-14 02:16:22 +0000: Memory Usage (1404680K) : Executing rule metal2_opc_Acute
+2026-10-14T02:16:22.4978923Z 2026-10-14 02:16:22 +0000: Memory Usage (1404680K) : Executing rule metal2_noqrc_Acute
+2026-10-14T02:16:22.5356252Z 2026-10-14 02:16:22 +0000: Memory Usage (1404680K) : Executing rule metal2_res_Acute
+2026-10-14T02:16:22.6373903Z 2026-10-14 02:16:22 +0000: Memory Usage (1404680K) : Executing rule metal2_iprobe_Acute
+2026-10-14T02:16:22.6767321Z 2026-10-14 02:16:22 +0000: Memory Usage (1404680K) : Executing rule metal2_diffprb_Acute
+2026-10-14T02:16:22.7150965Z 2026-10-14 02:16:22 +0000: Memory Usage (1404680K) : Executing rule baspoly_drw_Acute
+2026-10-14T02:16:22.7526220Z 2026-10-14 02:16:22 +0000: Memory Usage (1404680K) : Executing rule baspoly_pin_Acute
+2026-10-14T02:16:22.8442560Z 2026-10-14 02:16:22 +0000: Memory Usage (1404680K) : Executing rule psd_drw_Acute
+2026-10-14T02:16:23.6942043Z 2026-10-14 02:16:23 +0000: Memory Usage (1404680K) : Executing rule nldb_drw_Acute
+2026-10-14T02:16:23.7329154Z 2026-10-14 02:16:23 +0000: Memory Usage (1404680K) : Executing rule via1_drw_Acute
+2026-10-14T02:16:24.0795571Z 2026-10-14 02:16:24 +0000: Memory Usage (1404680K) : Executing rule backmetal1_drw_Acute
+2026-10-14T02:16:24.1182291Z 2026-10-14 02:16:24 +0000: Memory Usage (1404680K) : Executing rule backmetal1_pin_Acute
+2026-10-14T02:16:24.1555278Z 2026-10-14 02:16:24 +0000: Memory Usage (1404680K) : Executing rule backmetal1_mask_Acute
+2026-10-14T02:16:24.2964206Z 2026-10-14 02:16:24 +0000: Memory Usage (1404680K) : Executing rule backmetal1_filler_Acute
+2026-10-14T02:16:24.3352908Z 2026-10-14 02:16:24 +0000: Memory Usage (1404680K) : Executing rule backmetal1_nofill_Acute
+2026-10-14T02:16:24.3743122Z 2026-10-14 02:16:24 +0000: Memory Usage (1404680K) : Executing rule backmetal1_slit_Acute
+2026-10-14T02:16:24.4119685Z 2026-10-14 02:16:24 +0000: Memory Usage (1404680K) : Executing rule backmetal1_opc_Acute
+2026-10-14T02:16:24.4498836Z 2026-10-14 02:16:24 +0000: Memory Usage (1404680K) : Executing rule backmetal1_noqrc_Acute
+2026-10-14T02:16:24.4877752Z 2026-10-14 02:16:24 +0000: Memory Usage (1404680K) : Executing rule backmetal1_res_Acute
+2026-10-14T02:16:24.5273298Z 2026-10-14 02:16:24 +0000: Memory Usage (1404680K) : Executing rule backmetal1_iprobe_Acute
+2026-10-14T02:16:24.5651041Z 2026-10-14 02:16:24 +0000: Memory Usage (1404680K) : Executing rule backmetal1_diffprb_Acute
+2026-10-14T02:16:24.6024907Z 2026-10-14 02:16:24 +0000: Memory Usage (1404680K) : Executing rule backpassiv_drw_Acute
+2026-10-14T02:16:24.6404888Z 2026-10-14 02:16:24 +0000: Memory Usage (1404680K) : Executing rule salblock_drw_Acute
+2026-10-14T02:16:24.6798975Z 2026-10-14 02:16:24 +0000: Memory Usage (1404680K) : Executing rule via2_drw_Acute
+2026-10-14T02:16:25.0724809Z 2026-10-14 02:16:25 +0000: Memory Usage (1404680K) : Executing rule metal3_drw_Acute
+2026-10-14T02:16:25.2602017Z 2026-10-14 02:16:25 +0000: Memory Usage (1404680K) : Executing rule metal3_pin_Acute
+2026-10-14T02:16:25.5376693Z 2026-10-14 02:16:25 +0000: Memory Usage (1404680K) : Executing rule metal3_mask_Acute
+2026-10-14T02:16:25.5764614Z 2026-10-14 02:16:25 +0000: Memory Usage (1404680K) : Executing rule metal3_filler_Acute
+2026-10-14T02:16:25.6144310Z 2026-10-14 02:16:25 +0000: Memory Usage (1404680K) : Executing rule metal3_nofill_Acute
+2026-10-14T02:16:25.6523662Z 2026-10-14 02:16:25 +0000: Memory Usage (1404680K) : Executing rule metal3_slit_Acute
+2026-10-14T02:16:25.6895966Z 2026-10-14 02:16:25 +0000: Memory Usage (1404680K) : Executing rule metal3_opc_Acute
+2026-10-14T02:16:25.7268035Z 2026-10-14 02:16:25 +0000: Memory Usage (1404680K) : Executing rule metal3_noqrc_Acute
+2026-10-14T02:16:25.7642420Z 2026-10-14 02:16:25 +0000: Memory Usage (1404680K) : Executing rule metal3_res_Acute
+2026-10-14T02:16:25.8661448Z 2026-10-14 02:16:25 +0000: Memory Usage (1404680K) : Executing rule metal3_iprobe_Acute
+2026-10-14T02:16:25.9051639Z 2026-10-14 02:16:25 +0000: Memory Usage (1404680K) : Executing rule metal3_diffprb_Acute
+2026-10-14T02:16:25.9963505Z 2026-10-14 02:16:25 +0000: Memory Usage (1404680K) : Executing rule nwell_drw_Acute
+2026-10-14T02:16:26.5620164Z 2026-10-14 02:16:26 +0000: Memory Usage (1404680K) : Executing rule nwell_pin_Acute
+2026-10-14T02:16:26.6012180Z 2026-10-14 02:16:26 +0000: Memory Usage (1404680K) : Executing rule nbulay_drw_Acute
+2026-10-14T02:16:26.6392275Z 2026-10-14 02:16:26 +0000: Memory Usage (1404680K) : Executing rule nbulay_pin_Acute
+2026-10-14T02:16:26.6784031Z 2026-10-14 02:16:26 +0000: Memory Usage (1404680K) : Executing rule nbulay_block_Acute
+2026-10-14T02:16:26.7165598Z 2026-10-14 02:16:26 +0000: Memory Usage (1404680K) : Executing rule pwell_drw_Acute
+2026-10-14T02:16:26.7542491Z 2026-10-14 02:16:26 +0000: Memory Usage (1404680K) : Executing rule pwell_pin_Acute
+2026-10-14T02:16:26.7916911Z 2026-10-14 02:16:26 +0000: Memory Usage (1404680K) : Executing rule pwell_block_Acute
+2026-10-14T02:16:26.8292860Z 2026-10-14 02:16:26 +0000: Memory Usage (1404680K) : Executing rule emwind_drw_Acute
+2026-10-14T02:16:26.8669561Z 2026-10-14 02:16:26 +0000: Memory Usage (1404680K) : Executing rule emwind_opc_Acute
+2026-10-14T02:16:26.9042946Z 2026-10-14 02:16:26 +0000: Memory Usage (1404680K) : Executing rule deepco_drw_Acute
+2026-10-14T02:16:26.9418254Z 2026-10-14 02:16:26 +0000: Memory Usage (1404680K) : Executing rule mim_drw_Acute
+2026-10-14T02:16:26.9796613Z 2026-10-14 02:16:26 +0000: Memory Usage (1404680K) : Executing rule substrate_drw_Acute
+2026-10-14T02:16:27.0185549Z 2026-10-14 02:16:27 +0000: Memory Usage (1404680K) : Executing rule ic_drw_Acute
+2026-10-14T02:16:27.1191319Z 2026-10-14 02:16:27 +0000: Memory Usage (1404680K) : Executing rule via3_drw_Acute
+2026-10-14T02:16:27.4164165Z 2026-10-14 02:16:27 +0000: Memory Usage (1404680K) : Executing rule pldb_drw_Acute
+2026-10-14T02:16:27.4543673Z 2026-10-14 02:16:27 +0000: Memory Usage (1404680K) : Executing rule metal4_drw_Acute
+2026-10-14T02:16:27.5784997Z 2026-10-14 02:16:27 +0000: Memory Usage (1404680K) : Executing rule metal4_pin_Acute
+2026-10-14T02:16:27.7825552Z 2026-10-14 02:16:27 +0000: Memory Usage (1404680K) : Executing rule metal4_mask_Acute
+2026-10-14T02:16:27.8207357Z 2026-10-14 02:16:27 +0000: Memory Usage (1404680K) : Executing rule metal4_filler_Acute
+2026-10-14T02:16:27.8586980Z 2026-10-14 02:16:27 +0000: Memory Usage (1404680K) : Executing rule metal4_nofill_Acute
+2026-10-14T02:16:27.8965962Z 2026-10-14 02:16:27 +0000: Memory Usage (1404680K) : Executing rule metal4_slit_Acute
+2026-10-14T02:16:27.9351730Z 2026-10-14 02:16:27 +0000: Memory Usage (1404680K) : Executing rule metal4_opc_Acute
+2026-10-14T02:16:27.9732733Z 2026-10-14 02:16:27 +0000: Memory Usage (1404680K) : Executing rule metal4_noqrc_Acute
+2026-10-14T02:16:28.0106985Z 2026-10-14 02:16:28 +0000: Memory Usage (1404680K) : Executing rule metal4_res_Acute
+2026-10-14T02:16:28.0482100Z 2026-10-14 02:16:28 +0000: Memory Usage (1404680K) : Executing rule metal4_iprobe_Acute
+2026-10-14T02:16:28.0863139Z 2026-10-14 02:16:28 +0000: Memory Usage (1404680K) : Executing rule metal4_diffprb_Acute
+2026-10-14T02:16:28.1234960Z 2026-10-14 02:16:28 +0000: Memory Usage (1404680K) : Executing rule via4_drw_Acute
+2026-10-14T02:16:28.4128666Z 2026-10-14 02:16:28 +0000: Memory Usage (1404680K) : Executing rule metal5_drw_Acute
+2026-10-14T02:16:28.5078245Z 2026-10-14 02:16:28 +0000: Memory Usage (1404680K) : Executing rule metal5_pin_Acute
+2026-10-14T02:16:28.5451209Z 2026-10-14 02:16:28 +0000: Memory Usage (1404680K) : Executing rule metal5_mask_Acute
+2026-10-14T02:16:28.5825080Z 2026-10-14 02:16:28 +0000: Memory Usage (1404680K) : Executing rule metal5_filler_Acute
+2026-10-14T02:16:28.6199336Z 2026-10-14 02:16:28 +0000: Memory Usage (1404680K) : Executing rule metal5_nofill_Acute
+2026-10-14T02:16:28.6578856Z 2026-10-14 02:16:28 +0000: Memory Usage (1404680K) : Executing rule metal5_slit_Acute
+2026-10-14T02:16:28.7536058Z 2026-10-14 02:16:28 +0000: Memory Usage (1404680K) : Executing rule metal5_opc_Acute
+2026-10-14T02:16:28.7909965Z 2026-10-14 02:16:28 +0000: Memory Usage (1404680K) : Executing rule metal5_noqrc_Acute
+2026-10-14T02:16:28.8288899Z 2026-10-14 02:16:28 +0000: Memory Usage (1404680K) : Executing rule metal5_res_Acute
+2026-10-14T02:16:28.8666829Z 2026-10-14 02:16:28 +0000: Memory Usage (1404680K) : Executing rule metal5_iprobe_Acute
+2026-10-14T02:16:28.9039808Z 2026-10-14 02:16:28 +0000: Memory Usage (1404680K) : Executing rule metal5_diffprb_Acute
+2026-10-14T02:16:28.9415128Z 2026-10-14 02:16:28 +0000: Memory Usage (1404680K) : Executing rule prboundary_drw_Acute
+2026-10-14T02:16:28.9788585Z 2026-10-14 02:16:28 +0000: Memory Usage (1404680K) : Executing rule exchange0_drw_Acute
+2026-10-14T02:16:29.0164152Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule exchange0_pin_Acute
+2026-10-14T02:16:29.0535547Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule exchange1_drw_Acute
+2026-10-14T02:16:29.0914301Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule exchange1_pin_Acute
+2026-10-14T02:16:29.1286533Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule exchange2_drw_Acute
+2026-10-14T02:16:29.1659775Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule exchange2_pin_Acute
+2026-10-14T02:16:29.2033129Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule exchange3_drw_Acute
+2026-10-14T02:16:29.2617196Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule exchange3_pin_Acute
+2026-10-14T02:16:29.2992732Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule exchange4_drw_Acute
+2026-10-14T02:16:29.3367655Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule exchange4_pin_Acute
+2026-10-14T02:16:29.3741545Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule isonwell_drw_Acute
+2026-10-14T02:16:29.4119358Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule thickgateox_drw_Acute
+2026-10-14T02:16:29.4496423Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule pempoly_drw_Acute
+2026-10-14T02:16:29.4878653Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule fbe_drw_Acute
+2026-10-14T02:16:29.5254774Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule empoly_drw_Acute
+2026-10-14T02:16:29.5633051Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule ldmos_drw_Acute
+2026-10-14T02:16:29.6011524Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule pbiwind_drw_Acute
+2026-10-14T02:16:29.6386958Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule colopen_drw_Acute
+2026-10-14T02:16:29.6765042Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule extblock_drw_Acute
+2026-10-14T02:16:29.7139435Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule nldd_drw_Acute
+2026-10-14T02:16:29.7728561Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule pldd_drw_Acute
+2026-10-14T02:16:29.8102388Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule next_drw_Acute
+2026-10-14T02:16:29.8478636Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule pext_drw_Acute
+2026-10-14T02:16:29.8870144Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule nexthv_drw_Acute
+2026-10-14T02:16:29.9263244Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule pexthv_drw_Acute
+2026-10-14T02:16:29.9649018Z 2026-10-14 02:16:29 +0000: Memory Usage (1404680K) : Executing rule graphgate_drw_Acute
+2026-10-14T02:16:30.0033148Z 2026-10-14 02:16:30 +0000: Memory Usage (1404680K) : Executing rule mempad_drw_Acute
+2026-10-14T02:16:30.0412329Z 2026-10-14 02:16:30 +0000: Memory Usage (1404680K) : Executing rule topvia1_drw_Acute
+2026-10-14T02:16:30.2145760Z 2026-10-14 02:16:30 +0000: Memory Usage (1404680K) : Executing rule topmetal1_drw_Acute
+2026-10-14T02:16:30.3155501Z 2026-10-14 02:16:30 +0000: Memory Usage (1404680K) : Executing rule topmetal1_pin_Acute
+2026-10-14T02:16:30.4286700Z 2026-10-14 02:16:30 +0000: Memory Usage (1404680K) : Executing rule topmetal1_mask_Acute
+2026-10-14T02:16:30.4671238Z 2026-10-14 02:16:30 +0000: Memory Usage (1404680K) : Executing rule topmetal1_filler_Acute
+2026-10-14T02:16:30.5047596Z 2026-10-14 02:16:30 +0000: Memory Usage (1404680K) : Executing rule topmetal1_nofill_Acute
+2026-10-14T02:16:30.5426801Z 2026-10-14 02:16:30 +0000: Memory Usage (1404680K) : Executing rule topmetal1_slit_Acute
+2026-10-14T02:16:30.5806247Z 2026-10-14 02:16:30 +0000: Memory Usage (1404680K) : Executing rule topmetal1_noqrc_Acute
+2026-10-14T02:16:30.6177978Z 2026-10-14 02:16:30 +0000: Memory Usage (1404680K) : Executing rule topmetal1_res_Acute
+2026-10-14T02:16:30.6559310Z 2026-10-14 02:16:30 +0000: Memory Usage (1404680K) : Executing rule topmetal1_iprobe_Acute
+2026-10-14T02:16:30.6942433Z 2026-10-14 02:16:30 +0000: Memory Usage (1404680K) : Executing rule topmetal1_diffprb_Acute
+2026-10-14T02:16:30.7316055Z 2026-10-14 02:16:30 +0000: Memory Usage (1404680K) : Executing rule inldpwl_drw_Acute
+2026-10-14T02:16:30.7687136Z 2026-10-14 02:16:30 +0000: Memory Usage (1404680K) : Executing rule polyres_drw_Acute
+2026-10-14T02:16:30.8455799Z 2026-10-14 02:16:30 +0000: Memory Usage (1404680K) : Executing rule polyres_pin_Acute
+2026-10-14T02:16:30.8836260Z 2026-10-14 02:16:30 +0000: Memory Usage (1404680K) : Executing rule vmim_drw_Acute
+2026-10-14T02:16:30.9215820Z 2026-10-14 02:16:30 +0000: Memory Usage (1404680K) : Executing rule nbulaycut_drw_Acute
+2026-10-14T02:16:30.9595201Z 2026-10-14 02:16:30 +0000: Memory Usage (1404680K) : Executing rule antmetal1_drw_Acute
+2026-10-14T02:16:30.9970744Z 2026-10-14 02:16:30 +0000: Memory Usage (1404680K) : Executing rule topvia2_drw_Acute
+2026-10-14T02:16:31.0343034Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule topmetal2_drw_Acute
+2026-10-14T02:16:31.0722200Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule topmetal2_pin_Acute
+2026-10-14T02:16:31.1104501Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule topmetal2_mask_Acute
+2026-10-14T02:16:31.1477426Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule topmetal2_filler_Acute
+2026-10-14T02:16:31.1853474Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule topmetal2_nofill_Acute
+2026-10-14T02:16:31.2224078Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule topmetal2_slit_Acute
+2026-10-14T02:16:31.2596247Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule topmetal2_noqrc_Acute
+2026-10-14T02:16:31.2967073Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule topmetal2_res_Acute
+2026-10-14T02:16:31.3552636Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule topmetal2_iprobe_Acute
+2026-10-14T02:16:31.3928115Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule topmetal2_diffprb_Acute
+2026-10-14T02:16:31.4302723Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule snsring_drw_Acute
+2026-10-14T02:16:31.4680170Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule sensor_drw_Acute
+2026-10-14T02:16:31.5056006Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule snsarms_drw_Acute
+2026-10-14T02:16:31.5432401Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule snscmosvia_drw_Acute
+2026-10-14T02:16:31.5812799Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule colwind_drw_Acute
+2026-10-14T02:16:31.6191565Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule flm_drw_Acute
+2026-10-14T02:16:31.6568686Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule hafniumox_drw_Acute
+2026-10-14T02:16:31.6956125Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule memvia_drw_Acute
+2026-10-14T02:16:31.7350822Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule thinfilmres_drw_Acute
+2026-10-14T02:16:31.7734540Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule rfmem_drw_Acute
+2026-10-14T02:16:31.8116261Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule snsbotvia_drw_Acute
+2026-10-14T02:16:31.8719637Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule snstopvia_drw_Acute
+2026-10-14T02:16:31.9098380Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule deepvia_drw_Acute
+2026-10-14T02:16:31.9483505Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule fgetch_drw_Acute
+2026-10-14T02:16:31.9858081Z 2026-10-14 02:16:31 +0000: Memory Usage (1404680K) : Executing rule ctrgat_drw_Acute
+2026-10-14T02:16:32.0230987Z 2026-10-14 02:16:32 +0000: Memory Usage (1404680K) : Executing rule fgimp_drw_Acute
+2026-10-14T02:16:32.0606330Z 2026-10-14 02:16:32 +0000: Memory Usage (1404680K) : Executing rule emwihv_drw_Acute
+2026-10-14T02:16:32.0989088Z 2026-10-14 02:16:32 +0000: Memory Usage (1404680K) : Executing rule lbe_drw_Acute
+2026-10-14T02:16:32.1369465Z 2026-10-14 02:16:32 +0000: Memory Usage (1404680K) : Executing rule alcustop_drw_Acute
+2026-10-14T02:16:32.1744283Z 2026-10-14 02:16:32 +0000: Memory Usage (1404680K) : Executing rule cont_drw_Angle90
+2026-10-14T02:16:51.2556684Z 2026-10-14 02:16:51 +0000: Memory Usage (2511884K) : Executing rule via1_drw_Angle90
+2026-10-14T02:16:51.8605178Z 2026-10-14 02:16:51 +0000: Memory Usage (2512012K) : Executing rule via2_drw_Angle90
+2026-10-14T02:16:52.4407498Z 2026-10-14 02:16:52 +0000: Memory Usage (2512012K) : Executing rule via3_drw_Angle90
+2026-10-14T02:16:52.9778530Z 2026-10-14 02:16:52 +0000: Memory Usage (2512012K) : Executing rule via4_drw_Angle90
+2026-10-14T02:16:53.4421025Z 2026-10-14 02:16:53 +0000: Memory Usage (2512012K) : Executing rule vmim_drw_Angle90
+2026-10-14T02:16:53.5298612Z 2026-10-14 02:16:53 +0000: Memory Usage (2512012K) : Executing rule topvia1_drw_Angle90
+2026-10-14T02:16:53.8081740Z 2026-10-14 02:16:53 +0000: Memory Usage (2512012K) : Executing rule topvia2_drw_Angle90
+2026-10-14T02:16:53.8453388Z 2026-10-14 02:16:53 +0000: Memory Usage (2512012K) : Executing rule gatpoly_drw_Angle45
+2026-10-14T02:16:54.5814766Z 2026-10-14 02:16:54 +0000: Memory Usage (2511884K) : Executing rule activ_drw_Angle45
+2026-10-14T02:17:01.1541501Z 2026-10-14 02:17:01 +0000: Memory Usage (2533388K) : Executing rule metal1_drw_Angle45
+2026-10-14T02:17:15.1762187Z 2026-10-14 02:17:15 +0000: Memory Usage (2604876K) : Executing rule metal2_drw_Angle45
+2026-10-14T02:17:15.7283461Z 2026-10-14 02:17:15 +0000: Memory Usage (2604876K) : Executing rule metal3_drw_Angle45
+2026-10-14T02:17:16.2200363Z 2026-10-14 02:17:16 +0000: Memory Usage (2604876K) : Executing rule metal4_drw_Angle45
+2026-10-14T02:17:16.5274588Z 2026-10-14 02:17:16 +0000: Memory Usage (2605004K) : Executing rule metal5_drw_Angle45
+2026-10-14T02:17:16.8122776Z 2026-10-14 02:17:16 +0000: Memory Usage (2542876K) : Executing rule topmetal1_drw_Angle45
+2026-10-14T02:17:16.9414178Z 2026-10-14 02:17:16 +0000: Memory Usage (2542876K) : Executing rule topmetal2_drw_Angle45
+2026-10-14T02:17:16.9838837Z 2026-10-14 02:17:16 +0000: Memory Usage (2542876K) : Starting 3.2. FORBIDDEN table
+2026-10-14T02:17:16.9839312Z 2026-10-14 02:17:16 +0000: Memory Usage (2542876K) : Executing rule forbidden.biwind
+2026-10-14T02:17:16.9901068Z 2026-10-14 02:17:16 +0000: Memory Usage (2542876K) : Executing rule forbidden.pemwind
+2026-10-14T02:17:16.9963089Z 2026-10-14 02:17:16 +0000: Memory Usage (2542876K) : Executing rule forbidden.baspoly
+2026-10-14T02:17:17.0025078Z 2026-10-14 02:17:17 +0000: Memory Usage (2542876K) : Executing rule forbidden.deepco
+2026-10-14T02:17:17.0087379Z 2026-10-14 02:17:17 +0000: Memory Usage (2542876K) : Executing rule forbidden.pempoly
+2026-10-14T02:17:17.0149934Z 2026-10-14 02:17:17 +0000: Memory Usage (2542876K) : Executing rule forbidden.empoly
+2026-10-14T02:17:17.0212208Z 2026-10-14 02:17:17 +0000: Memory Usage (2542876K) : Executing rule forbidden.ldmos
+2026-10-14T02:17:17.0275038Z 2026-10-14 02:17:17 +0000: Memory Usage (2542876K) : Executing rule forbidden.pbiwind
+2026-10-14T02:17:17.0337520Z 2026-10-14 02:17:17 +0000: Memory Usage (2542876K) : Executing rule forbidden.nodrc
+2026-10-14T02:17:17.0399716Z 2026-10-14 02:17:17 +0000: Memory Usage (2542876K) : Executing rule forbidden.flash
+2026-10-14T02:17:17.0461758Z 2026-10-14 02:17:17 +0000: Memory Usage (2542876K) : Executing rule forbidden.colwind
+2026-10-14T02:17:17.0523868Z 2026-10-14 02:17:17 +0000: Memory Usage (2542876K) : KLayout DRC run for tables 'main' completed in 199.86 seconds
+2026-10-14T02:17:17.5475556Z INFO: Running klayout zero_area on /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt_submission/tt_um_RaghuvPotdar_Leonidas.gds
+2026-10-14T02:17:19.1592520Z 0 zero-area shapes
+2026-10-14T02:17:19.1593341Z 0 zero-length paths,  0 zero-length paths deleted.
+2026-10-14T02:17:19.1593681Z 0 total zero-area objects,  0 total objects deleted.
+2026-10-14T02:17:19.1593949Z VmPeak:	 1076420 kB
+2026-10-14T02:17:19.1594135Z VmHWM:	  465632 kB
+2026-10-14T02:17:19.4831257Z INFO: Running top macro name check...
+2026-10-14T02:17:19.4831718Z INFO: Running forbidden layer check...
+2026-10-14T02:17:19.4832104Z INFO: * Checking TopMetal2.drawing
+2026-10-14T02:17:19.4832477Z INFO: * Checking TopMetal2.pin
+2026-10-14T02:17:19.4832814Z INFO: * Checking TopMetal2.label
+2026-10-14T02:17:19.4833167Z INFO: Running prBoundary check...
+2026-10-14T02:17:19.4838065Z INFO: Running pin check...
+2026-10-14T02:17:19.4838732Z INFO: * gds: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt_submission/tt_um_RaghuvPotdar_Leonidas.gds
+2026-10-14T02:17:19.4839691Z INFO: * lef: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt_submission/tt_um_RaghuvPotdar_Leonidas.lef
+2026-10-14T02:17:19.4840506Z INFO: * template_def: ../tech/ihp-sg13g2/def/tt_block_6x4_pgvdd.def
+2026-10-14T02:17:19.4841087Z INFO: * toplevel: tt_um_RaghuvPotdar_Leonidas
+2026-10-14T02:17:19.4841512Z INFO: * uses_vapwr: False
+2026-10-14T02:17:19.7689295Z INFO: Running Verilog syntax check on /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt_submission/tt_um_RaghuvPotdar_Leonidas.v
+2026-10-14T02:17:19.8395523Z Preparing to run yowasp-yosys. This might take a while...
+2026-10-14T02:17:30.1931306Z 
+2026-10-14T02:17:30.1940688Z  /----------------------------------------------------------------------------\
+2026-10-14T02:17:30.1941442Z  |  yosys -- Yosys Open SYnthesis Suite                                       |
+2026-10-14T02:17:30.1942145Z  |  Copyright (C) 2012 - 2026  Claire Xenia Wolf <claire@yosyshq.com>         |
+2026-10-14T02:17:30.1942881Z  |  Distributed under an ISC-like license, type "license" to see terms        |
+2026-10-14T02:17:30.1943569Z  \----------------------------------------------------------------------------/
+2026-10-14T02:17:30.1944529Z  Yosys 0.63 (git sha1 70a11c6bf, ccache clang++ 18.1.3 -O3 -flto -flto) [yowasp/yosys at release-0.63]
+2026-10-14T02:17:30.1945057Z 
+2026-10-14T02:17:30.1945672Z -- Running command `read_verilog -sv "/home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt_submission/tt_um_RaghuvPotdar_Leonidas.v"' --
+2026-10-14T02:17:30.1946418Z 
+2026-10-14T02:17:30.1947137Z 1. Executing Verilog-2005 frontend: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt_submission/tt_um_RaghuvPotdar_Leonidas.v
+2026-10-14T02:17:31.0609099Z Parsing SystemVerilog input from `/home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt_submission/tt_um_RaghuvPotdar_Leonidas.v' to AST representation.
+2026-10-14T02:17:31.0609803Z Generating RTLIL representation for module `\tt_um_RaghuvPotdar_Leonidas'.
+2026-10-14T02:17:31.0610151Z Successfully finished Verilog frontend.
+2026-10-14T02:17:31.0610320Z 
+2026-10-14T02:17:31.0610480Z End of script. Logfile hash: 156b76790c, CPU: user 0.87s system 0.00s
+2026-10-14T02:17:31.0610937Z Yosys 0.63 (git sha1 70a11c6bf, ccache clang++ 18.1.3 -O3 -flto -flto) [yowasp/yosys at release-0.63]
+2026-10-14T02:17:31.0611841Z Time spent: 99% 2x read_verilog (0 sec), 0% 0x id_gc (0 sec)
+2026-10-14T02:17:31.1367479Z INFO: Precheck passed for /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt_submission/tt_um_RaghuvPotdar_Leonidas.gds! 🎉
+2026-10-14T02:17:31.1709867Z ##[end-action id=__TinyTapeout_tt-gds-action.__run_4;outcome=success;conclusion=success;duration_ms=218889]
+2026-10-14T02:17:31.1712077Z ##[start-action display=Test Summary;id=__TinyTapeout_tt-gds-action.__test-summary_action]
+2026-10-14T02:17:31.1738400Z ##[group]Run test-summary/action@v2.6
+2026-10-14T02:17:31.1738644Z with:
+2026-10-14T02:17:31.1738832Z   paths: tt/precheck/reports/results.xml
+2026-10-14T02:17:31.1739070Z env:
+2026-10-14T02:17:31.1739236Z   PDK: ihp-sg13g2
+2026-10-14T02:17:31.1739432Z   PDK_ROOT: /home/runner/pdk
+2026-10-14T02:17:31.1739687Z   PDK_VERSION: 22f43352dd8219f9007eb659e422e0d5fe28c5fb
+2026-10-14T02:17:31.1740176Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:17:31.1740545Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-14T02:17:31.1740900Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:17:31.1741215Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:17:31.1741523Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:17:31.1741839Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-14T02:17:31.1742114Z   USER: runner
+2026-10-14T02:17:31.1742295Z   NIX_PATH: nixpkgs=channel:
+2026-10-14T02:17:31.1742505Z ##[endgroup]
+2026-10-14T02:17:31.2228601Z ##[end-action id=__TinyTapeout_tt-gds-action.__test-summary_action;outcome=success;conclusion=success;duration_ms=51]
+2026-10-14T02:17:31.2230755Z ##[start-action display=Capture test results;id=__TinyTapeout_tt-gds-action.__run_5]
+2026-10-14T02:17:31.2247321Z ##[group]Run cat reports/results.md >> $GITHUB_STEP_SUMMARY
+2026-10-14T02:17:31.2247688Z [36;1mcat reports/results.md >> $GITHUB_STEP_SUMMARY[0m
+2026-10-14T02:17:31.2306136Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-14T02:17:31.2306427Z env:
+2026-10-14T02:17:31.2306604Z   PDK: ihp-sg13g2
+2026-10-14T02:17:31.2306802Z   PDK_ROOT: /home/runner/pdk
+2026-10-14T02:17:31.2307048Z   PDK_VERSION: 22f43352dd8219f9007eb659e422e0d5fe28c5fb
+2026-10-14T02:17:31.2307363Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:17:31.2307717Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-14T02:17:31.2308060Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:17:31.2308374Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:17:31.2308685Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:17:31.2308999Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-14T02:17:31.2309272Z   USER: runner
+2026-10-14T02:17:31.2309459Z   NIX_PATH: nixpkgs=channel:
+2026-10-14T02:17:31.2309671Z ##[endgroup]
+2026-10-14T02:17:31.2400921Z ##[end-action id=__TinyTapeout_tt-gds-action.__run_5;outcome=success;conclusion=success;duration_ms=16]
+2026-10-14T02:17:31.2402798Z ##[start-action display=Upload reports;id=__TinyTapeout_tt-gds-action.__actions_upload-artifact]
+2026-10-14T02:17:31.2431920Z ##[group]Run actions/upload-artifact@v7
+2026-10-14T02:17:31.2432161Z with:
+2026-10-14T02:17:31.2432339Z   name: precheck_reports
+2026-10-14T02:17:31.2432547Z   path: tt/precheck/reports
+2026-10-14T02:17:31.2432763Z   if-no-files-found: warn
+2026-10-14T02:17:31.2432971Z   compression-level: 6
+2026-10-14T02:17:31.2433162Z   overwrite: false
+2026-10-14T02:17:31.2433357Z   include-hidden-files: false
+2026-10-14T02:17:31.2433569Z   archive: true
+2026-10-14T02:17:31.2433741Z env:
+2026-10-14T02:17:31.2433911Z   PDK: ihp-sg13g2
+2026-10-14T02:17:31.2434106Z   PDK_ROOT: /home/runner/pdk
+2026-10-14T02:17:31.2434503Z   PDK_VERSION: 22f43352dd8219f9007eb659e422e0d5fe28c5fb
+2026-10-14T02:17:31.2434891Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:17:31.2435386Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-14T02:17:31.2435740Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:17:31.2436060Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:17:31.2436374Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-14T02:17:31.2436680Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-14T02:17:31.2436951Z   USER: runner
+2026-10-14T02:17:31.2437142Z   NIX_PATH: nixpkgs=channel:
+2026-10-14T02:17:31.2437348Z ##[endgroup]
+2026-10-14T02:17:31.3543767Z With the provided path, there will be 5 files uploaded
+2026-10-14T02:17:31.3555934Z Artifact name is valid!
+2026-10-14T02:17:31.3556291Z Root directory input is valid!
+2026-10-14T02:17:31.6825945Z Uploading artifact: precheck_reports.zip
+2026-10-14T02:17:31.6859043Z Beginning upload of artifact content to blob storage
+2026-10-14T02:17:31.9168284Z Uploaded bytes 9480
+2026-10-14T02:17:31.9698200Z Finished uploading artifact content to blob storage!
+2026-10-14T02:17:31.9698792Z SHA256 digest of uploaded artifact is 126d65118c62570733809f6600e917ae58e79bd2962f0b9556e68f94dca0a886
+2026-10-14T02:17:31.9699379Z Finalizing artifact upload
+2026-10-14T02:17:32.3575166Z Artifact precheck_reports successfully finalized. Artifact ID 11865447936
+2026-10-14T02:17:32.3576071Z Artifact precheck_reports has been successfully uploaded! Final size is 9480 bytes. Artifact ID is 11865447936
+2026-10-14T02:17:32.3577137Z Artifact download URL: https://github.com/RaghuvPotdar/jstreet_Leonidas/actions/runs/38499274412/artifacts/11865447936
+2026-10-14T02:17:32.3649936Z ##[end-action id=__TinyTapeout_tt-gds-action.__actions_upload-artifact;outcome=success;conclusion=success;duration_ms=1124]
+2026-10-14T02:17:32.3760404Z Post job cleanup.
+2026-10-14T02:17:32.3765056Z ##[start-action display=Install ihp-sg13g2 PDK;id=__c9981601-4aea-4fbf-99ac-4f0f7d004551.__TinyTapeout_ciel-action]
+2026-10-14T02:17:32.3796299Z Post job cleanup.
+2026-10-14T02:17:32.3798554Z ##[start-action display=Cache;id=__c9981601-4aea-4fbf-99ac-4f0f7d004551.__TinyTapeout_ciel-action.cache-pdk]
+2026-10-14T02:17:32.3827027Z Post job cleanup.
+2026-10-14T02:17:32.4853227Z Cache hit occurred on the primary key Linux-pdk-ihp-sg13g2-22f43352dd8219f9007eb659e422e0d5fe28c5fb, not saving cache.
+2026-10-14T02:17:32.4920415Z ##[end-action id=__c9981601-4aea-4fbf-99ac-4f0f7d004551.__TinyTapeout_ciel-action.cache-pdk;outcome=success;conclusion=success;duration_ms=112]
+2026-10-14T02:17:32.4923940Z ##[end-action id=__c9981601-4aea-4fbf-99ac-4f0f7d004551.__TinyTapeout_ciel-action;outcome=success;conclusion=success;duration_ms=115]
+2026-10-14T02:17:32.4926399Z ##[start-action display=Set up Python;id=__c9981601-4aea-4fbf-99ac-4f0f7d004551.__actions_setup-python]
+2026-10-14T02:17:32.4962319Z Post job cleanup.
+2026-10-14T02:17:32.5943244Z Cache hit occurred on the primary key setup-python-Linux-x64-24.04-Ubuntu-python-3.11.17-pip-6042522863102a9ff38b8ca0cb6bcbdfceae80ab695e967ee078d3b388eb1895, not saving cache.
+2026-10-14T02:17:32.5993995Z ##[end-action id=__c9981601-4aea-4fbf-99ac-4f0f7d004551.__actions_setup-python;outcome=success;conclusion=success;duration_ms=106]
+2026-10-14T02:17:32.5996543Z ##[start-action display=Checkout tt-support-tools repo;id=__c9981601-4aea-4fbf-99ac-4f0f7d004551.__actions_checkout]
+2026-10-14T02:17:32.6041839Z Post job cleanup.
+2026-10-14T02:17:32.6776160Z [command]/usr/bin/git version
+2026-10-14T02:17:32.6811246Z git version 2.55.0
+2026-10-14T02:17:32.6841246Z Temporarily overriding HOME='/home/runner/work/_temp/4a1fef52-993b-4607-95f2-0a6fc6e39d4f' before making global git config changes
+2026-10-14T02:17:32.6842539Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-14T02:17:32.6855362Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt
+2026-10-14T02:17:32.6880894Z Removing SSH command configuration
+2026-10-14T02:17:32.6886220Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-14T02:17:32.6918217Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-14T02:17:32.7130270Z Removing HTTP extra header
+2026-10-14T02:17:32.7135996Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-14T02:17:32.7166796Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-14T02:17:32.7373369Z Removing includeIf entries pointing to credentials config files
+2026-10-14T02:17:32.7381551Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-14T02:17:32.7412204Z includeif.gitdir:/home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt/.git.path
+2026-10-14T02:17:32.7412746Z includeif.gitdir:/home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt/.git/worktrees/*.path
+2026-10-14T02:17:32.7413345Z includeif.gitdir:/github/workspace/tt/.git.path
+2026-10-14T02:17:32.7413697Z includeif.gitdir:/github/workspace/tt/.git/worktrees/*.path
+2026-10-14T02:17:32.7422833Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt/.git.path
+2026-10-14T02:17:32.7446310Z /home/runner/work/_temp/git-credentials-24730779-fd46-4fd7-a17a-ec8b66a5c47b.config
+2026-10-14T02:17:32.7457775Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt/.git.path /home/runner/work/_temp/git-credentials-24730779-fd46-4fd7-a17a-ec8b66a5c47b.config
+2026-10-14T02:17:32.7500955Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt/.git/worktrees/*.path
+2026-10-14T02:17:32.7522987Z /home/runner/work/_temp/git-credentials-24730779-fd46-4fd7-a17a-ec8b66a5c47b.config
+2026-10-14T02:17:32.7534101Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-24730779-fd46-4fd7-a17a-ec8b66a5c47b.config
+2026-10-14T02:17:32.7671228Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/tt/.git.path
+2026-10-14T02:17:32.7695006Z /github/runner_temp/git-credentials-24730779-fd46-4fd7-a17a-ec8b66a5c47b.config
+2026-10-14T02:17:32.7702268Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/tt/.git.path /github/runner_temp/git-credentials-24730779-fd46-4fd7-a17a-ec8b66a5c47b.config
+2026-10-14T02:17:32.7733751Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/tt/.git/worktrees/*.path
+2026-10-14T02:17:32.7755115Z /github/runner_temp/git-credentials-24730779-fd46-4fd7-a17a-ec8b66a5c47b.config
+2026-10-14T02:17:32.7762149Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/tt/.git/worktrees/*.path /github/runner_temp/git-credentials-24730779-fd46-4fd7-a17a-ec8b66a5c47b.config
+2026-10-14T02:17:32.7796218Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-14T02:17:32.7992496Z Removing credentials config '/home/runner/work/_temp/git-credentials-24730779-fd46-4fd7-a17a-ec8b66a5c47b.config'
+2026-10-14T02:17:32.8076422Z ##[end-action id=__c9981601-4aea-4fbf-99ac-4f0f7d004551.__actions_checkout;outcome=success;conclusion=success;duration_ms=207]
+2026-10-14T02:17:32.8123941Z Cleaning up orphan processes
