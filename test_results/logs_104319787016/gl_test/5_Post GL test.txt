@@ -1,8 +1,0 @@
-﻿2026-10-14T02:12:51.1617584Z Post job cleanup.
-2026-10-14T02:12:51.1621596Z ##[start-action display=Setup python;id=__9c0004dd-cb04-4821-8e88-035d5ce0c518.__actions_setup-python]
-2026-10-14T02:12:51.1624029Z ##[end-action id=__9c0004dd-cb04-4821-8e88-035d5ce0c518.__actions_setup-python;outcome=skipped;conclusion=skipped;duration_ms=0]
-2026-10-14T02:12:51.1626778Z ##[start-action display=Install ihp-sg13g2 PDK;id=__9c0004dd-cb04-4821-8e88-035d5ce0c518.__TinyTapeout_ciel-action]
-2026-10-14T02:12:51.1663306Z Post job cleanup.
-2026-10-14T02:12:51.1666094Z ##[start-action display=Cache;id=__9c0004dd-cb04-4821-8e88-035d5ce0c518.__TinyTapeout_ciel-action.cache-pdk]
-2026-10-14T02:12:51.1668226Z ##[end-action id=__9c0004dd-cb04-4821-8e88-035d5ce0c518.__TinyTapeout_ciel-action.cache-pdk;outcome=skipped;conclusion=skipped;duration_ms=0]
-2026-10-14T02:12:51.1672166Z ##[end-action id=__9c0004dd-cb04-4821-8e88-035d5ce0c518.__TinyTapeout_ciel-action;outcome=success;conclusion=success;duration_ms=4]

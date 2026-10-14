@@ -21,9 +21,22 @@ async def byte_strobe(dut, code, data):
     await clock_edge(dut)
 
 
+def loader(dut):
+    """The RTL hierarchy. Synthesis flattens imem away, so gate-level has none."""
+    try:
+        return dut.DUT.imem
+    except AttributeError:
+        return None
+
+
 @cocotb.test()
 async def test_imem_load(dut):
-    """Two words are stored. The last strobe starts a read of word 0."""
+    """Two words are stored. The last strobe starts a read of word 0.
+
+    uo_out is the check both simulations can see: the low byte of word 0
+    once the read comes back. running, wr_addr, and half exist only while
+    imem is still a module, which is the RTL run.
+    """
     dut.ena.value = 1
     dut.ui_in.value = 0
     dut.uio_in.value = 0
@@ -35,24 +48,30 @@ async def test_imem_load(dut):
     await clock_edge(dut)
     dut.rst_n.value = 1
     await clock_edge(dut)
-    assert int(dut.DUT.imem.running.value) == 0
+    imem = loader(dut)
+    if imem is not None:
+        assert int(imem.running.value) == 0
 
     # 16'hABCD, then 16'h1234. 10 on the last byte starts execution.
     await byte_strobe(dut, 0b01, 0xCD)
     await byte_strobe(dut, 0b01, 0xAB)
-    assert int(dut.DUT.imem.running.value) == 0
-    assert int(dut.DUT.imem.wr_addr.value) == 1
+    assert int(dut.uo_out.value) == 0x00
+    if imem is not None:
+        assert int(imem.running.value) == 0
+        assert int(imem.wr_addr.value) == 1
 
     await byte_strobe(dut, 0b01, 0x34)
     await byte_strobe(dut, 0b10, 0x12)
-    assert int(dut.DUT.imem.running.value) == 1
-    assert int(dut.DUT.imem.wr_addr.value) == 2
+    if imem is not None:
+        assert int(imem.running.value) == 1
+        assert int(imem.wr_addr.value) == 2
 
     # byte_strobe already consumed the write edge and the following edge.
     # The read data is valid on the edge after that.
     await clock_edge(dut)
-    assert int(dut.DUT.imem.fetch_valid.value) == 1
-    assert int(dut.DUT.imem.dout.value) == 0xABCD
+    if imem is not None:
+        assert int(imem.fetch_valid.value) == 1
+        assert int(imem.dout.value) == 0xABCD
     assert int(dut.uo_out.value) == 0xCD
 
     # Holding 01 for several clocks must not store extra bytes. Reset and
@@ -68,8 +87,10 @@ async def test_imem_load(dut):
     await clock_edge(dut)
     await clock_edge(dut)
     await clock_edge(dut)
-    assert int(dut.DUT.imem.half.value) == 1
-    assert int(dut.DUT.imem.wr_addr.value) == 0
+    assert int(dut.uo_out.value) == 0x00
+    if imem is not None:
+        assert int(imem.half.value) == 1
+        assert int(imem.wr_addr.value) == 0
 
     dut.uio_in.value = 0
     await clock_edge(dut)
@@ -77,6 +98,8 @@ async def test_imem_load(dut):
     await clock_edge(dut)
     dut.uio_in.value = 0
     await clock_edge(dut)
-    assert int(dut.DUT.imem.half.value) == 1
-    assert int(dut.DUT.imem.wr_addr.value) == 0
-    assert int(dut.DUT.imem.running.value) == 0
+    assert int(dut.uo_out.value) == 0x00
+    if imem is not None:
+        assert int(imem.half.value) == 1
+        assert int(imem.wr_addr.value) == 0
+        assert int(imem.running.value) == 0
