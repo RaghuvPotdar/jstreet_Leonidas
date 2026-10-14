@@ -31,7 +31,8 @@
   "//": "https://tinytapeout.com/faq/#how-can-i-map-an-additional-external-clock-to-one-of-the-gpios",
   "CLOCK_PORT": "clk",
 
-  "//": "Instruction SRAM. SIM compiles a stand-in array for cocotb. The GDS flow does not define SIM, so the netlist keeps the empty macro and MACROS supplies its LEF, GDS, and timing library. The fast liberty file is characterized at -55 C and is the closest file to the -40 C corner the flow asks for. pdn_cfg.tcl vias the SRAM's Metal4 supply columns up to the TopMetal1 straps; the stock macro grid vias TopMetal1 to a horizontal layer this tile does not have and dies with PDN-0233. VDD.* covers both VDD! and VDDARRAY! (liberty spells them without the bang). At x=50 the template straps already cross a VDD column and a VSS column.",
+  "//": "Instruction SRAM. SIM compiles a stand-in array for cocotb. The GDS flow does not define SIM, so the netlist keeps the empty macro and MACROS supplies its LEF, GDS, and timing library. The fast liberty file is characterized at -55 C and is the closest file to the -40 C corner the flow asks for. pdn_cfg.tcl vias the SRAM Metal4 supply columns up to the TopMetal1 straps. Magic DRC does not understand the SRAM bit cells (279091 false errors); the shuttle precheck is KLayout, which does. The macro sits at x=5.815 so a TopMetal1 track (pitch 3.28, offset 1.64) lands on the first VDD column center. Strap spacing 3.52 plus width 2.1 is the 5.62 um from a VDD column center to the next VSS column center. Pitch 45.92 is 14 tracks, so later straps stay on the TopMetal1 grid.",
+  "RUN_MAGIC_DRC": 0,
   "FP_MACRO_HORIZONTAL_HALO": 2,
   "PDN_CFG": "dir::pdn_cfg.tcl",
   "PDN_MACRO_CONNECTIONS": [
@@ -50,7 +51,7 @@
         "nom_slow_1p08V_125C": ["pdk_dir::libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_256x16_c2_bm_bist_slow_1p08V_125C.lib"]
       },
       "instances": {
-        "imem.sram": { "location": [50, 200], "orientation": "N" }
+        "imem.sram": { "location": [5.815, 200], "orientation": "N" }
       }
     }
   },
@@ -82,7 +83,10 @@
   "FP_IO_HLENGTH": 2,
   "FP_IO_VLENGTH": 2,
 
-  "FP_PDN_VPITCH": 38.87,
+  "FP_PDN_VPITCH": 45.92,
+  "FP_PDN_VWIDTH": 2.1,
+  "FP_PDN_VSPACING": 3.52,
+  "FP_PDN_VOFFSET": 8.6,
 
   "//": "Clock",
   "RUN_CTS": 1,
