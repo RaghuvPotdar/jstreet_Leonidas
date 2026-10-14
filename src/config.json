@@ -31,11 +31,11 @@
   "//": "https://tinytapeout.com/faq/#how-can-i-map-an-additional-external-clock-to-one-of-the-gpios",
   "CLOCK_PORT": "clk",
 
-  "//": "Instruction SRAM. SIM compiles a stand-in array for cocotb. The GDS flow does not define SIM, so the netlist keeps the empty macro, and the floorplan has to be given its LEF, GDS, and timing library or OpenROAD stops with ORD-2013. The fast liberty file is characterized at -55 C and is the closest file to the -40 C corner the flow asks for. Power-column alignment for this size is not tuned yet.",
+  "//": "Instruction SRAM. SIM compiles a stand-in array for cocotb. The GDS flow does not define SIM, so the netlist keeps the empty macro and MACROS supplies its LEF, GDS, and timing library. The fast liberty file is characterized at -55 C and is the closest file to the -40 C corner the flow asks for. pdn_cfg.tcl vias the SRAM's Metal4 supply columns up to the TopMetal1 straps; the stock macro grid vias TopMetal1 to a horizontal layer this tile does not have and dies with PDN-0233. VDD.* covers both VDD! and VDDARRAY! (liberty spells them without the bang). At x=50 the template straps already cross a VDD column and a VSS column.",
   "FP_MACRO_HORIZONTAL_HALO": 2,
+  "PDN_CFG": "dir::pdn_cfg.tcl",
   "PDN_MACRO_CONNECTIONS": [
-    "imem\\.sram VPWR VGND VDD! VSS!",
-    "imem\\.sram VPWR VGND VDDARRAY! VSS!"
+    "imem\\.sram VPWR VGND VDD.* VSS.*"
   ],
   "MACROS": {
     "RM_IHPSG13_1P_256x16_c2_bm_bist": {
