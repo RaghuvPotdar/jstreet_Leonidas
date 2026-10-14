@@ -20,6 +20,7 @@ project:
     - "uart.sv"
     - "sram_256x16.sv"
     - "imem.sv"
+    - "datapath.sv"
     - "leonidas.sv"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
@@ -35,15 +36,15 @@ pinout:
   ui[6]: "byte[6]"
   ui[7]: "byte[7]"
 
-  # Low byte of instruction word 0, after the read comes back.
-  uo[0]: "word0[0]"
-  uo[1]: "word0[1]"
-  uo[2]: "word0[2]"
-  uo[3]: "word0[3]"
-  uo[4]: "word0[4]"
-  uo[5]: "word0[5]"
-  uo[6]: "word0[6]"
-  uo[7]: "word0[7]"
+  # Program pins. Idle high. The UART example drives out1.
+  uo[0]: "out0"
+  uo[1]: "out1"
+  uo[2]: "out2"
+  uo[3]: "out3"
+  uo[4]: "out4"
+  uo[5]: "out5"
+  uo[6]: "out6"
+  uo[7]: "out7"
 
   # 00 idle, 01 load byte, 10 last byte and start, 11 reserved.
   uio[0]: "strobe[0]"

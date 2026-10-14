@@ -13,15 +13,15 @@
 //   10 load the byte on ui_in and, once the word is complete, start
 //   11 reserved, ignored
 // The first byte of a word is instr[7:0]. The second is instr[15:8].
-// After start, the memory is read at address 0. The byte is presented one
-// clock and the read data is valid on the clock after that.
+// After start, every clock is a read of `pc`. The word comes back on the
+// next clock. `pc` is the datapath's address, not a pin.
 module imem (
     input  wire        clk,
     input  wire        rst_n,
     input  wire [7:0]  byte_in,
     input  wire [1:0]  strobe,
+    input  wire [7:0]  pc,
     output wire        running,
-    output wire        fetch_valid,
     output wire [15:0] dout
 );
 
@@ -35,7 +35,6 @@ module imem (
   logic [7:0]  wr_addr;
   logic        running_q;
   logic        arm_run;
-  logic [1:0]  read_pipe;
 
   wire take = (strobe_q == IDLE) && (strobe == LOAD || strobe == FINAL) && !running_q;
   wire write_word = take && half;
@@ -46,12 +45,11 @@ module imem (
   logic [7:0]  addr;
   logic [15:0] din;
 
-  assign running     = running_q;
-  assign fetch_valid = read_pipe[1];
-  assign men         = write_word || running_q;
-  assign wen         = write_word;
-  assign ren         = running_q && !write_word;
-  assign addr        = write_word ? wr_addr : 8'h00;
+  assign running = running_q;
+  assign men     = write_word || running_q;
+  assign wen     = write_word;
+  assign ren     = running_q && !write_word;
+  assign addr    = write_word ? wr_addr : pc;
   assign din         = {byte_in, low_byte};
 
   RM_IHPSG13_1P_256x16_c2_bm_bist sram (
@@ -82,13 +80,8 @@ module imem (
       wr_addr   <= 8'h00;
       running_q <= 1'b0;
       arm_run   <= 1'b0;
-      read_pipe <= 2'b00;
     end else begin
       strobe_q <= strobe;
-      if (!running_q)
-        read_pipe <= 2'b00;
-      else
-        read_pipe <= {read_pipe[0], 1'b1};
 
       if (take && !half) begin
         low_byte <= byte_in;

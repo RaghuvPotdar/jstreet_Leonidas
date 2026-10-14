@@ -17,27 +17,34 @@ module tt_um_RaghuvPotdar_Leonidas (
 );
 
     logic        running;
-    logic        fetch_valid;
     logic [15:0] dout;
+    logic [7:0]  pc;
 
     // ui_in is one byte of an instruction. uio_in[1:0] says what to do with
     // it: 00 idle, 01 store the byte, 10 store the byte and start once the
-    // word is complete, 11 ignored. uo_out shows the low byte of word 0
-    // once that read has come back.
+    // word is complete, 11 ignored. After start, datapath reads the SRAM
+    // through pc and drives the pins.
     imem imem (
-        .clk        (clk),
-        .rst_n      (rst_n),
-        .byte_in    (ui_in),
-        .strobe     (uio_in[1:0]),
-        .running    (running),
-        .fetch_valid(fetch_valid),
-        .dout       (dout)
+        .clk    (clk),
+        .rst_n  (rst_n),
+        .byte_in(ui_in),
+        .strobe (uio_in[1:0]),
+        .pc     (pc),
+        .running(running),
+        .dout   (dout)
     );
 
-    assign uo_out  = fetch_valid ? dout[7:0] : 8'h00;
-    assign uio_oe  = 8'b0;
-    assign uio_out = 8'b0;
+    datapath datapath (
+        .clk    (clk),
+        .rst_n  (rst_n),
+        .running(running),
+        .instr  (dout),
+        .pc     (pc),
+        .uo_out (uo_out),
+        .uio_out(uio_out),
+        .uio_oe (uio_oe)
+    );
 
-    wire _unused = &{1'b0, ena, running, dout[15:8], 1'b0};
+    wire _unused = &{1'b0, ena, 1'b0};
 
 endmodule

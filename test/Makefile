@@ -6,7 +6,7 @@ SIM ?= icarus
 FST ?= -fst # Use more efficient FST format
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
-PROJECT_SOURCES = uart.sv sram_256x16.sv imem.sv leonidas.sv
+PROJECT_SOURCES = uart.sv sram_256x16.sv imem.sv datapath.sv leonidas.sv
 
 ifneq ($(GATES),yes)
 
