@@ -7,13 +7,22 @@
 
 // Executes the program in the instruction SRAM.
 //
-// The SRAM returns a word one clock after the address is shown. A pin
-// level from LOW, HIGH, or OUT lasts for the count in that instruction,
-// and this clock is one of them. The next word is requested as soon as
-// the current one is accepted, so it is usually waiting in `buf` during
-// the hold. A one-clock instruction (LDI, SETX, DJNZ, HALT) that arrives
-// during a hold runs on the last clock of that hold, which keeps it off
-// the pin. The instruction after it then starts on the following clock.
+// Fetch and decode are separate blocks. Fetch asks the SRAM for an
+// address. The word is on `instr` two clocks later: the SRAM updates its
+// output one clock after the address is sampled, and the decode block
+// sees that output on the clock after the update. Decode then writes the
+// shifter, X, the pin, and the hold counter.
+//
+// A LOW, HIGH, or OUT level lasts for the count in the instruction, and
+// the clock that starts it is one of those clocks. The next word is
+// requested as that instruction starts, so it is waiting in `buf` while
+// the pin holds. With two clocks of the level left after the current
+// one, decode asks for the word that buffered instruction will need.
+// For OUT then DJNZ then OUT, that ask is the branch target, and the
+// next OUT starts on the clock after the current level's last clock.
+//
+// HALT runs in that same last-clock slot. The level still gets its full
+// count. HALT then leaves the pin at that level.
 //
 // Opcode is instr[15:12]. LOW, HIGH, and OUT use [11:8] as the pin and
 // [7:0] as the hold count. Pin 0-7 is uo_out. Pin 8-15 is uio, and that
@@ -26,7 +35,7 @@ module datapath (
     input  wire        rst_n,
     input  wire        running,
     input  wire [15:0] instr,
-    output wire [7:0]  pc,
+    output logic [7:0] pc,
     output wire [7:0]  uo_out,
     output wire [7:0]  uio_out,
     output wire [7:0]  uio_oe
@@ -40,40 +49,37 @@ module datapath (
   localparam logic [3:0] OP_DJNZ = 4'h5;
   localparam logic [3:0] OP_HALT = 4'h6;
 
-  // Address shown to the SRAM on the previous clock. Repeated until the
-  // next request, so an idle cycle does not read a different word.
+  // Fetch registers. `shown` is the address presented last clock.
+  // `issue_q` is the ask from last clock. `asked` is the ask from two
+  // clocks ago, which is when `instr` is that word. `asked_addr` is the
+  // address the word came from.
   logic [7:0]  shown;
-  // `issue_q` is the request from the previous clock. `asked` is one
-  // clock later, which is when `instr` is that word. Decoding on
-  // `issue_q` would see the previous word.
   logic        issue_q;
   logic        asked;
   logic [7:0]  asked_addr;
-  // Next instruction already returned, waiting for the pin hold to finish.
+  logic [7:0]  next_addr;
+
+  // Execute registers.
   logic        buf_v;
   logic [15:0] buf_word;
   logic [7:0]  buf_addr;
-  // Clocks of the current pin level still left after this clock.
   logic [7:0]  hold;
-  // A pin instruction that arrived on the last clock of the previous
-  // level. Starting it now would steal that last clock, so it waits
-  // one clock.
   logic        defer_v;
   logic [15:0] defer_word;
   logic [7:0]  defer_addr;
   logic        halted;
-  // Address of the instruction after the one most recently accepted.
-  logic [7:0]  next_addr;
   logic [7:0]  shifter;
   logic [7:0]  xreg;
   logic [7:0]  uo_q;
   logic [7:0]  uio_q;
   logic [7:0]  oe_q;
 
+  // Fetch combinational result: ask the SRAM to sample `issue_addr`.
   logic        issue;
   logic [7:0]  issue_addr;
-  logic        asked_n;
   logic [7:0]  asked_addr_n;
+
+  // Decode combinational result, loaded by the execute registers.
   logic        buf_v_n;
   logic [15:0] buf_n;
   logic [7:0]  buf_addr_n;
@@ -92,9 +98,6 @@ module datapath (
   logic        do_start;
   logic        do_one;
   logic        do_defer;
-  // A one-clock op already in buf had its successor requested on the
-  // previous clock, while two clocks of the pin level were still left.
-  // Executing it must not request that word again.
   logic        fetched;
   logic [15:0] op_word;
   logic [7:0]  op_addr;
@@ -102,7 +105,6 @@ module datapath (
   logic        level;
   logic [3:0]  pin_i;
 
-  assign pc      = (!running) ? 8'h00 : (issue ? issue_addr : shown);
   assign uo_out  = uo_q;
   assign uio_out = uio_q;
   assign uio_oe  = oe_q;
@@ -111,8 +113,9 @@ module datapath (
     is_pin = (op == OP_LOW) || (op == OP_HIGH) || (op == OP_OUT);
   endfunction
 
+  // Decode. Chooses the instruction to execute and whether fetch should
+  // ask for another word. Does not present the address itself.
   always_comb begin
-    asked_n      = 1'b0;
     asked_addr_n = asked_addr;
     buf_v_n      = buf_v;
     buf_n        = buf_word;
@@ -157,7 +160,7 @@ module datapath (
       uio_n        = 8'h00;
       oe_n         = 8'h00;
     end else if (halted) begin
-      // Pin and shifter stay as the last instruction left them.
+      // The timed level already finished. The pin stays.
     end else if (defer_v) begin
       do_start     = 1'b1;
       op_word      = defer_word;
@@ -194,8 +197,9 @@ module datapath (
         hold_n     = hold - 8'd1;
       end else if (hold == 8'd2 && buf_v && !is_pin(buf_word[15:12])
                    && buf_word[15:12] != OP_HALT) begin
-        // The buffered op runs on the next clock. Ask for the word
-        // after it now, so that word is decoded as this level ends.
+        // Two clocks of this level remain after this one. DJNZ or SETX
+        // is already in buf, so the word it needs can be sampled now
+        // and will be ready when this level ends.
         hold_n = hold - 8'd1;
         if (buf_word[15:12] == OP_DJNZ && x_dec != 8'h00)
           next_addr_n = buf_word[7:0];
@@ -211,8 +215,6 @@ module datapath (
         end
       end
     end else if (!(issue_q && !asked)) begin
-      // First clock after the load, and any later clock where no read
-      // is outstanding. Ask for next_addr (0 coming out of reset).
       issue      = 1'b1;
       issue_addr = next_addr;
     end
@@ -242,6 +244,8 @@ module datapath (
             next_addr_n = op_addr + 8'd1;
           issue = !fetched;
         end
+        // Last clock of the current level. The count still completes.
+        // The pin is then left at this level.
         OP_HALT: halted_n = 1'b1;
         default: begin
           next_addr_n = op_addr + 8'd1;
@@ -274,10 +278,19 @@ module datapath (
       issue_addr  = next_addr_n;
     end
 
-    if (issue) begin
-      asked_n      = 1'b1;
+    if (issue)
       asked_addr_n = issue_addr;
-    end
+  end
+
+  // Fetch. Presents the address decode asked for, or repeats the last
+  // address when decode did not ask.
+  always_comb begin
+    if (!running)
+      pc = 8'h00;
+    else if (issue)
+      pc = issue_addr;
+    else
+      pc = shown;
   end
 
   always_ff @(posedge clk) begin
@@ -286,6 +299,16 @@ module datapath (
       issue_q    <= 1'b0;
       asked      <= 1'b0;
       asked_addr <= 8'h00;
+    end else begin
+      shown      <= pc;
+      issue_q    <= issue;
+      asked      <= issue_q;
+      asked_addr <= asked_addr_n;
+    end
+  end
+
+  always_ff @(posedge clk) begin
+    if (!rst_n) begin
       buf_v      <= 1'b0;
       buf_word   <= 16'h0000;
       buf_addr   <= 8'h00;
@@ -301,10 +324,6 @@ module datapath (
       uio_q      <= 8'h00;
       oe_q       <= 8'h00;
     end else begin
-      shown      <= pc;
-      issue_q    <= issue;
-      asked      <= issue_q;
-      asked_addr <= asked_addr_n;
       buf_v      <= buf_v_n;
       buf_word   <= buf_n;
       buf_addr   <= buf_addr_n;
