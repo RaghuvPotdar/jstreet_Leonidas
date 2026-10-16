@@ -171,3 +171,8 @@ each pad: the program picks which internal signal is connected to
 `uo_out[0]`, or whether `uio_oe[0]` is forced on, forced off, or controlled
 by the protocol. One pin stays a load strobe so the host can still feed a
 new program after reset.
+
+## FUTURE
+1. add signal that tells chip to start output data
+2. superscalar execution - different protocols at the same time; would need different start signals for different protocols
+3. detect inputs, with protocole and have a buffer that outputs the built packets

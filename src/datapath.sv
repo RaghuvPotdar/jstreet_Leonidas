@@ -13,23 +13,24 @@
 // sees that output on the clock after the update. Decode then writes the
 // shifter, X, the pin, and the hold counter.
 //
-// A LOW, HIGH, or OUT level lasts for the count in the instruction, and
+// A LOW, HIGH, OUT_L, or OUT_M level lasts for the count in the instruction, and
 // the clock that starts it is one of those clocks. The next word is
 // requested as that instruction starts, so it is waiting in `buf` while
 // the pin holds. With two clocks of the level left after the current
 // one, decode asks for the word that buffered instruction will need.
-// For OUT then DJNZ then OUT, that ask is the branch target, and the
-// next OUT starts on the clock after the current level's last clock.
+// For OUT_L then DJNZ then OUT_L, that ask is the branch target, and the
+// next OUT_L starts on the clock after the current level's last clock.
 //
 // HALT runs in that same last-clock slot. The level still gets its full
 // count. HALT then leaves the pin at that level.
 //
-// Opcode is instr[15:12]. LOW, HIGH, and OUT use [11:8] as the pin and
-// [7:0] as the hold count. Pin 0-7 is uo_out. Pin 8-15 is uio, and that
-// bit of uio_oe is turned on. LDI writes [7:0] into the shifter. SETX
-// writes [7:0] into X. DJNZ decrements X and, if the result is not zero,
-// continues at address [7:0]. OUT drives shifter[0] and shifts right.
-// A hold count of 0 lasts 256 clocks.
+// Opcode is instr[15:12]. LOW, HIGH, OUT_L, and OUT_M use [11:8] as the
+// pin and [7:0] as the hold count. Pin 0-7 is uo_out. Pin 8-15 is uio,
+// and that bit of uio_oe is turned on. LDI writes [7:0] into the shifter.
+// SETX writes [7:0] into X. DJNZ decrements X and, if the result is not
+// zero, continues at address [7:0]. OUT_L drives shifter[0] and shifts
+// right. OUT_M drives shifter[7] and shifts left. A hold count of 0
+// lasts 256 clocks.
 module datapath (
     input  wire        clk,
     input  wire        rst_n,
@@ -45,9 +46,10 @@ module datapath (
   localparam logic [3:0] OP_LOW  = 4'h1;
   localparam logic [3:0] OP_HIGH = 4'h2;
   localparam logic [3:0] OP_SETX = 4'h3;
-  localparam logic [3:0] OP_OUT  = 4'h4;
-  localparam logic [3:0] OP_DJNZ = 4'h5;
-  localparam logic [3:0] OP_HALT = 4'h6;
+  localparam logic [3:0] OP_OUT_L = 4'h4;
+  localparam logic [3:0] OP_DJNZ  = 4'h5;
+  localparam logic [3:0] OP_HALT  = 4'h6;
+  localparam logic [3:0] OP_OUT_M = 4'h7;
 
   // Fetch registers. `shown` is the address presented last clock.
   // `issue_q` is the ask from last clock. `asked` is the ask from two
@@ -110,7 +112,7 @@ module datapath (
   assign uio_oe  = oe_q;
 
   function automatic logic is_pin(input logic [3:0] op);
-    is_pin = (op == OP_LOW) || (op == OP_HIGH) || (op == OP_OUT);
+    is_pin = (op == OP_LOW) || (op == OP_HIGH) || (op == OP_OUT_L) || (op == OP_OUT_M);
   endfunction
 
   // Decode. Chooses the instruction to execute and whether fetch should
@@ -256,9 +258,12 @@ module datapath (
         issue_addr = next_addr_n;
     end else if (do_start) begin
       pin_i = op_word[11:8];
-      if (op_word[15:12] == OP_OUT) begin
+      if (op_word[15:12] == OP_OUT_L) begin
         level     = shifter[0];
         shifter_n = {1'b0, shifter[7:1]};
+      end else if (op_word[15:12] == OP_OUT_M) begin
+        level     = shifter[7];
+        shifter_n = {shifter[6:0], 1'b0};
       end else if (op_word[15:12] == OP_HIGH) begin
         level = 1'b1;
       end else begin
