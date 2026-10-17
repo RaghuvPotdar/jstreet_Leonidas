@@ -39,6 +39,7 @@ module tt_um_RaghuvPotdar_Leonidas (
         .rst_n  (rst_n),
         .running(running),
         .instr  (dout),
+        .uio_in (uio_in),
         .pc     (pc),
         .uo_out (uo_out),
         .uio_out(uio_out),

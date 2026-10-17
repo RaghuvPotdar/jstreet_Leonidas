@@ -175,4 +175,4 @@ new program after reset.
 ## FUTURE
 1. add signal that tells chip to start output data
 2. superscalar execution - different protocols at the same time; would need different start signals for different protocols
-3. detect inputs, with protocole and have a buffer that outputs the built packets
+3. detect inputs, with protocol and have a buffer that outputs the built packets
