@@ -12,6 +12,7 @@ PROJECT_SOURCES := \
 	$(SRC_DIR)/uart.sv \
 	$(SRC_DIR)/sram_256x16.sv \
 	$(SRC_DIR)/imem.sv \
+	$(SRC_DIR)/rf.sv \
 	$(SRC_DIR)/datapath.sv \
 	$(SRC_DIR)/leonidas.sv
 

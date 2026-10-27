@@ -12,6 +12,7 @@ vlog -sv -work work +define+SIM +incdir+$SRC \
     $SRC/uart.sv \
     $SRC/sram_256x16.sv \
     $SRC/imem.sv \
+    $SRC/rf.sv \
     $SRC/datapath.sv \
     $SRC/leonidas.sv \
     tb.sv

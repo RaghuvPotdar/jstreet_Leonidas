@@ -55,7 +55,7 @@ def pin_byte(level):
 
 
 def rf_at(dp, index):
-    return int(dp.rf[index].value)
+    return int(dp.regs.mem[index].value)
 
 
 @cocotb.test()
@@ -333,3 +333,133 @@ async def test_uart_program(dut):
     dp = engine(dut)
     if dp is not None:
         assert int(dp.halted.value) == 1
+
+
+# USB D+/D- on uo_out[5]/[6] (see info.yaml / usb_*_ack.asm).
+USB_DP = 5
+USB_DM = 6
+
+
+def usb_pair(uo):
+    return ((int(uo) >> USB_DP) & 1, (int(uo) >> USB_DM) & 1)
+
+
+def usb_runs(samples):
+    """Collapse consecutive identical (dp, dm) samples into (state, clocks)."""
+    runs = []
+    for state in samples:
+        if runs and runs[-1][0] == state:
+            runs[-1] = (state, runs[-1][1] + 1)
+        else:
+            runs.append((state, 1))
+    return runs
+
+
+def usb_ack_bit_states(j, k, se0):
+    # establish J, SYNC KJKJKJKK, PID ACK JJKJJKKK, EOP SE0, idle J
+    return (
+        [j]
+        + [k, j, k, j, k, j, k, k]
+        + [j, j, k, j, j, k, k, k]
+        + [se0, j]
+    )
+
+
+def usb_ack_expect_runs(j, k, se0, bit_time, se0_time):
+    """Merge consecutive identical line states (PSETH KK → one 2× hold)."""
+    raw = []
+    for state in usb_ack_bit_states(j, k, se0):
+        dur = se0_time if state == se0 else bit_time
+        if raw and raw[-1][0] == state:
+            raw[-1] = (state, raw[-1][1] + dur)
+        else:
+            raw.append((state, dur))
+    return raw
+
+
+async def run_usb_ack(dut, asm_name, bit_time, se0_time, j, k, se0):
+    dut.ena.value = 1
+    dut.ui_in.value = 0
+    dut.uio_in.value = 0
+    dut.clk.value = 0
+    dut.rst_n.value = 0
+    await Timer(1, unit="ns")
+    Clock(dut.clk, 10, unit="us").start()
+
+    await clock_edge(dut)
+    dut.rst_n.value = 1
+    await clock_edge(dut)
+
+    words = assemble((ASM / asm_name).read_text(encoding="utf-8"))
+    await load_program(dut, words)
+
+    # Enough room for two LDIs, the packet, and sticky idle after HALT.
+    n = 2 * bit_time + 18 * bit_time + se0_time + bit_time + 64
+    samples = [usb_pair(dut.uo_out.value)]
+    for _ in range(n - 1):
+        await clock_edge(dut)
+        samples.append(usb_pair(dut.uo_out.value))
+
+    # Drop leading SE1 / undriven idle (both high after reset).
+    while samples and samples[0] == (1, 1):
+        samples.pop(0)
+    assert samples, "USB never left idle SE1"
+
+    runs = usb_runs(samples)
+    expect = usb_ack_expect_runs(j, k, se0, bit_time, se0_time)
+    assert len(runs) >= len(expect), (
+        f"{asm_name} too few runs\n got {runs}\n exp {expect}"
+    )
+
+    for i, ((got_s, got_n), (exp_s, exp_n)) in enumerate(
+        zip(runs[: len(expect)], expect)
+    ):
+        assert got_s == exp_s, (
+            f"{asm_name} state[{i}] {got_s}, want {exp_s}\n runs {runs}"
+        )
+        # Final idle J merges with post-HALT sticky drive → only a floor.
+        if i == len(expect) - 1:
+            assert got_n >= exp_n, (
+                f"{asm_name} idle J held {got_n}, want >= {exp_n}"
+            )
+        else:
+            assert got_n == exp_n, (
+                f"{asm_name} state[{i}] {got_s} held {got_n}, want {exp_n} "
+                f"(stretch or early cut)"
+            )
+
+    dp = engine(dut)
+    if dp is not None:
+        assert int(dp.halted.value) == 1
+        assert rf_at(dp, 4) == bit_time
+        assert rf_at(dp, 5) == se0_time
+
+
+@cocotb.test()
+async def test_usb_ls_ack(dut):
+    """USB Low-Speed ACK: PSETH J/K/SE0 at 40 / 80 clocks (60 MHz → 1.5 Mbit/s)."""
+    # LS: J=D- high, K=D+ high
+    await run_usb_ack(
+        dut,
+        "usb_ls_ack.asm",
+        bit_time=40,
+        se0_time=80,
+        j=(0, 1),
+        k=(1, 0),
+        se0=(0, 0),
+    )
+
+
+@cocotb.test()
+async def test_usb_fs_ack(dut):
+    """USB Full-Speed ACK: same packet, flipped J/K, 5 / 10 clocks (60 MHz → 12 Mbit/s)."""
+    # FS: J=D+ high, K=D- high
+    await run_usb_ack(
+        dut,
+        "usb_fs_ack.asm",
+        bit_time=5,
+        se0_time=10,
+        j=(1, 0),
+        k=(0, 1),
+        se0=(0, 0),
+    )

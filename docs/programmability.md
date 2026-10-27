@@ -39,5 +39,5 @@ protocol dict  →  protocol lowering  →  ISA asm  →  assemble.py  →  hex
 
 ## Open (next)
 
-- USB listing using `PSETH` (dual-pin) on top of the wired ISA.
 - Multi-protocol / second SM (not lockstep dual-issue on one RF).
+- ISA polish after more protocol listings (shared duration regs, PSETH vs PSET redundancy) — keep silicon dumb until a real program cannot be written.

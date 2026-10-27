@@ -38,6 +38,7 @@ $src = Join-Path (Split-Path $PSScriptRoot -Parent) "src"
     (Join-Path $src "uart.sv") `
     (Join-Path $src "sram_256x16.sv") `
     (Join-Path $src "imem.sv") `
+    (Join-Path $src "rf.sv") `
     (Join-Path $src "datapath.sv") `
     (Join-Path $src "leonidas.sv") `
     "tb.sv"

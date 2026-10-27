@@ -20,6 +20,7 @@ project:
     - "uart.sv"
     - "sram_256x16.sv"
     - "imem.sv"
+    - "rf.sv"
     - "datapath.sv"
     - "leonidas.sv"
 
@@ -42,8 +43,8 @@ pinout:
   uo[2]: "out2"
   uo[3]: "out3"
   uo[4]: "out4"
-  uo[5]: "out5"
-  uo[6]: "out6"
+  uo[5]: "usb_dp"
+  uo[6]: "usb_dm"
   uo[7]: "out7"
 
   # 00 idle, 01 load byte, 10 last byte and start, 11 reserved.
