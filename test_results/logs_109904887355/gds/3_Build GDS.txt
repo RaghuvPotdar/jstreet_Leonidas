@@ -1,0 +1,1163 @@
+﻿2026-10-27T17:13:41.4959066Z ##[group]Run TinyTapeout/tt-gds-action@ttihp26b
+2026-10-27T17:13:41.4959443Z with:
+2026-10-27T17:13:41.4959650Z   pdk: ihp-sg13g2
+2026-10-27T17:13:41.4959898Z   tools-repo: TinyTapeout/tt-support-tools
+2026-10-27T17:13:41.4960184Z   tools-ref: main
+2026-10-27T17:13:41.4960402Z   librelane-version: 3.0.5
+2026-10-27T17:13:41.4960642Z ##[endgroup]
+2026-10-27T17:13:41.5025899Z ##[start-action display=Set up environment variables;id=__TinyTapeout_tt-gds-action.__run]
+2026-10-27T17:13:41.5083101Z ##[group]Run # Defaults:
+2026-10-27T17:13:41.5083452Z [36;1m# Defaults:[0m
+2026-10-27T17:13:41.5083691Z [36;1mPDK="ihp-sg13g2"[0m
+2026-10-27T17:13:41.5083955Z [36;1mPDK_ROOT=/home/runner/pdk[0m
+2026-10-27T17:13:41.5084228Z [36;1mTT_ARGS=""[0m
+2026-10-27T17:13:41.5084439Z [36;1m[0m
+2026-10-27T17:13:41.5084723Z [36;1m# Backward compatibility with old 'pdk' values[0m
+2026-10-27T17:13:41.5085077Z [36;1mif [ "$PDK" == "sky130" ]; then[0m
+2026-10-27T17:13:41.5085352Z [36;1m  PDK="sky130A"[0m
+2026-10-27T17:13:41.5085633Z [36;1melif [ "$PDK" == "ihp" ]; then[0m
+2026-10-27T17:13:41.5085911Z [36;1m  PDK="ihp-sg13g2"[0m
+2026-10-27T17:13:41.5086144Z [36;1mfi[0m
+2026-10-27T17:13:41.5086327Z [36;1m[0m
+2026-10-27T17:13:41.5086528Z [36;1m# PDK-specific overrides[0m
+2026-10-27T17:13:41.5087002Z [36;1mif [ "$PDK" == "gf180mcuD" ]; then[0m
+2026-10-27T17:13:41.5087293Z [36;1m  TT_ARGS="--gf"[0m
+2026-10-27T17:13:41.5087555Z [36;1melif [ "$PDK" == "ihp-sg13g2" ]; then[0m
+2026-10-27T17:13:41.5087845Z [36;1m  TT_ARGS="--ihp"[0m
+2026-10-27T17:13:41.5088076Z [36;1mfi[0m
+2026-10-27T17:13:41.5088258Z [36;1m[0m
+2026-10-27T17:13:41.5088450Z [36;1mcat << __EOF >> $GITHUB_ENV[0m
+2026-10-27T17:13:41.5088707Z [36;1mPDK=$PDK[0m
+2026-10-27T17:13:41.5088916Z [36;1mTT_ARGS=$TT_ARGS[0m
+2026-10-27T17:13:41.5089152Z [36;1m__EOF[0m
+2026-10-27T17:13:41.5338454Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T17:13:41.5339066Z ##[endgroup]
+2026-10-27T17:13:41.5479551Z ##[end-action id=__TinyTapeout_tt-gds-action.__run;outcome=success;conclusion=success;duration_ms=45]
+2026-10-27T17:13:41.5482302Z ##[start-action display=Install prerequisites;id=__TinyTapeout_tt-gds-action.__awalsh128_cache-apt-pkgs-action]
+2026-10-27T17:13:41.5625909Z ##[group]Run awalsh128/cache-apt-pkgs-action@553a35bb8ebd9fcabcb1c9451aa4c98e1b4ca8a9
+2026-10-27T17:13:41.5626387Z with:
+2026-10-27T17:13:41.5626818Z   packages: librsvg2-bin pngquant ghdl-llvm
+2026-10-27T17:13:41.5627141Z   version: tinytapeout_gds_action
+2026-10-27T17:13:41.5627420Z   execute_install_scripts: false
+2026-10-27T17:13:41.5627687Z   empty_packages_behavior: error
+2026-10-27T17:13:41.5627932Z   debug: false
+2026-10-27T17:13:41.5628125Z env:
+2026-10-27T17:13:41.5628308Z   PDK: ihp-sg13g2
+2026-10-27T17:13:41.5628522Z   TT_ARGS: --ihp
+2026-10-27T17:13:41.5628738Z ##[endgroup]
+2026-10-27T17:13:41.5637281Z ##[start-action display=Run ${GITHUB_ACTION_PATH}/pre_cache_action.sh \;id=__TinyTapeout_tt-gds-action.__awalsh128_cache-apt-pkgs-action.pre-cache]
+2026-10-27T17:13:41.5656940Z ##[group]Run ${GITHUB_ACTION_PATH}/pre_cache_action.sh \
+2026-10-27T17:13:41.5657417Z [36;1m${GITHUB_ACTION_PATH}/pre_cache_action.sh \[0m
+2026-10-27T17:13:41.5657750Z [36;1m  ~/cache-apt-pkgs \[0m
+2026-10-27T17:13:41.5681689Z [36;1m  "$VERSION" \[0m
+2026-10-27T17:13:41.5681995Z [36;1m  "$EXEC_INSTALL_SCRIPTS" \[0m
+2026-10-27T17:13:41.5682289Z [36;1m  "$DEBUG" \[0m
+2026-10-27T17:13:41.5682528Z [36;1m  "$ADD_REPOSITORY" \[0m
+2026-10-27T17:13:41.5682784Z [36;1m  "$PACKAGES"[0m
+2026-10-27T17:13:41.5683073Z [36;1mif [ -f ~/cache-apt-pkgs/cache_key.md5 ]; then[0m
+2026-10-27T17:13:41.5683548Z [36;1m  echo "CACHE_KEY=$(cat ~/cache-apt-pkgs/cache_key.md5)" >> $GITHUB_ENV[0m
+2026-10-27T17:13:41.5683963Z [36;1melse[0m
+2026-10-27T17:13:41.5684196Z [36;1m  echo "CACHE_KEY=" >> $GITHUB_ENV[0m
+2026-10-27T17:13:41.5684685Z [36;1mfi[0m
+2026-10-27T17:13:41.5747123Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T17:13:41.5747557Z env:
+2026-10-27T17:13:41.5747783Z   PDK: ihp-sg13g2
+2026-10-27T17:13:41.5748260Z   TT_ARGS: --ihp
+2026-10-27T17:13:41.5748520Z   VERSION: tinytapeout_gds_action
+2026-10-27T17:13:41.5748839Z   EXEC_INSTALL_SCRIPTS: false
+2026-10-27T17:13:41.5749144Z   EMPTY_PACKAGES_BEHAVIOR: error
+2026-10-27T17:13:41.5749437Z   DEBUG: false
+2026-10-27T17:13:41.5749674Z   ADD_REPOSITORY: 
+2026-10-27T17:13:41.5749958Z   PACKAGES: librsvg2-bin pngquant ghdl-llvm
+2026-10-27T17:13:41.5750313Z ##[endgroup]
+2026-10-27T17:13:41.5883400Z Normalizing package list...
+2026-10-27T17:13:42.2002295Z done
+2026-10-27T17:13:42.2021103Z Validating action arguments (version='tinytapeout_gds_action', packages='ghdl-llvm=4.1.0+dfsg-0ubuntu2.1 librsvg2-bin=2.58.0+dfsg-1ubuntu0.1 pngquant=2.18.0-1build2')...
+2026-10-27T17:13:42.2038782Z done
+2026-10-27T17:13:42.2039156Z 
+2026-10-27T17:13:42.2039369Z Creating cache key...
+2026-10-27T17:13:42.2061148Z - CPU architecture is 'x86_64'.
+2026-10-27T17:13:42.2062517Z - Value to hash is 'ghdl-llvm=4.1.0+dfsg-0ubuntu2.1 librsvg2-bin=2.58.0+dfsg-1ubuntu0.1 pngquant=2.18.0-1build2 @ tinytapeout_gds_action 3'.
+2026-10-27T17:13:42.2096304Z - Value hashed as 'c64598ebb40a937a93d97cceb7dfde03'.
+2026-10-27T17:13:42.2097586Z done
+2026-10-27T17:13:42.2098532Z Hash value written to /home/runner/cache-apt-pkgs/cache_key.md5
+2026-10-27T17:13:42.2125351Z ##[end-action id=__TinyTapeout_tt-gds-action.__awalsh128_cache-apt-pkgs-action.pre-cache;outcome=success;conclusion=success;duration_ms=648]
+2026-10-27T17:13:42.2132816Z ##[start-action display=Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9;id=__TinyTapeout_tt-gds-action.__awalsh128_cache-apt-pkgs-action.load-cache]
+2026-10-27T17:13:42.2193160Z ##[group]Run actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+2026-10-27T17:13:42.2193584Z with:
+2026-10-27T17:13:42.2193804Z   path: ~/cache-apt-pkgs
+2026-10-27T17:13:42.2194139Z   key: cache-apt-pkgs_c64598ebb40a937a93d97cceb7dfde03
+2026-10-27T17:13:42.2194474Z   enableCrossOsArchive: false
+2026-10-27T17:13:42.2194735Z   fail-on-cache-miss: false
+2026-10-27T17:13:42.2194984Z   lookup-only: false
+2026-10-27T17:13:42.2195192Z env:
+2026-10-27T17:13:42.2195384Z   PDK: ihp-sg13g2
+2026-10-27T17:13:42.2195621Z   TT_ARGS: --ihp
+2026-10-27T17:13:42.2195854Z   CACHE_KEY: c64598ebb40a937a93d97cceb7dfde03
+2026-10-27T17:13:42.2196142Z ##[endgroup]
+2026-10-27T17:13:42.6045912Z Cache not found for input keys: cache-apt-pkgs_c64598ebb40a937a93d97cceb7dfde03
+2026-10-27T17:13:42.6131072Z ##[end-action id=__TinyTapeout_tt-gds-action.__awalsh128_cache-apt-pkgs-action.load-cache;outcome=success;conclusion=success;duration_ms=399]
+2026-10-27T17:13:42.6138391Z ##[start-action display=Run ${GITHUB_ACTION_PATH}/post_cache_action.sh \;id=__TinyTapeout_tt-gds-action.__awalsh128_cache-apt-pkgs-action.post-cache]
+2026-10-27T17:13:42.6159551Z ##[group]Run ${GITHUB_ACTION_PATH}/post_cache_action.sh \
+2026-10-27T17:13:42.6160019Z [36;1m${GITHUB_ACTION_PATH}/post_cache_action.sh \[0m
+2026-10-27T17:13:42.6160372Z [36;1m  ~/cache-apt-pkgs \[0m
+2026-10-27T17:13:42.6160655Z [36;1m  / \[0m
+2026-10-27T17:13:42.6160875Z [36;1m  "$CACHE_HIT" \[0m
+2026-10-27T17:13:42.6161134Z [36;1m  "$EXEC_INSTALL_SCRIPTS" \[0m
+2026-10-27T17:13:42.6161406Z [36;1m  "$DEBUG" \[0m
+2026-10-27T17:13:42.6161641Z [36;1m  "$ADD_REPOSITORY" \[0m
+2026-10-27T17:13:42.6161905Z [36;1m  "$PACKAGES"[0m
+2026-10-27T17:13:42.6162452Z [36;1mfunction create_list { local list=$(cat ~/cache-apt-pkgs/manifest_${1}.log | tr '\n' ','); echo ${list:0:-1}; };[0m
+2026-10-27T17:13:42.6163164Z [36;1mecho "package-version-list=$(create_list main)" >> $GITHUB_OUTPUT[0m
+2026-10-27T17:13:42.6163716Z [36;1mecho "all-package-version-list=$(create_list all)" >> $GITHUB_OUTPUT[0m
+2026-10-27T17:13:42.6227987Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T17:13:42.6228591Z env:
+2026-10-27T17:13:42.6228809Z   PDK: ihp-sg13g2
+2026-10-27T17:13:42.6229060Z   TT_ARGS: --ihp
+2026-10-27T17:13:42.6229325Z   CACHE_KEY: c64598ebb40a937a93d97cceb7dfde03
+2026-10-27T17:13:42.6229648Z   CACHE_HIT: 
+2026-10-27T17:13:42.6230049Z   EXEC_INSTALL_SCRIPTS: false
+2026-10-27T17:13:42.6230328Z   DEBUG: false
+2026-10-27T17:13:42.6230569Z   ADD_REPOSITORY: 
+2026-10-27T17:13:42.6230851Z   PACKAGES: librsvg2-bin pngquant ghdl-llvm
+2026-10-27T17:13:42.6231176Z ##[endgroup]
+2026-10-27T17:13:42.6409152Z Installing apt-fast for optimized installs...
+2026-10-27T17:13:42.7580933Z --2026-10-27 17:13:42--  https://raw.githubusercontent.com/ilikenwf/apt-fast/master/apt-fast
+2026-10-27T17:13:42.7784743Z Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 185.199.110.133, 185.199.111.133, 185.199.108.133, ...
+2026-10-27T17:13:42.7797689Z Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|185.199.110.133|:443... connected.
+2026-10-27T17:13:42.8516233Z HTTP request sent, awaiting response... 200 OK
+2026-10-27T17:13:42.8517986Z Length: 23941 (23K) [text/plain]
+2026-10-27T17:13:42.8519523Z Saving to: ‘/usr/local/bin/apt-fast’
+2026-10-27T17:13:42.8520031Z 
+2026-10-27T17:13:42.8520385Z      0K .......... .......... ...                             100% 58.4M=0s
+2026-10-27T17:13:42.8521123Z 
+2026-10-27T17:13:42.8522023Z 2026-10-27 17:13:42 (58.4 MB/s) - ‘/usr/local/bin/apt-fast’ saved [23941/23941]
+2026-10-27T17:13:42.8522747Z 
+2026-10-27T17:13:42.8712306Z --2026-10-27 17:13:42--  https://raw.githubusercontent.com/ilikenwf/apt-fast/master/apt-fast.conf
+2026-10-27T17:13:42.8915527Z Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 185.199.111.133, 185.199.109.133, 185.199.110.133, ...
+2026-10-27T17:13:42.8926820Z Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|185.199.111.133|:443... connected.
+2026-10-27T17:13:42.9629924Z HTTP request sent, awaiting response... 200 OK
+2026-10-27T17:13:42.9631073Z Length: 5052 (4.9K) [text/plain]
+2026-10-27T17:13:42.9632268Z Saving to: ‘/etc/apt-fast.conf’
+2026-10-27T17:13:42.9632696Z 
+2026-10-27T17:13:42.9632960Z      0K ....                                                  100% 35.2M=0s
+2026-10-27T17:13:42.9633456Z 
+2026-10-27T17:13:42.9633971Z 2026-10-27 17:13:42 (35.2 MB/s) - ‘/etc/apt-fast.conf’ saved [5052/5052]
+2026-10-27T17:13:42.9634565Z 
+2026-10-27T17:13:42.9656166Z done
+2026-10-27T17:13:42.9656511Z 
+2026-10-27T17:13:42.9656945Z Updating APT package list...
+2026-10-27T17:13:42.9657314Z 
+2026-10-27T17:13:43.2494454Z Clean installing and caching 3 package(s).
+2026-10-27T17:13:43.2495171Z 
+2026-10-27T17:13:43.2495404Z Package list:
+2026-10-27T17:13:43.2495998Z - ghdl-llvm=4.1.0+dfsg-0ubuntu2.1
+2026-10-27T17:13:43.2496941Z - librsvg2-bin=2.58.0+dfsg-1ubuntu0.1
+2026-10-27T17:13:43.2497610Z - pngquant=2.18.0-1build2
+2026-10-27T17:13:43.2498712Z Writing main packages manifest to /home/runner/cache-apt-pkgs/manifest_main.log...
+2026-10-27T17:13:43.2522195Z done
+2026-10-27T17:13:43.2522428Z 
+2026-10-27T17:13:43.2522705Z Clean installing 3 packages...
+2026-10-27T17:15:17.7987182Z 
+2026-10-27T17:15:17.7987777Z Running kernel seems to be up-to-date.
+2026-10-27T17:15:17.7988240Z 
+2026-10-27T17:15:17.7988453Z No services need to be restarted.
+2026-10-27T17:15:17.7988834Z 
+2026-10-27T17:15:17.7988971Z No containers need to be restarted.
+2026-10-27T17:15:17.7989210Z 
+2026-10-27T17:15:17.7989680Z No user sessions are running outdated binaries.
+2026-10-27T17:15:17.7990101Z 
+2026-10-27T17:15:17.7990503Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-10-27T17:15:18.6514281Z done
+2026-10-27T17:15:18.6514993Z Installation log written to /home/runner/cache-apt-pkgs/install.log
+2026-10-27T17:15:18.6515577Z 
+2026-10-27T17:15:18.6545054Z Installed package list:
+2026-10-27T17:15:18.6571662Z - ghdl-common (4.1.0+dfsg-0ubuntu2.1)
+2026-10-27T17:15:18.6595618Z - libgnat-13 (13.3.0-6ubuntu2~24.04.1)
+2026-10-27T17:15:18.6619746Z - ghdl-llvm (4.1.0+dfsg-0ubuntu2.1)
+2026-10-27T17:15:18.6644020Z - libimagequant0 (2.18.0-1build1)
+2026-10-27T17:15:18.6668798Z - librsvg2-2 (2.58.0+dfsg-1ubuntu0.1)
+2026-10-27T17:15:18.6692860Z - librsvg2-bin (2.58.0+dfsg-1ubuntu0.1)
+2026-10-27T17:15:18.6717411Z - librsvg2-common (2.58.0+dfsg-1ubuntu0.1)
+2026-10-27T17:15:18.6741692Z - pngquant (2.18.0-1build2)
+2026-10-27T17:15:18.6741999Z 
+2026-10-27T17:15:18.6757619Z Caching 8 installed packages...
+2026-10-27T17:15:18.6764087Z   * Caching ghdl-common to /home/runner/cache-apt-pkgs/ghdl-common=4.1.0+dfsg-0ubuntu2.1.tar...
+2026-10-27T17:15:18.7030264Z     done (compressed size 2.4M).
+2026-10-27T17:15:18.7035509Z   * Caching libgnat-13 to /home/runner/cache-apt-pkgs/libgnat-13=13.3.0-6ubuntu2~24.04.1.tar...
+2026-10-27T17:15:18.7281153Z     done (compressed size 4.7M).
+2026-10-27T17:15:18.7286254Z   * Caching ghdl-llvm to /home/runner/cache-apt-pkgs/ghdl-llvm=4.1.0+dfsg-0ubuntu2.1.tar...
+2026-10-27T17:15:18.7587448Z     done (compressed size 16M).
+2026-10-27T17:15:18.7592769Z   * Caching libimagequant0 to /home/runner/cache-apt-pkgs/libimagequant0=2.18.0-1build1.tar...
+2026-10-27T17:15:18.7851676Z     done (compressed size 80K).
+2026-10-27T17:15:18.7857201Z   * Caching librsvg2-2 to /home/runner/cache-apt-pkgs/librsvg2-2=2.58.0+dfsg-1ubuntu0.1.tar...
+2026-10-27T17:15:18.8114010Z     done (compressed size 6.5M).
+2026-10-27T17:15:18.8119740Z   * Caching librsvg2-bin to /home/runner/cache-apt-pkgs/librsvg2-bin=2.58.0+dfsg-1ubuntu0.1.tar...
+2026-10-27T17:15:18.8369320Z     done (compressed size 7.1M).
+2026-10-27T17:15:18.8374890Z   * Caching librsvg2-common to /home/runner/cache-apt-pkgs/librsvg2-common=2.58.0+dfsg-1ubuntu0.1.tar...
+2026-10-27T17:15:18.8625253Z     done (compressed size 52K).
+2026-10-27T17:15:18.8630890Z   * Caching pngquant to /home/runner/cache-apt-pkgs/pngquant=2.18.0-1build2.tar...
+2026-10-27T17:15:18.8872189Z     done (compressed size 60K).
+2026-10-27T17:15:18.8903775Z done (total cache size 37M)
+2026-10-27T17:15:18.8904097Z 
+2026-10-27T17:15:18.8904495Z Writing all packages manifest to /home/runner/cache-apt-pkgs/manifest_all.log...
+2026-10-27T17:15:18.8927263Z done
+2026-10-27T17:15:18.8930505Z 
+2026-10-27T17:15:18.8984538Z ##[end-action id=__TinyTapeout_tt-gds-action.__awalsh128_cache-apt-pkgs-action.post-cache;outcome=success;conclusion=success;duration_ms=96284]
+2026-10-27T17:15:18.8988484Z ##[start-action display=Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f;id=__TinyTapeout_tt-gds-action.__awalsh128_cache-apt-pkgs-action.upload-logs]
+2026-10-27T17:15:18.9003579Z ##[end-action id=__TinyTapeout_tt-gds-action.__awalsh128_cache-apt-pkgs-action.upload-logs;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-27T17:15:18.9006394Z ##[start-action display=Run actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9;id=__TinyTapeout_tt-gds-action.__awalsh128_cache-apt-pkgs-action.save-cache]
+2026-10-27T17:15:18.9044794Z ##[group]Run actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+2026-10-27T17:15:18.9045160Z with:
+2026-10-27T17:15:18.9045359Z   path: ~/cache-apt-pkgs
+2026-10-27T17:15:18.9045657Z   key: cache-apt-pkgs_c64598ebb40a937a93d97cceb7dfde03
+2026-10-27T17:15:18.9045989Z   enableCrossOsArchive: false
+2026-10-27T17:15:18.9046225Z env:
+2026-10-27T17:15:18.9046409Z   PDK: ihp-sg13g2
+2026-10-27T17:15:18.9046884Z   TT_ARGS: --ihp
+2026-10-27T17:15:18.9047180Z   CACHE_KEY: c64598ebb40a937a93d97cceb7dfde03
+2026-10-27T17:15:18.9047469Z ##[endgroup]
+2026-10-27T17:15:19.0426231Z [command]/usr/bin/tar --posix -cf cache.tzst --exclude cache.tzst -P -C /home/runner/work/jstreet_Leonidas/jstreet_Leonidas --files-from manifest.txt --use-compress-program zstdmt
+2026-10-27T17:15:20.4625956Z Sent 12495581 of 12495581 (100.0%), 11.9 MBs/sec
+2026-10-27T17:15:20.7647123Z Cache saved with key: cache-apt-pkgs_c64598ebb40a937a93d97cceb7dfde03
+2026-10-27T17:15:20.7738382Z ##[end-action id=__TinyTapeout_tt-gds-action.__awalsh128_cache-apt-pkgs-action.save-cache;outcome=success;conclusion=success;duration_ms=1872]
+2026-10-27T17:15:20.7741550Z ##[start-action display=Run rm -rf ~/cache-apt-pkgs;id=__TinyTapeout_tt-gds-action.__awalsh128_cache-apt-pkgs-action.clean-cache]
+2026-10-27T17:15:20.7760723Z ##[group]Run rm -rf ~/cache-apt-pkgs
+2026-10-27T17:15:20.7761050Z [36;1mrm -rf ~/cache-apt-pkgs[0m
+2026-10-27T17:15:20.7824395Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T17:15:20.7825022Z env:
+2026-10-27T17:15:20.7825261Z   PDK: ihp-sg13g2
+2026-10-27T17:15:20.7825523Z   TT_ARGS: --ihp
+2026-10-27T17:15:20.7825805Z   CACHE_KEY: c64598ebb40a937a93d97cceb7dfde03
+2026-10-27T17:15:20.7826151Z ##[endgroup]
+2026-10-27T17:15:20.7987579Z ##[end-action id=__TinyTapeout_tt-gds-action.__awalsh128_cache-apt-pkgs-action.clean-cache;outcome=success;conclusion=success;duration_ms=24]
+2026-10-27T17:15:20.8027558Z ##[end-action id=__TinyTapeout_tt-gds-action.__awalsh128_cache-apt-pkgs-action;outcome=success;conclusion=success;duration_ms=99254]
+2026-10-27T17:15:20.8029973Z ##[start-action display=Checkout tt-support-tools repo;id=__TinyTapeout_tt-gds-action.__actions_checkout]
+2026-10-27T17:15:20.8102141Z ##[group]Run actions/checkout@v6
+2026-10-27T17:15:20.8102415Z with:
+2026-10-27T17:15:20.8102638Z   repository: TinyTapeout/tt-support-tools
+2026-10-27T17:15:20.8102921Z   ref: main
+2026-10-27T17:15:20.8103107Z   path: tt
+2026-10-27T17:15:20.8105757Z   token: ***
+2026-10-27T17:15:20.8105978Z   ssh-strict: true
+2026-10-27T17:15:20.8106189Z   ssh-user: git
+2026-10-27T17:15:20.8106411Z   persist-credentials: true
+2026-10-27T17:15:20.8106943Z   clean: true
+2026-10-27T17:15:20.8107183Z   sparse-checkout-cone-mode: true
+2026-10-27T17:15:20.8107448Z   fetch-depth: 1
+2026-10-27T17:15:20.8107664Z   fetch-tags: false
+2026-10-27T17:15:20.8107882Z   show-progress: true
+2026-10-27T17:15:20.8108097Z   lfs: false
+2026-10-27T17:15:20.8108294Z   submodules: false
+2026-10-27T17:15:20.8108516Z   set-safe-directory: true
+2026-10-27T17:15:20.8108769Z   allow-unsafe-pr-checkout: false
+2026-10-27T17:15:20.8109019Z env:
+2026-10-27T17:15:20.8109204Z   PDK: ihp-sg13g2
+2026-10-27T17:15:20.8109411Z   TT_ARGS: --ihp
+2026-10-27T17:15:20.8109654Z   CACHE_KEY: c64598ebb40a937a93d97cceb7dfde03
+2026-10-27T17:15:20.8109949Z ##[endgroup]
+2026-10-27T17:15:20.9005153Z Syncing repository: TinyTapeout/tt-support-tools
+2026-10-27T17:15:20.9008620Z ##[group]Getting Git version info
+2026-10-27T17:15:20.9009544Z Working directory is '/home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt'
+2026-10-27T17:15:20.9060496Z [command]/usr/bin/git version
+2026-10-27T17:15:20.9106160Z git version 2.55.0
+2026-10-27T17:15:20.9130460Z ##[endgroup]
+2026-10-27T17:15:20.9144872Z Temporarily overriding HOME='/home/runner/work/_temp/931b1410-681f-4618-8672-b31592e99f8e' before making global git config changes
+2026-10-27T17:15:20.9146143Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-27T17:15:20.9152092Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt
+2026-10-27T17:15:20.9194751Z ##[group]Determining repository object format
+2026-10-27T17:15:21.2103616Z ##[endgroup]
+2026-10-27T17:15:21.2104608Z ##[group]Initializing the repository
+2026-10-27T17:15:21.2108846Z [command]/usr/bin/git init /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt
+2026-10-27T17:15:21.2163991Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-27T17:15:21.2164656Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-27T17:15:21.2165388Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-27T17:15:21.2165952Z hint: call:
+2026-10-27T17:15:21.2166177Z hint:
+2026-10-27T17:15:21.2166460Z hint: 	git config --global init.defaultBranch <name>
+2026-10-27T17:15:21.2167365Z hint:
+2026-10-27T17:15:21.2167930Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-27T17:15:21.2168889Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-27T17:15:21.2169783Z hint:
+2026-10-27T17:15:21.2170167Z hint: 	git branch -m <name>
+2026-10-27T17:15:21.2170795Z hint:
+2026-10-27T17:15:21.2171574Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-27T17:15:21.2172619Z Initialized empty Git repository in /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt/.git/
+2026-10-27T17:15:21.2185624Z [command]/usr/bin/git remote add origin https://github.com/TinyTapeout/tt-support-tools
+2026-10-27T17:15:21.2229841Z ##[endgroup]
+2026-10-27T17:15:21.2230310Z ##[group]Disabling automatic garbage collection
+2026-10-27T17:15:21.2237341Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-27T17:15:21.2279330Z ##[endgroup]
+2026-10-27T17:15:21.2279954Z ##[group]Setting up auth
+2026-10-27T17:15:21.2281150Z Removing SSH command configuration
+2026-10-27T17:15:21.2290498Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-27T17:15:21.2343708Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-27T17:15:21.2626376Z Removing HTTP extra header
+2026-10-27T17:15:21.2627526Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-27T17:15:21.2675532Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-27T17:15:21.2934454Z Removing includeIf entries pointing to credentials config files
+2026-10-27T17:15:21.2942822Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-27T17:15:21.2989465Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-27T17:15:21.3238044Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-2865d494-7aed-4b49-87fc-f1338f3aa973.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-27T17:15:21.3294896Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt/.git.path /home/runner/work/_temp/git-credentials-2865d494-7aed-4b49-87fc-f1338f3aa973.config
+2026-10-27T17:15:21.3332826Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/jstreet_Leonidas/jstreet_Leonidas/tt/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-2865d494-7aed-4b49-87fc-f1338f3aa973.config
+2026-10-27T17:15:21.3371334Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/tt/.git.path /github/runner_temp/git-credentials-2865d494-7aed-4b49-87fc-f1338f3aa973.config
+2026-10-27T17:15:21.3411769Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/tt/.git/worktrees/*.path /github/runner_temp/git-credentials-2865d494-7aed-4b49-87fc-f1338f3aa973.config
+2026-10-27T17:15:21.3445599Z ##[endgroup]
+2026-10-27T17:15:21.3446223Z ##[group]Fetching the repository
+2026-10-27T17:15:21.3454858Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +refs/heads/main*:refs/remotes/origin/main* +refs/tags/main*:refs/tags/main*
+2026-10-27T17:15:22.1296359Z From https://github.com/TinyTapeout/tt-support-tools
+2026-10-27T17:15:22.1297356Z  * [new branch]      main       -> origin/main
+2026-10-27T17:15:22.1304346Z ##[endgroup]
+2026-10-27T17:15:22.1305080Z ##[group]Determining the checkout info
+2026-10-27T17:15:22.1311241Z [command]/usr/bin/git branch --list --remote origin/main
+2026-10-27T17:15:22.1345495Z   origin/main
+2026-10-27T17:15:22.1350360Z ##[endgroup]
+2026-10-27T17:15:22.1355120Z [command]/usr/bin/git sparse-checkout disable
+2026-10-27T17:15:22.1401352Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-27T17:15:22.1436010Z ##[group]Checking out the ref
+2026-10-27T17:15:22.1440248Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-10-27T17:15:22.1804229Z Switched to a new branch 'main'
+2026-10-27T17:15:22.1805854Z branch 'main' set up to track 'origin/main'.
+2026-10-27T17:15:22.1814222Z ##[endgroup]
+2026-10-27T17:15:22.1864289Z [command]/usr/bin/git log -1 --format=%H
+2026-10-27T17:15:22.1900036Z 02abf73b5f5dcd2eabdda92b074bf00c4446d886
+2026-10-27T17:15:22.2028082Z ##[end-action id=__TinyTapeout_tt-gds-action.__actions_checkout;outcome=success;conclusion=success;duration_ms=1399]
+2026-10-27T17:15:22.2030876Z ##[start-action display=Setup python;id=__TinyTapeout_tt-gds-action.__actions_setup-python]
+2026-10-27T17:15:22.2076895Z ##[group]Run actions/setup-python@v6
+2026-10-27T17:15:22.2077194Z with:
+2026-10-27T17:15:22.2077401Z   python-version: 3.11
+2026-10-27T17:15:22.2077625Z   cache: pip
+2026-10-27T17:15:22.2077826Z   check-latest: false
+2026-10-27T17:15:22.2081401Z   token: ***
+2026-10-27T17:15:22.2081642Z   update-environment: true
+2026-10-27T17:15:22.2081905Z   allow-prereleases: false
+2026-10-27T17:15:22.2082148Z   freethreaded: false
+2026-10-27T17:15:22.2082365Z env:
+2026-10-27T17:15:22.2082569Z   PDK: ihp-sg13g2
+2026-10-27T17:15:22.2082780Z   TT_ARGS: --ihp
+2026-10-27T17:15:22.2083017Z   CACHE_KEY: c64598ebb40a937a93d97cceb7dfde03
+2026-10-27T17:15:22.2083308Z ##[endgroup]
+2026-10-27T17:15:22.3437841Z ##[group]Installed versions
+2026-10-27T17:15:22.3538047Z Successfully set up CPython (3.11.17)
+2026-10-27T17:15:22.3539000Z ##[endgroup]
+2026-10-27T17:15:22.4500690Z [command]/opt/hostedtoolcache/Python/3.11.17/x64/bin/pip cache dir
+2026-10-27T17:15:22.7468272Z /home/runner/.cache/pip
+2026-10-27T17:15:23.0700253Z Cache hit for: setup-python-Linux-x64-24.04-Ubuntu-python-3.11.17-pip-13d01a50785d30741db1a526dabdffa1ca0523da542265bc23bee93ebaa154bd
+2026-10-27T17:15:24.3481333Z Received 0 of 97672488 (0.0%), 0.0 MBs/sec
+2026-10-27T17:15:25.1769476Z Received 97672488 of 97672488 (100.0%), 51.0 MBs/sec
+2026-10-27T17:15:25.1770561Z Cache Size: ~93 MB (97672488 B)
+2026-10-27T17:15:25.1834900Z [command]/usr/bin/tar -xf /home/runner/work/_temp/19062031-3cec-4aa2-9253-9dca7e0fe663/cache.tzst -P -C /home/runner/work/jstreet_Leonidas/jstreet_Leonidas --use-compress-program unzstd
+2026-10-27T17:15:25.3371158Z Cache restored successfully
+2026-10-27T17:15:25.3420646Z Cache restored from key: setup-python-Linux-x64-24.04-Ubuntu-python-3.11.17-pip-13d01a50785d30741db1a526dabdffa1ca0523da542265bc23bee93ebaa154bd
+2026-10-27T17:15:25.3574040Z ##[end-action id=__TinyTapeout_tt-gds-action.__actions_setup-python;outcome=success;conclusion=success;duration_ms=3154]
+2026-10-27T17:15:25.3576897Z ##[start-action display=Install tt-support-tools dependencies;id=__TinyTapeout_tt-gds-action.__run_2]
+2026-10-27T17:15:25.3595016Z ##[group]Run pip install -r tt/requirements.txt
+2026-10-27T17:15:25.3595406Z [36;1mpip install -r tt/requirements.txt[0m
+2026-10-27T17:15:25.3663645Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T17:15:25.3664033Z env:
+2026-10-27T17:15:25.3664252Z   PDK: ihp-sg13g2
+2026-10-27T17:15:25.3664484Z   TT_ARGS: --ihp
+2026-10-27T17:15:25.3664741Z   CACHE_KEY: c64598ebb40a937a93d97cceb7dfde03
+2026-10-27T17:15:25.3665151Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:15:25.3665635Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-27T17:15:25.3666113Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:15:25.3666781Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:15:25.3667229Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:15:25.3667666Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-27T17:15:25.3668033Z ##[endgroup]
+2026-10-27T17:15:25.9295629Z Collecting cairocffi==1.7.1 (from -r tt/requirements.txt (line 7))
+2026-10-27T17:15:25.9313088Z   Using cached cairocffi-1.7.1-py3-none-any.whl.metadata (3.3 kB)
+2026-10-27T17:15:25.9395461Z Collecting cairosvg==2.8.2 (from -r tt/requirements.txt (line 9))
+2026-10-27T17:15:25.9412094Z   Using cached cairosvg-2.8.2-py3-none-any.whl.metadata (2.7 kB)
+2026-10-27T17:15:25.9507807Z Collecting certifi==2025.8.3 (from -r tt/requirements.txt (line 11))
+2026-10-27T17:15:25.9524250Z   Using cached certifi-2025.8.3-py3-none-any.whl.metadata (2.4 kB)
+2026-10-27T17:15:26.0520328Z Collecting cffi==1.17.1 (from -r tt/requirements.txt (line 13))
+2026-10-27T17:15:26.0540122Z   Using cached cffi-1.17.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (1.5 kB)
+2026-10-27T17:15:26.0592451Z Collecting cfgv==3.4.0 (from -r tt/requirements.txt (line 15))
+2026-10-27T17:15:26.0607223Z   Using cached cfgv-3.4.0-py2.py3-none-any.whl.metadata (8.5 kB)
+2026-10-27T17:15:26.1656323Z Collecting charset-normalizer==3.4.2 (from -r tt/requirements.txt (line 17))
+2026-10-27T17:15:26.1674183Z   Using cached charset_normalizer-3.4.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (35 kB)
+2026-10-27T17:15:26.1741857Z Collecting chevron==0.14.0 (from -r tt/requirements.txt (line 19))
+2026-10-27T17:15:26.1756687Z   Using cached chevron-0.14.0-py3-none-any.whl.metadata (4.9 kB)
+2026-10-27T17:15:26.1843001Z Collecting click==8.2.1 (from -r tt/requirements.txt (line 21))
+2026-10-27T17:15:26.1857824Z   Using cached click-8.2.1-py3-none-any.whl.metadata (2.5 kB)
+2026-10-27T17:15:26.1912623Z Collecting configupdater==3.2 (from -r tt/requirements.txt (line 23))
+2026-10-27T17:15:26.1926904Z   Using cached ConfigUpdater-3.2-py2.py3-none-any.whl.metadata (10 kB)
+2026-10-27T17:15:26.2449037Z Collecting contourpy==1.3.3 (from -r tt/requirements.txt (line 25))
+2026-10-27T17:15:26.2466361Z   Using cached contourpy-1.3.3-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (5.5 kB)
+2026-10-27T17:15:26.2528943Z Collecting cssselect2==0.8.0 (from -r tt/requirements.txt (line 27))
+2026-10-27T17:15:26.2544128Z   Using cached cssselect2-0.8.0-py3-none-any.whl.metadata (2.9 kB)
+2026-10-27T17:15:26.2583342Z Collecting cycler==0.12.1 (from -r tt/requirements.txt (line 29))
+2026-10-27T17:15:26.2598337Z   Using cached cycler-0.12.1-py3-none-any.whl.metadata (3.8 kB)
+2026-10-27T17:15:26.2647392Z Collecting defusedxml==0.7.1 (from -r tt/requirements.txt (line 31))
+2026-10-27T17:15:26.2666034Z   Using cached defusedxml-0.7.1-py2.py3-none-any.whl.metadata (32 kB)
+2026-10-27T17:15:26.2729456Z Collecting distlib==0.4.0 (from -r tt/requirements.txt (line 33))
+2026-10-27T17:15:26.2743907Z   Using cached distlib-0.4.0-py2.py3-none-any.whl.metadata (5.2 kB)
+2026-10-27T17:15:26.2870856Z Collecting filelock==3.18.0 (from -r tt/requirements.txt (line 35))
+2026-10-27T17:15:26.2885423Z   Using cached filelock-3.18.0-py3-none-any.whl.metadata (2.9 kB)
+2026-10-27T17:15:26.4394093Z Collecting fonttools==4.60.1 (from -r tt/requirements.txt (line 37))
+2026-10-27T17:15:26.4411309Z   Using cached fonttools-4.60.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (112 kB)
+2026-10-27T17:15:26.4954083Z Collecting gdstk==0.9.60 (from -r tt/requirements.txt (line 39))
+2026-10-27T17:15:26.4970473Z   Using cached gdstk-0.9.60-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (8.8 kB)
+2026-10-27T17:15:26.5024174Z Collecting gitdb==4.0.12 (from -r tt/requirements.txt (line 41))
+2026-10-27T17:15:26.5039058Z   Using cached gitdb-4.0.12-py3-none-any.whl.metadata (1.2 kB)
+2026-10-27T17:15:26.5155927Z Collecting gitpython==3.1.45 (from -r tt/requirements.txt (line 43))
+2026-10-27T17:15:26.5170915Z   Using cached gitpython-3.1.45-py3-none-any.whl.metadata (13 kB)
+2026-10-27T17:15:26.5361056Z Collecting identify==2.6.12 (from -r tt/requirements.txt (line 45))
+2026-10-27T17:15:26.5377165Z   Using cached identify-2.6.12-py2.py3-none-any.whl.metadata (4.4 kB)
+2026-10-27T17:15:26.5440242Z Collecting idna==3.10 (from -r tt/requirements.txt (line 47))
+2026-10-27T17:15:26.5454634Z   Using cached idna-3.10-py3-none-any.whl.metadata (10 kB)
+2026-10-27T17:15:26.5565075Z Collecting importlib-resources==6.5.2 (from -r tt/requirements.txt (line 49))
+2026-10-27T17:15:26.5581530Z   Using cached importlib_resources-6.5.2-py3-none-any.whl.metadata (3.9 kB)
+2026-10-27T17:15:26.5632119Z Collecting iniconfig==2.1.0 (from -r tt/requirements.txt (line 51))
+2026-10-27T17:15:26.5646962Z   Using cached iniconfig-2.1.0-py3-none-any.whl.metadata (2.7 kB)
+2026-10-27T17:15:26.6221691Z Collecting kiwisolver==1.4.9 (from -r tt/requirements.txt (line 53))
+2026-10-27T17:15:26.6239645Z   Using cached kiwisolver-1.4.9-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (6.3 kB)
+2026-10-27T17:15:26.6578225Z Collecting klayout==0.29.12 (from -r tt/requirements.txt (line 55))
+2026-10-27T17:15:26.6595571Z   Using cached klayout-0.29.12-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (915 bytes)
+2026-10-27T17:15:26.7787801Z Collecting matplotlib==3.10.6 (from -r tt/requirements.txt (line 57))
+2026-10-27T17:15:26.7806080Z   Using cached matplotlib-3.10.6-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (11 kB)
+2026-10-27T17:15:26.7920764Z Collecting mistune==3.1.3 (from -r tt/requirements.txt (line 59))
+2026-10-27T17:15:26.7937461Z   Using cached mistune-3.1.3-py3-none-any.whl.metadata (1.8 kB)
+2026-10-27T17:15:26.7994116Z Collecting mpremote==1.27.0 (from -r tt/requirements.txt (line 61))
+2026-10-27T17:15:26.8009768Z   Using cached mpremote-1.27.0-py3-none-any.whl.metadata (4.3 kB)
+2026-10-27T17:15:26.8084119Z Collecting nodeenv==1.9.1 (from -r tt/requirements.txt (line 63))
+2026-10-27T17:15:26.8099804Z   Using cached nodeenv-1.9.1-py2.py3-none-any.whl.metadata (21 kB)
+2026-10-27T17:15:27.0205661Z Collecting numpy==1.26.4 (from -r tt/requirements.txt (line 65))
+2026-10-27T17:15:27.0224090Z   Using cached numpy-1.26.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (61 kB)
+2026-10-27T17:15:27.0397222Z Collecting packaging==25.0 (from -r tt/requirements.txt (line 71))
+2026-10-27T17:15:27.0412946Z   Using cached packaging-25.0-py3-none-any.whl.metadata (3.3 kB)
+2026-10-27T17:15:27.1873688Z Collecting pillow==11.3.0 (from -r tt/requirements.txt (line 75))
+2026-10-27T17:15:27.1891471Z   Using cached pillow-11.3.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (9.0 kB)
+2026-10-27T17:15:27.2023770Z Collecting platformdirs==4.3.8 (from -r tt/requirements.txt (line 79))
+2026-10-27T17:15:27.2039586Z   Using cached platformdirs-4.3.8-py3-none-any.whl.metadata (12 kB)
+2026-10-27T17:15:27.2103618Z Collecting pluggy==1.6.0 (from -r tt/requirements.txt (line 84))
+2026-10-27T17:15:27.2118701Z   Using cached pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)
+2026-10-27T17:15:27.2296269Z Collecting pre-commit==4.2.0 (from -r tt/requirements.txt (line 86))
+2026-10-27T17:15:27.2311543Z   Using cached pre_commit-4.2.0-py2.py3-none-any.whl.metadata (1.3 kB)
+2026-10-27T17:15:27.2355532Z Collecting pycparser==2.22 (from -r tt/requirements.txt (line 88))
+2026-10-27T17:15:27.2370722Z   Using cached pycparser-2.22-py3-none-any.whl.metadata (943 bytes)
+2026-10-27T17:15:27.2462412Z Collecting pygments==2.19.2 (from -r tt/requirements.txt (line 90))
+2026-10-27T17:15:27.2477215Z   Using cached pygments-2.19.2-py3-none-any.whl.metadata (2.5 kB)
+2026-10-27T17:15:27.2625485Z Collecting pyparsing==3.2.5 (from -r tt/requirements.txt (line 92))
+2026-10-27T17:15:27.2641351Z   Using cached pyparsing-3.2.5-py3-none-any.whl.metadata (5.0 kB)
+2026-10-27T17:15:27.2697740Z Collecting pyserial==3.5 (from -r tt/requirements.txt (line 94))
+2026-10-27T17:15:27.2717126Z   Using cached pyserial-3.5-py2.py3-none-any.whl.metadata (1.6 kB)
+2026-10-27T17:15:27.2890428Z Collecting pytest==8.4.2 (from -r tt/requirements.txt (line 96))
+2026-10-27T17:15:27.2906855Z   Using cached pytest-8.4.2-py3-none-any.whl.metadata (7.7 kB)
+2026-10-27T17:15:27.2974546Z Collecting python-dateutil==2.9.0.post0 (from -r tt/requirements.txt (line 98))
+2026-10-27T17:15:27.2989366Z   Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+2026-10-27T17:15:27.3036281Z Collecting python-frontmatter==1.1.0 (from -r tt/requirements.txt (line 100))
+2026-10-27T17:15:27.3050395Z   Using cached python_frontmatter-1.1.0-py3-none-any.whl.metadata (4.1 kB)
+2026-10-27T17:15:27.3335102Z Collecting pyyaml==6.0.2 (from -r tt/requirements.txt (line 102))
+2026-10-27T17:15:27.3352134Z   Using cached PyYAML-6.0.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (2.1 kB)
+2026-10-27T17:15:27.3473568Z Collecting requests==2.32.4 (from -r tt/requirements.txt (line 107))
+2026-10-27T17:15:27.3489090Z   Using cached requests-2.32.4-py3-none-any.whl.metadata (4.9 kB)
+2026-10-27T17:15:27.3547132Z Collecting six==1.17.0 (from -r tt/requirements.txt (line 109))
+2026-10-27T17:15:27.3562911Z   Using cached six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+2026-10-27T17:15:27.3606721Z Collecting smmap==5.0.2 (from -r tt/requirements.txt (line 111))
+2026-10-27T17:15:27.3621596Z   Using cached smmap-5.0.2-py3-none-any.whl.metadata (4.3 kB)
+2026-10-27T17:15:27.3666723Z Collecting tinycss2==1.4.0 (from -r tt/requirements.txt (line 113))
+2026-10-27T17:15:27.3681426Z   Using cached tinycss2-1.4.0-py3-none-any.whl.metadata (3.0 kB)
+2026-10-27T17:15:27.3791643Z Collecting urllib3==2.5.0 (from -r tt/requirements.txt (line 117))
+2026-10-27T17:15:27.3807116Z   Using cached urllib3-2.5.0-py3-none-any.whl.metadata (6.5 kB)
+2026-10-27T17:15:27.4352136Z Collecting virtualenv==20.33.1 (from -r tt/requirements.txt (line 119))
+2026-10-27T17:15:27.4367860Z   Using cached virtualenv-20.33.1-py3-none-any.whl.metadata (4.5 kB)
+2026-10-27T17:15:27.4684263Z Collecting wasmtime==35.0.0 (from -r tt/requirements.txt (line 121))
+2026-10-27T17:15:27.4701463Z   Using cached wasmtime-35.0.0-py3-none-manylinux1_x86_64.whl.metadata (7.6 kB)
+2026-10-27T17:15:27.4747828Z Collecting webencodings==0.5.1 (from -r tt/requirements.txt (line 123))
+2026-10-27T17:15:27.4763892Z   Using cached webencodings-0.5.1-py2.py3-none-any.whl.metadata (2.1 kB)
+2026-10-27T17:15:27.4832855Z Collecting yowasp-runtime==1.78 (from -r tt/requirements.txt (line 127))
+2026-10-27T17:15:27.4848762Z   Using cached yowasp_runtime-1.78-py3-none-any.whl.metadata (2.4 kB)
+2026-10-27T17:15:27.4959035Z Collecting yowasp-yosys==0.55.0.0.post944 (from -r tt/requirements.txt (line 129))
+2026-10-27T17:15:27.4974482Z   Using cached yowasp_yosys-0.55.0.0.post944-py3-none-any.whl.metadata (2.6 kB)
+2026-10-27T17:15:27.5506568Z Using cached cairocffi-1.7.1-py3-none-any.whl (75 kB)
+2026-10-27T17:15:27.5522763Z Using cached cairosvg-2.8.2-py3-none-any.whl (45 kB)
+2026-10-27T17:15:27.5538587Z Using cached certifi-2025.8.3-py3-none-any.whl (161 kB)
+2026-10-27T17:15:27.5554407Z Using cached cffi-1.17.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (467 kB)
+2026-10-27T17:15:27.5571186Z Using cached cfgv-3.4.0-py2.py3-none-any.whl (7.2 kB)
+2026-10-27T17:15:27.5586034Z Using cached charset_normalizer-3.4.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (147 kB)
+2026-10-27T17:15:27.5601707Z Using cached chevron-0.14.0-py3-none-any.whl (11 kB)
+2026-10-27T17:15:27.5616059Z Using cached click-8.2.1-py3-none-any.whl (102 kB)
+2026-10-27T17:15:27.5631213Z Using cached ConfigUpdater-3.2-py2.py3-none-any.whl (34 kB)
+2026-10-27T17:15:27.5645533Z Using cached contourpy-1.3.3-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (355 kB)
+2026-10-27T17:15:27.5661328Z Using cached cssselect2-0.8.0-py3-none-any.whl (15 kB)
+2026-10-27T17:15:27.5675682Z Using cached cycler-0.12.1-py3-none-any.whl (8.3 kB)
+2026-10-27T17:15:27.5690628Z Using cached defusedxml-0.7.1-py2.py3-none-any.whl (25 kB)
+2026-10-27T17:15:27.5704846Z Using cached distlib-0.4.0-py2.py3-none-any.whl (469 kB)
+2026-10-27T17:15:27.5720965Z Using cached filelock-3.18.0-py3-none-any.whl (16 kB)
+2026-10-27T17:15:27.5735568Z Using cached fonttools-4.60.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.0 MB)
+2026-10-27T17:15:27.5768260Z Using cached gdstk-0.9.60-cp311-cp311-manylinux_2_28_x86_64.whl (534 kB)
+2026-10-27T17:15:27.5783982Z Using cached gitdb-4.0.12-py3-none-any.whl (62 kB)
+2026-10-27T17:15:27.5799530Z Using cached smmap-5.0.2-py3-none-any.whl (24 kB)
+2026-10-27T17:15:27.5813715Z Using cached gitpython-3.1.45-py3-none-any.whl (208 kB)
+2026-10-27T17:15:27.5828636Z Using cached identify-2.6.12-py2.py3-none-any.whl (99 kB)
+2026-10-27T17:15:27.5842949Z Using cached idna-3.10-py3-none-any.whl (70 kB)
+2026-10-27T17:15:27.5858084Z Using cached importlib_resources-6.5.2-py3-none-any.whl (37 kB)
+2026-10-27T17:15:27.5872159Z Using cached iniconfig-2.1.0-py3-none-any.whl (6.0 kB)
+2026-10-27T17:15:27.5886443Z Using cached kiwisolver-1.4.9-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (1.4 MB)
+2026-10-27T17:15:27.5906063Z Using cached klayout-0.29.12-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (23.8 MB)
+2026-10-27T17:15:27.6012055Z Using cached matplotlib-3.10.6-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (8.7 MB)
+2026-10-27T17:15:27.6059783Z Using cached mistune-3.1.3-py3-none-any.whl (53 kB)
+2026-10-27T17:15:27.6074756Z Using cached mpremote-1.27.0-py3-none-any.whl (36 kB)
+2026-10-27T17:15:27.6089841Z Using cached nodeenv-1.9.1-py2.py3-none-any.whl (22 kB)
+2026-10-27T17:15:27.6104758Z Using cached numpy-1.26.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (18.3 MB)
+2026-10-27T17:15:27.6186847Z Using cached packaging-25.0-py3-none-any.whl (66 kB)
+2026-10-27T17:15:27.6202339Z Using cached pillow-11.3.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (6.6 MB)
+2026-10-27T17:15:27.6240721Z Using cached platformdirs-4.3.8-py3-none-any.whl (18 kB)
+2026-10-27T17:15:27.6255152Z Using cached pluggy-1.6.0-py3-none-any.whl (20 kB)
+2026-10-27T17:15:27.6269893Z Using cached pre_commit-4.2.0-py2.py3-none-any.whl (220 kB)
+2026-10-27T17:15:27.6285079Z Using cached pycparser-2.22-py3-none-any.whl (117 kB)
+2026-10-27T17:15:27.6299813Z Using cached pygments-2.19.2-py3-none-any.whl (1.2 MB)
+2026-10-27T17:15:27.6319483Z Using cached pyparsing-3.2.5-py3-none-any.whl (113 kB)
+2026-10-27T17:15:27.6333976Z Using cached pyserial-3.5-py2.py3-none-any.whl (90 kB)
+2026-10-27T17:15:27.6348612Z Using cached pytest-8.4.2-py3-none-any.whl (365 kB)
+2026-10-27T17:15:27.6364226Z Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+2026-10-27T17:15:27.6379440Z Using cached python_frontmatter-1.1.0-py3-none-any.whl (9.8 kB)
+2026-10-27T17:15:27.6394053Z Using cached PyYAML-6.0.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (762 kB)
+2026-10-27T17:15:27.6410875Z Using cached requests-2.32.4-py3-none-any.whl (64 kB)
+2026-10-27T17:15:27.6425443Z Using cached urllib3-2.5.0-py3-none-any.whl (129 kB)
+2026-10-27T17:15:27.6440032Z Using cached six-1.17.0-py2.py3-none-any.whl (11 kB)
+2026-10-27T17:15:27.6454149Z Using cached tinycss2-1.4.0-py3-none-any.whl (26 kB)
+2026-10-27T17:15:27.6468470Z Using cached virtualenv-20.33.1-py3-none-any.whl (6.1 MB)
+2026-10-27T17:15:27.6504829Z Using cached wasmtime-35.0.0-py3-none-manylinux1_x86_64.whl (9.2 MB)
+2026-10-27T17:15:27.6553835Z Using cached webencodings-0.5.1-py2.py3-none-any.whl (11 kB)
+2026-10-27T17:15:27.6568029Z Using cached yowasp_runtime-1.78-py3-none-any.whl (5.2 kB)
+2026-10-27T17:15:27.6582245Z Using cached yowasp_yosys-0.55.0.0.post944-py3-none-any.whl (9.5 MB)
+2026-10-27T17:15:27.9653806Z Installing collected packages: webencodings, pyserial, klayout, distlib, chevron, urllib3, tinycss2, smmap, six, pyyaml, pyparsing, pygments, pycparser, pluggy, platformdirs, pillow, packaging, numpy, nodeenv, mistune, kiwisolver, iniconfig, importlib-resources, idna, identify, fonttools, filelock, defusedxml, cycler, configupdater, click, charset-normalizer, cfgv, certifi, wasmtime, virtualenv, requests, python-frontmatter, python-dateutil, pytest, mpremote, gitdb, gdstk, cssselect2, contourpy, cffi, yowasp-runtime, pre-commit, matplotlib, gitpython, cairocffi, yowasp-yosys, cairosvg
+2026-10-27T17:15:35.3758516Z 
+2026-10-27T17:15:35.3788055Z Successfully installed cairocffi-1.7.1 cairosvg-2.8.2 certifi-2025.8.3 cffi-1.17.1 cfgv-3.4.0 charset-normalizer-3.4.2 chevron-0.14.0 click-8.2.1 configupdater-3.2 contourpy-1.3.3 cssselect2-0.8.0 cycler-0.12.1 defusedxml-0.7.1 distlib-0.4.0 filelock-3.18.0 fonttools-4.60.1 gdstk-0.9.60 gitdb-4.0.12 gitpython-3.1.45 identify-2.6.12 idna-3.10 importlib-resources-6.5.2 iniconfig-2.1.0 kiwisolver-1.4.9 klayout-0.29.12 matplotlib-3.10.6 mistune-3.1.3 mpremote-1.27.0 nodeenv-1.9.1 numpy-1.26.4 packaging-25.0 pillow-11.3.0 platformdirs-4.3.8 pluggy-1.6.0 pre-commit-4.2.0 pycparser-2.22 pygments-2.19.2 pyparsing-3.2.5 pyserial-3.5 pytest-8.4.2 python-dateutil-2.9.0.post0 python-frontmatter-1.1.0 pyyaml-6.0.2 requests-2.32.4 six-1.17.0 smmap-5.0.2 tinycss2-1.4.0 urllib3-2.5.0 virtualenv-20.33.1 wasmtime-35.0.0 webencodings-0.5.1 yowasp-runtime-1.78 yowasp-yosys-0.55.0.0.post944
+2026-10-27T17:15:35.3794137Z 
+2026-10-27T17:15:35.3794709Z [notice] A new release of pip is available: 26.2.1 -> 26.2.2
+2026-10-27T17:15:35.3795546Z [notice] To update, run: pip install --upgrade pip
+2026-10-27T17:15:35.5237650Z ##[end-action id=__TinyTapeout_tt-gds-action.__run_2;outcome=success;conclusion=success;duration_ms=10165]
+2026-10-27T17:15:35.5241252Z ##[start-action display=Fetch verilog and build config;id=__TinyTapeout_tt-gds-action.__run_3]
+2026-10-27T17:15:35.5261837Z ##[group]Run ./tt/tt_tool.py --create-user-config $TT_ARGS
+2026-10-27T17:15:35.5262353Z [36;1m./tt/tt_tool.py --create-user-config $TT_ARGS[0m
+2026-10-27T17:15:35.5327066Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T17:15:35.5327539Z env:
+2026-10-27T17:15:35.5327823Z   PDK: ihp-sg13g2
+2026-10-27T17:15:35.5328110Z   TT_ARGS: --ihp
+2026-10-27T17:15:35.5328439Z   CACHE_KEY: c64598ebb40a937a93d97cceb7dfde03
+2026-10-27T17:15:35.5328921Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:15:35.5329584Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-27T17:15:35.5330228Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:15:35.5330805Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:15:35.5331382Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:15:35.5331961Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-27T17:15:35.5332454Z ##[endgroup]
+2026-10-27T17:15:36.0986130Z 2026-10-27 17:15:36,098 - tt_tool    - WARNING  - --ihp is deprecated and will be removed in a future version, use --pdk ihp-sg13g2 instead
+2026-10-27T17:15:48.1431700Z Warning: Replacing memory \rf with list of registers. See /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/datapath.sv:347
+2026-10-27T17:15:48.1433999Z Warning: Replacing memory \rf_n with list of registers. See /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/datapath.sv:121
+2026-10-27T17:15:48.1850772Z 2026-10-27 17:15:48,184 - project    - INFO     - creating include file
+2026-10-27T17:15:48.2334398Z ##[end-action id=__TinyTapeout_tt-gds-action.__run_3;outcome=success;conclusion=success;duration_ms=12709]
+2026-10-27T17:15:48.2338481Z ##[start-action display=Install LibreLane;id=__TinyTapeout_tt-gds-action.__run_4]
+2026-10-27T17:15:48.2361113Z ##[group]Run pip install librelane==3.0.5
+2026-10-27T17:15:48.2361526Z [36;1mpip install librelane==3.0.5[0m
+2026-10-27T17:15:48.2427563Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T17:15:48.2428034Z env:
+2026-10-27T17:15:48.2428296Z   PDK: ihp-sg13g2
+2026-10-27T17:15:48.2428610Z   TT_ARGS: --ihp
+2026-10-27T17:15:48.2428924Z   CACHE_KEY: c64598ebb40a937a93d97cceb7dfde03
+2026-10-27T17:15:48.2429404Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:15:48.2430011Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-27T17:15:48.2430612Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:15:48.2431139Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:15:48.2431661Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:15:48.2432191Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-27T17:15:48.2432636Z ##[endgroup]
+2026-10-27T17:15:48.6315103Z Collecting librelane==3.0.5
+2026-10-27T17:15:48.6791146Z   Downloading librelane-3.0.5-py3-none-any.whl.metadata (8.8 kB)
+2026-10-27T17:15:48.6938886Z Collecting ciel<3,>=2.3.1 (from librelane==3.0.5)
+2026-10-27T17:15:48.6980635Z   Downloading ciel-2.6.1-py3-none-any.whl.metadata (7.5 kB)
+2026-10-27T17:15:48.7031372Z Requirement already satisfied: click<8.3,>=8 in /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages (from librelane==3.0.5) (8.2.1)
+2026-10-27T17:15:48.7156474Z Collecting cloup<4,>=3.0.5 (from librelane==3.0.5)
+2026-10-27T17:15:48.7195330Z   Downloading cloup-3.1.0-py2.py3-none-any.whl.metadata (6.4 kB)
+2026-10-27T17:15:48.7325047Z Collecting deprecated<2,>=1.2.10 (from librelane==3.0.5)
+2026-10-27T17:15:48.7354809Z   Downloading deprecated-1.3.1-py2.py3-none-any.whl.metadata (5.9 kB)
+2026-10-27T17:15:48.7521079Z Collecting httpx<0.29,>=0.22.0 (from librelane==3.0.5)
+2026-10-27T17:15:48.7548606Z   Downloading httpx-0.28.1-py3-none-any.whl.metadata (7.1 kB)
+2026-10-27T17:15:48.7594212Z Requirement already satisfied: klayout<0.32.0,>=0.29.0 in /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages (from librelane==3.0.5) (0.29.12)
+2026-10-27T17:15:48.7682328Z Collecting lln-libparse==0.56.* (from librelane==3.0.5)
+2026-10-27T17:15:48.7803505Z   Downloading lln_libparse-0.56.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (3.8 kB)
+2026-10-27T17:15:49.0226039Z Collecting lxml>=4.9.0 (from librelane==3.0.5)
+2026-10-27T17:15:49.0262507Z   Downloading lxml-6.1.3-cp311-cp311-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl.metadata (3.3 kB)
+2026-10-27T17:15:49.0865818Z Collecting psutil>=5.9.0 (from librelane==3.0.5)
+2026-10-27T17:15:49.0900840Z   Downloading psutil-7.2.2-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl.metadata (22 kB)
+2026-10-27T17:15:49.0970141Z Requirement already satisfied: pyyaml<7,>=5 in /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages (from librelane==3.0.5) (6.0.2)
+2026-10-27T17:15:49.5465175Z Collecting rapidfuzz<4,>=3.9.0 (from librelane==3.0.5)
+2026-10-27T17:15:49.5500665Z   Downloading rapidfuzz-3.14.6-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (12 kB)
+2026-10-27T17:15:49.5792397Z Collecting rich<16,>=12 (from librelane==3.0.5)
+2026-10-27T17:15:49.5823627Z   Downloading rich-15.0.0-py3-none-any.whl.metadata (18 kB)
+2026-10-27T17:15:49.5972500Z Collecting semver<4,>=3.0.2 (from librelane==3.0.5)
+2026-10-27T17:15:49.6003017Z   Downloading semver-3.1.0-py3-none-any.whl.metadata (6.9 kB)
+2026-10-27T17:15:49.6134934Z Collecting yamlcore<0.1.0,>=0.0.2 (from librelane==3.0.5)
+2026-10-27T17:15:49.6192448Z   Downloading yamlcore-0.0.4-py3-none-any.whl.metadata (4.0 kB)
+2026-10-27T17:15:49.6386294Z Collecting pcpp<2,>=1.2 (from ciel<3,>=2.3.1->librelane==3.0.5)
+2026-10-27T17:15:49.6414391Z   Downloading pcpp-1.30-py2.py3-none-any.whl.metadata (23 kB)
+2026-10-27T17:15:49.7247349Z Collecting zstandard<1,>=0.19.0 (from ciel<3,>=2.3.1->librelane==3.0.5)
+2026-10-27T17:15:49.7280815Z   Downloading zstandard-0.25.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (3.3 kB)
+2026-10-27T17:15:50.0558359Z Collecting wrapt<3,>=1.10 (from deprecated<2,>=1.2.10->librelane==3.0.5)
+2026-10-27T17:15:50.0594076Z   Downloading wrapt-2.5.1-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (7.6 kB)
+2026-10-27T17:15:50.0795097Z Collecting anyio (from httpx<0.29,>=0.22.0->librelane==3.0.5)
+2026-10-27T17:15:50.0836143Z   Downloading anyio-4.15.1-py3-none-any.whl.metadata (4.7 kB)
+2026-10-27T17:15:50.0873531Z Requirement already satisfied: certifi in /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages (from httpx<0.29,>=0.22.0->librelane==3.0.5) (2025.8.3)
+2026-10-27T17:15:50.1006328Z Collecting httpcore==1.* (from httpx<0.29,>=0.22.0->librelane==3.0.5)
+2026-10-27T17:15:50.1035527Z   Downloading httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
+2026-10-27T17:15:50.1083583Z Requirement already satisfied: idna in /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages (from httpx<0.29,>=0.22.0->librelane==3.0.5) (3.10)
+2026-10-27T17:15:50.1172984Z Collecting h11>=0.16 (from httpcore==1.*->httpx<0.29,>=0.22.0->librelane==3.0.5)
+2026-10-27T17:15:50.1203855Z   Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+2026-10-27T17:15:50.1477273Z Collecting wheel (from lln-libparse==0.56.*->librelane==3.0.5)
+2026-10-27T17:15:50.1504966Z   Downloading wheel-0.48.0-py3-none-any.whl.metadata (2.3 kB)
+2026-10-27T17:15:50.1691011Z Collecting markdown-it-py>=2.2.0 (from rich<16,>=12->librelane==3.0.5)
+2026-10-27T17:15:50.1723332Z   Downloading markdown_it_py-4.2.0-py3-none-any.whl.metadata (7.4 kB)
+2026-10-27T17:15:50.1781374Z Requirement already satisfied: pygments<3.0.0,>=2.13.0 in /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages (from rich<16,>=12->librelane==3.0.5) (2.19.2)
+2026-10-27T17:15:50.1895849Z Collecting mdurl~=0.1 (from markdown-it-py>=2.2.0->rich<16,>=12->librelane==3.0.5)
+2026-10-27T17:15:50.1925996Z   Downloading mdurl-0.1.2-py3-none-any.whl.metadata (1.6 kB)
+2026-10-27T17:15:50.2098092Z Collecting typing_extensions>=4.16.0 (from anyio->httpx<0.29,>=0.22.0->librelane==3.0.5)
+2026-10-27T17:15:50.2129172Z   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+2026-10-27T17:15:50.2184989Z Requirement already satisfied: packaging>=24.0 in /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages (from wheel->lln-libparse==0.56.*->librelane==3.0.5) (25.0)
+2026-10-27T17:15:50.2236884Z Downloading librelane-3.0.5-py3-none-any.whl (424 kB)
+2026-10-27T17:15:50.2336376Z Downloading ciel-2.6.1-py3-none-any.whl (38 kB)
+2026-10-27T17:15:50.2402941Z Downloading cloup-3.1.0-py2.py3-none-any.whl (55 kB)
+2026-10-27T17:15:50.2451353Z Downloading deprecated-1.3.1-py2.py3-none-any.whl (11 kB)
+2026-10-27T17:15:50.2495840Z Downloading httpx-0.28.1-py3-none-any.whl (73 kB)
+2026-10-27T17:15:50.2546046Z Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
+2026-10-27T17:15:50.2603871Z Downloading lln_libparse-0.56.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (134 kB)
+2026-10-27T17:15:50.2654528Z Downloading pcpp-1.30-py2.py3-none-any.whl (91 kB)
+2026-10-27T17:15:50.2711563Z Downloading rapidfuzz-3.14.6-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (3.2 MB)
+2026-10-27T17:15:50.2840765Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.2/3.2 MB 284.9 MB/s  0:00:00
+2026-10-27T17:15:50.2870573Z Downloading rich-15.0.0-py3-none-any.whl (310 kB)
+2026-10-27T17:15:50.2930744Z Downloading semver-3.1.0-py3-none-any.whl (18 kB)
+2026-10-27T17:15:50.2983701Z Downloading wrapt-2.5.1-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (240 kB)
+2026-10-27T17:15:50.3048140Z Downloading yamlcore-0.0.4-py3-none-any.whl (6.0 kB)
+2026-10-27T17:15:50.3101019Z Downloading zstandard-0.25.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.6 MB)
+2026-10-27T17:15:50.3338866Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.6/5.6 MB 246.0 MB/s  0:00:00
+2026-10-27T17:15:50.3372781Z Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+2026-10-27T17:15:50.3430937Z Downloading lxml-6.1.3-cp311-cp311-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl (5.2 MB)
+2026-10-27T17:15:50.3628961Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.2/5.2 MB 287.9 MB/s  0:00:00
+2026-10-27T17:15:50.3664156Z Downloading markdown_it_py-4.2.0-py3-none-any.whl (91 kB)
+2026-10-27T17:15:50.3725085Z Downloading mdurl-0.1.2-py3-none-any.whl (10.0 kB)
+2026-10-27T17:15:50.3778474Z Downloading psutil-7.2.2-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl (155 kB)
+2026-10-27T17:15:50.3832097Z Downloading anyio-4.15.1-py3-none-any.whl (132 kB)
+2026-10-27T17:15:50.3888931Z Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+2026-10-27T17:15:50.3948975Z Downloading wheel-0.48.0-py3-none-any.whl (33 kB)
+2026-10-27T17:15:50.5475735Z Installing collected packages: pcpp, zstandard, yamlcore, wrapt, wheel, typing_extensions, semver, rapidfuzz, psutil, mdurl, lxml, h11, cloup, markdown-it-py, lln-libparse, httpcore, deprecated, anyio, rich, httpx, ciel, librelane
+2026-10-27T17:15:51.7899690Z 
+2026-10-27T17:15:51.7929482Z Successfully installed anyio-4.15.1 ciel-2.6.1 cloup-3.1.0 deprecated-1.3.1 h11-0.16.0 httpcore-1.0.9 httpx-0.28.1 librelane-3.0.5 lln-libparse-0.56.0 lxml-6.1.3 markdown-it-py-4.2.0 mdurl-0.1.2 pcpp-1.30 psutil-7.2.2 rapidfuzz-3.14.6 rich-15.0.0 semver-3.1.0 typing_extensions-4.16.0 wheel-0.48.0 wrapt-2.5.1 yamlcore-0.0.4 zstandard-0.25.0
+2026-10-27T17:15:51.7938621Z 
+2026-10-27T17:15:51.7939331Z [notice] A new release of pip is available: 26.2.1 -> 26.2.2
+2026-10-27T17:15:51.7940017Z [notice] To update, run: pip install --upgrade pip
+2026-10-27T17:15:51.8835593Z ##[end-action id=__TinyTapeout_tt-gds-action.__run_4;outcome=success;conclusion=success;duration_ms=3649]
+2026-10-27T17:15:51.8840796Z ##[start-action display=Make GDS with LibreLane;id=__TinyTapeout_tt-gds-action.__run_5]
+2026-10-27T17:15:51.8869205Z ##[group]Run ./tt/tt_tool.py --harden $TT_ARGS
+2026-10-27T17:15:51.8869833Z [36;1m./tt/tt_tool.py --harden $TT_ARGS[0m
+2026-10-27T17:15:51.8941712Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T17:15:51.8942086Z env:
+2026-10-27T17:15:51.8942302Z   PDK: ihp-sg13g2
+2026-10-27T17:15:51.8942533Z   TT_ARGS: --ihp
+2026-10-27T17:15:51.8942797Z   CACHE_KEY: c64598ebb40a937a93d97cceb7dfde03
+2026-10-27T17:15:51.8943179Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:15:51.8943631Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-27T17:15:51.8944104Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:15:51.8944531Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:15:51.8944940Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:15:51.8945343Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-27T17:15:51.8945688Z ##[endgroup]
+2026-10-27T17:15:52.3725478Z 2026-10-27 17:15:52,372 - tt_tool    - WARNING  - --ihp is deprecated and will be removed in a future version, use --pdk ihp-sg13g2 instead
+2026-10-27T17:15:54.0668057Z 3.0.5: Pulling from librelane/librelane
+2026-10-27T17:15:54.2519307Z 2509e44732df: Pulling fs layer
+2026-10-27T17:15:54.2520362Z 9fea094cd485: Pulling fs layer
+2026-10-27T17:15:54.5347535Z 9fea094cd485: Verifying Checksum
+2026-10-27T17:15:54.5348042Z 9fea094cd485: Download complete
+2026-10-27T17:16:39.0674972Z 2509e44732df: Verifying Checksum
+2026-10-27T17:16:39.0675733Z 2509e44732df: Download complete
+2026-10-27T17:17:45.2135554Z 2509e44732df: Pull complete
+2026-10-27T17:17:46.7697324Z 9fea094cd485: Pull complete
+2026-10-27T17:17:46.7742890Z Digest: sha256:ecabd075d0ddf6a2bd1cd4a32109c7dbb861ec007f7e4e423a9a081f8d23b8e2
+2026-10-27T17:17:46.7758375Z Status: Downloaded newer image for ghcr.io/librelane/librelane:3.0.5
+2026-10-27T17:17:46.7769499Z ghcr.io/librelane/librelane:3.0.5
+2026-10-27T17:17:46.7837862Z [17:17:46] WARNING  DISPLAY environment variable not set. GUI    container.py:53
+2026-10-27T17:17:46.7838838Z                     features will not be available.                             
+2026-10-27T17:17:46.7848483Z [17:17:46] INFO     Running containerized command:              container.py:285
+2026-10-27T17:17:47.3909365Z [17:17:47] VERBOSE  Resolved PDK variant ihp-sg13g2.                  cli.py:534
+2026-10-27T17:17:47.4498889Z Version c4b8b4e5e7a05f375cca3815d51b3a37721fbf5c not found locally, attempting 
+2026-10-27T17:17:47.4500178Z to download…
+2026-10-27T17:17:53.4872435Z Downloading common.tar.zst… ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
+2026-10-27T17:17:55.5745123Z Downloading sg13g2_io.tar.zst… ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
+2026-10-27T17:17:55.9171413Z Downloading sg13g2_pr.tar.zst… ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
+2026-10-27T17:17:56.2088489Z Downloading sg13g2_sram.tar.zst… ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
+2026-10-27T17:17:56.5643860Z Downloading sg13g2_stdcell.tar.zst… ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
+2026-10-27T17:17:56.6566066Z [17:17:56] INFO     Loading the design configuration file has      config.py:736
+2026-10-27T17:17:56.6567207Z                     generated the following warnings:                           
+2026-10-27T17:17:56.6578950Z [17:17:56] WARNING  The configuration variable 'FP_PDN_MULTILAYER' config.py:740
+2026-10-27T17:17:56.6580060Z                     is deprecated. Please check the docs for the                
+2026-10-27T17:17:56.6580735Z                     usage on the replacement variable                           
+2026-10-27T17:17:56.6581542Z                     'PDN_MULTILAYER'.                                           
+2026-10-27T17:17:56.6592923Z [17:17:56] WARNING  The configuration variable 'FP_PDN_VWIDTH' is  config.py:740
+2026-10-27T17:17:56.6594081Z                     deprecated. Please check the docs for the                   
+2026-10-27T17:17:56.6594760Z                     usage on the replacement variable                           
+2026-10-27T17:17:56.6595360Z                     'PDN_VWIDTH'.                                               
+2026-10-27T17:17:56.6606530Z [17:17:56] WARNING  The configuration variable 'FP_PDN_VSPACING'   config.py:740
+2026-10-27T17:17:56.6607557Z                     is deprecated. Please check the docs for the                
+2026-10-27T17:17:56.6608250Z                     usage on the replacement variable                           
+2026-10-27T17:17:56.6608811Z                     'PDN_VSPACING'.                                             
+2026-10-27T17:17:56.6620319Z [17:17:56] WARNING  The configuration variable 'FP_PDN_VPITCH' is  config.py:740
+2026-10-27T17:17:56.6621091Z                     deprecated. Please check the docs for the                   
+2026-10-27T17:17:56.6621752Z                     usage on the replacement variable                           
+2026-10-27T17:17:56.6622358Z                     'PDN_VPITCH'.                                               
+2026-10-27T17:17:56.6633407Z [17:17:56] WARNING  The configuration variable 'FP_PDN_VOFFSET' is config.py:740
+2026-10-27T17:17:56.6634436Z                     deprecated. Please check the docs for the                   
+2026-10-27T17:17:56.6635112Z                     usage on the replacement variable                           
+2026-10-27T17:17:56.6635735Z                     'PDN_VOFFSET'.                                              
+2026-10-27T17:17:56.6646806Z [17:17:56] WARNING  The configuration variable 'FP_IO_VLENGTH' is  config.py:740
+2026-10-27T17:17:56.6647909Z                     deprecated. Please check the docs for the                   
+2026-10-27T17:17:56.6648535Z                     usage on the replacement variable                           
+2026-10-27T17:17:56.6649090Z                     'IO_PIN_V_LENGTH'.                                          
+2026-10-27T17:17:56.6659894Z [17:17:56] WARNING  The configuration variable 'FP_IO_HLENGTH' is  config.py:740
+2026-10-27T17:17:56.6660829Z                     deprecated. Please check the docs for the                   
+2026-10-27T17:17:56.6661480Z                     usage on the replacement variable                           
+2026-10-27T17:17:56.6662084Z                     'IO_PIN_H_LENGTH'.                                          
+2026-10-27T17:17:56.6734093Z [17:17:56] INFO     Starting a new run of the 'Classic' flow with    flow.py:654
+2026-10-27T17:17:56.6734965Z                     the tag 'wokwi'.                                            
+2026-10-27T17:17:56.6759044Z [17:17:56] INFO     Starting…                                  sequential.py:339
+2026-10-27T17:17:56.6850318Z ──────────────────────────────── Verilator Lint ────────────────────────────────
+2026-10-27T17:17:56.6863303Z [17:17:56] VERBOSE  Running 'Verilator.Lint' at                     step.py:1138
+2026-10-27T17:17:56.6864265Z                     'runs/wokwi/01-verilator-lint'…                             
+2026-10-27T17:17:56.7650864Z [17:17:56] VERBOSE  Logging subprocess to                           step.py:1338
+2026-10-27T17:17:56.7651643Z                     'runs/wokwi/01-verilator-lint/verilator-lint.lo             
+2026-10-27T17:17:56.7652346Z                     g'…                                                         
+2026-10-27T17:17:56.8470834Z %Error-MULTIDRIVEN:                                                             
+2026-10-27T17:17:56.8472636Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/datapath.sv:346:12:     
+2026-10-27T17:17:56.8473634Z Variable also written to in always_comb (IEEE 1800-2023 9.2.2.2): 'i'           
+2026-10-27T17:17:56.8478371Z                                                                                 
+2026-10-27T17:17:56.8479341Z               : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.datapath'    
+2026-10-27T17:17:56.8486117Z                     /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/data
+2026-10-27T17:17:56.8487322Z path.sv:346:12:                                                                 
+2026-10-27T17:17:56.8495544Z   346 |       for (i = 0; i < 8; i++)                                           
+2026-10-27T17:17:56.8500631Z       |            ^                                                            
+2026-10-27T17:17:56.8510263Z                     /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/data
+2026-10-27T17:17:56.8511144Z path.sv:153:26: ... Location of always_comb write                               
+2026-10-27T17:17:56.8517737Z   153 |       for (i = 0; i < 8; i++)                                           
+2026-10-27T17:17:56.8522835Z       |                          ^                                              
+2026-10-27T17:17:56.8531223Z                     ... For error description see                               
+2026-10-27T17:17:56.8532160Z https://verilator.org/warn/MULTIDRIVEN?v=5.044                                  
+2026-10-27T17:17:56.8540662Z %Error-MULTIDRIVEN:                                                             
+2026-10-27T17:17:56.8541508Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/datapath.sv:346:26:     
+2026-10-27T17:17:56.8542068Z Variable also written to in always_comb (IEEE 1800-2023 9.2.2.2): 'i'           
+2026-10-27T17:17:56.8549821Z                                                                                 
+2026-10-27T17:17:56.8550797Z               : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.datapath'    
+2026-10-27T17:17:56.8557178Z                     /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/data
+2026-10-27T17:17:56.8563903Z path.sv:346:26:                                                                 
+2026-10-27T17:17:56.8564798Z   346 |       for (i = 0; i < 8; i++)                                           
+2026-10-27T17:17:56.8569645Z       |                          ^                                              
+2026-10-27T17:17:56.8576651Z                     /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/data
+2026-10-27T17:17:56.8577739Z path.sv:346:12: ... Location of always_comb write                               
+2026-10-27T17:17:56.8583084Z   346 |       for (i = 0; i < 8; i++)                                           
+2026-10-27T17:17:56.8587595Z       |            ^                                                            
+2026-10-27T17:17:56.8595616Z %Error-MULTIDRIVEN:                                                             
+2026-10-27T17:17:56.8596822Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/datapath.sv:361:12:     
+2026-10-27T17:17:56.8597510Z Variable also written to in always_comb (IEEE 1800-2023 9.2.2.2): 'i'           
+2026-10-27T17:17:56.8602690Z                                                                                 
+2026-10-27T17:17:56.8603832Z               : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.datapath'    
+2026-10-27T17:17:56.8610289Z                     /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/data
+2026-10-27T17:17:56.8611154Z path.sv:361:12:                                                                 
+2026-10-27T17:17:56.8616549Z   361 |       for (i = 0; i < 8; i++)                                           
+2026-10-27T17:17:56.8621613Z       |            ^                                                            
+2026-10-27T17:17:56.8628722Z                     /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/data
+2026-10-27T17:17:56.8630117Z path.sv:346:26: ... Location of always_comb write                               
+2026-10-27T17:17:56.8634933Z   346 |       for (i = 0; i < 8; i++)                                           
+2026-10-27T17:17:56.8639545Z       |                          ^                                              
+2026-10-27T17:17:56.8648290Z %Error-MULTIDRIVEN:                                                             
+2026-10-27T17:17:56.8648980Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/datapath.sv:361:26:     
+2026-10-27T17:17:56.8649837Z Variable also written to in always_comb (IEEE 1800-2023 9.2.2.2): 'i'           
+2026-10-27T17:17:56.8655932Z                                                                                 
+2026-10-27T17:17:56.8657079Z               : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.datapath'    
+2026-10-27T17:17:56.8663027Z                     /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/data
+2026-10-27T17:17:56.8664192Z path.sv:361:26:                                                                 
+2026-10-27T17:17:56.8670587Z   361 |       for (i = 0; i < 8; i++)                                           
+2026-10-27T17:17:56.8675935Z       |                          ^                                              
+2026-10-27T17:17:56.8692823Z                     /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/data
+2026-10-27T17:17:56.8693866Z path.sv:361:12: ... Location of always_comb write                               
+2026-10-27T17:17:56.8694544Z   361 |       for (i = 0; i < 8; i++)                                           
+2026-10-27T17:17:56.8697930Z       |            ^                                                            
+2026-10-27T17:17:56.8705769Z %Warning-UNUSEDSIGNAL:                                                          
+2026-10-27T17:17:56.8706796Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:57:24:   
+2026-10-27T17:17:56.8707533Z Signal is not used: 'A_CLK'                                                     
+2026-10-27T17:17:56.8713932Z                                                                                 
+2026-10-27T17:17:56.8714627Z                    : ... note: In instance                                      
+2026-10-27T17:17:56.8715355Z 'tt_um_RaghuvPotdar_Leonidas.imem.sram'                                         
+2026-10-27T17:17:56.8720852Z    57 |     input  wire        A_CLK,                                           
+2026-10-27T17:17:56.8726944Z       |                        ^~~~~                                            
+2026-10-27T17:17:56.8734352Z                        ... For warning description see                          
+2026-10-27T17:17:56.8743736Z https://verilator.org/warn/UNUSEDSIGNAL?v=5.044                                 
+2026-10-27T17:17:56.8744352Z                        ... Use "/* verilator lint_off UNUSEDSIGNAL */" and      
+2026-10-27T17:17:56.8744901Z lint_on around source to disable this message.                                  
+2026-10-27T17:17:56.8753190Z %Warning-UNUSEDSIGNAL:                                                          
+2026-10-27T17:17:56.8754155Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:58:24:   
+2026-10-27T17:17:56.8755083Z Signal is not used: 'A_MEN'                                                     
+2026-10-27T17:17:56.8762194Z                                                                                 
+2026-10-27T17:17:56.8762969Z                    : ... note: In instance                                      
+2026-10-27T17:17:56.8763864Z 'tt_um_RaghuvPotdar_Leonidas.imem.sram'                                         
+2026-10-27T17:17:56.8769395Z    58 |     input  wire        A_MEN,                                           
+2026-10-27T17:17:56.8774878Z       |                        ^~~~~                                            
+2026-10-27T17:17:56.8782688Z %Warning-UNUSEDSIGNAL:                                                          
+2026-10-27T17:17:56.8783678Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:59:24:   
+2026-10-27T17:17:56.8785056Z Signal is not used: 'A_WEN'                                                     
+2026-10-27T17:17:56.8791068Z                                                                                 
+2026-10-27T17:17:56.8792145Z                    : ... note: In instance                                      
+2026-10-27T17:17:56.8793030Z 'tt_um_RaghuvPotdar_Leonidas.imem.sram'                                         
+2026-10-27T17:17:56.8797685Z    59 |     input  wire        A_WEN,                                           
+2026-10-27T17:17:56.8802635Z       |                        ^~~~~                                            
+2026-10-27T17:17:56.8810774Z %Warning-UNUSEDSIGNAL:                                                          
+2026-10-27T17:17:56.8811758Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:60:24:   
+2026-10-27T17:17:56.8812720Z Signal is not used: 'A_REN'                                                     
+2026-10-27T17:17:56.8818615Z                                                                                 
+2026-10-27T17:17:56.8819377Z                    : ... note: In instance                                      
+2026-10-27T17:17:56.8820278Z 'tt_um_RaghuvPotdar_Leonidas.imem.sram'                                         
+2026-10-27T17:17:56.8825037Z    60 |     input  wire        A_REN,                                           
+2026-10-27T17:17:56.8830350Z       |                        ^~~~~                                            
+2026-10-27T17:17:56.8837755Z %Warning-UNUSEDSIGNAL:                                                          
+2026-10-27T17:17:56.8838580Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:61:24:   
+2026-10-27T17:17:56.8839223Z Signal is not used: 'A_ADDR'                                                    
+2026-10-27T17:17:56.8845279Z                                                                                 
+2026-10-27T17:17:56.8846084Z                    : ... note: In instance                                      
+2026-10-27T17:17:56.8847290Z 'tt_um_RaghuvPotdar_Leonidas.imem.sram'                                         
+2026-10-27T17:17:56.8852610Z    61 |     input  wire [7:0]  A_ADDR,                                          
+2026-10-27T17:17:56.8858023Z       |                        ^~~~~~                                           
+2026-10-27T17:17:56.8865381Z %Warning-UNUSEDSIGNAL:                                                          
+2026-10-27T17:17:56.8866444Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:62:24:   
+2026-10-27T17:17:56.8867856Z Signal is not used: 'A_DIN'                                                     
+2026-10-27T17:17:56.8872927Z                                                                                 
+2026-10-27T17:17:56.8873492Z                    : ... note: In instance                                      
+2026-10-27T17:17:56.8874144Z 'tt_um_RaghuvPotdar_Leonidas.imem.sram'                                         
+2026-10-27T17:17:56.8878892Z    62 |     input  wire [15:0] A_DIN,                                           
+2026-10-27T17:17:56.8883676Z       |                        ^~~~~                                            
+2026-10-27T17:17:56.8891138Z %Warning-UNUSEDSIGNAL:                                                          
+2026-10-27T17:17:56.8891778Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:63:24:   
+2026-10-27T17:17:56.8892328Z Signal is not used: 'A_DLY'                                                     
+2026-10-27T17:17:56.8898418Z                                                                                 
+2026-10-27T17:17:56.8899104Z                    : ... note: In instance                                      
+2026-10-27T17:17:56.8899808Z 'tt_um_RaghuvPotdar_Leonidas.imem.sram'                                         
+2026-10-27T17:17:56.8904240Z    63 |     input  wire        A_DLY,                                           
+2026-10-27T17:17:56.8909107Z       |                        ^~~~~                                            
+2026-10-27T17:17:56.8915983Z %Warning-UNDRIVEN:                                                              
+2026-10-27T17:17:56.8917295Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:64:24:   
+2026-10-27T17:17:56.8918128Z Signal is not driven: 'A_DOUT'                                                  
+2026-10-27T17:17:56.8923120Z                                                                                 
+2026-10-27T17:17:56.8923941Z                : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.imem.sram'  
+2026-10-27T17:17:56.8930757Z    64 |     output wire [15:0] A_DOUT,                                          
+2026-10-27T17:17:56.8936379Z       |                        ^~~~~~                                           
+2026-10-27T17:17:56.8943503Z                    ... For warning description see                              
+2026-10-27T17:17:56.8944488Z https://verilator.org/warn/UNDRIVEN?v=5.044                                     
+2026-10-27T17:17:56.8951209Z                    ... Use "/* verilator lint_off UNDRIVEN */" and lint_on      
+2026-10-27T17:17:56.8952186Z around source to disable this message.                                          
+2026-10-27T17:17:56.8959083Z %Warning-UNUSEDSIGNAL:                                                          
+2026-10-27T17:17:56.8960040Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:65:24:   
+2026-10-27T17:17:56.8960985Z Signal is not used: 'A_BM'                                                      
+2026-10-27T17:17:56.8967280Z                                                                                 
+2026-10-27T17:17:56.8968055Z                    : ... note: In instance                                      
+2026-10-27T17:17:56.8968942Z 'tt_um_RaghuvPotdar_Leonidas.imem.sram'                                         
+2026-10-27T17:17:56.8974179Z    65 |     input  wire [15:0] A_BM,                                            
+2026-10-27T17:17:56.8979871Z       |                        ^~~~                                             
+2026-10-27T17:17:56.8987293Z %Warning-UNUSEDSIGNAL:                                                          
+2026-10-27T17:17:56.8988281Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:66:24:   
+2026-10-27T17:17:56.8989262Z Signal is not used: 'A_BIST_CLK'                                                
+2026-10-27T17:17:56.8995129Z                                                                                 
+2026-10-27T17:17:56.8995892Z                    : ... note: In instance                                      
+2026-10-27T17:17:56.8997114Z 'tt_um_RaghuvPotdar_Leonidas.imem.sram'                                         
+2026-10-27T17:17:56.9002080Z    66 |     input  wire        A_BIST_CLK,                                      
+2026-10-27T17:17:56.9007261Z       |                        ^~~~~~~~~~                                       
+2026-10-27T17:17:56.9014714Z %Warning-UNUSEDSIGNAL:                                                          
+2026-10-27T17:17:56.9015685Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:67:24:   
+2026-10-27T17:17:56.9016903Z Signal is not used: 'A_BIST_EN'                                                 
+2026-10-27T17:17:56.9023248Z                                                                                 
+2026-10-27T17:17:56.9024018Z                    : ... note: In instance                                      
+2026-10-27T17:17:56.9024916Z 'tt_um_RaghuvPotdar_Leonidas.imem.sram'                                         
+2026-10-27T17:17:56.9029926Z    67 |     input  wire        A_BIST_EN,                                       
+2026-10-27T17:17:56.9035033Z       |                        ^~~~~~~~~                                        
+2026-10-27T17:17:56.9042772Z %Warning-UNUSEDSIGNAL:                                                          
+2026-10-27T17:17:56.9044110Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:68:24:   
+2026-10-27T17:17:56.9045110Z Signal is not used: 'A_BIST_MEN'                                                
+2026-10-27T17:17:56.9051360Z                                                                                 
+2026-10-27T17:17:56.9052175Z                    : ... note: In instance                                      
+2026-10-27T17:17:56.9053064Z 'tt_um_RaghuvPotdar_Leonidas.imem.sram'                                         
+2026-10-27T17:17:56.9058292Z    68 |     input  wire        A_BIST_MEN,                                      
+2026-10-27T17:17:56.9063770Z       |                        ^~~~~~~~~~                                       
+2026-10-27T17:17:56.9071384Z %Warning-UNUSEDSIGNAL:                                                          
+2026-10-27T17:17:56.9072365Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:69:24:   
+2026-10-27T17:17:56.9073352Z Signal is not used: 'A_BIST_WEN'                                                
+2026-10-27T17:17:56.9079893Z                                                                                 
+2026-10-27T17:17:56.9080684Z                    : ... note: In instance                                      
+2026-10-27T17:17:56.9081607Z 'tt_um_RaghuvPotdar_Leonidas.imem.sram'                                         
+2026-10-27T17:17:56.9086183Z    69 |     input  wire        A_BIST_WEN,                                      
+2026-10-27T17:17:56.9092125Z       |                        ^~~~~~~~~~                                       
+2026-10-27T17:17:56.9099632Z %Warning-UNUSEDSIGNAL:                                                          
+2026-10-27T17:17:56.9100594Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:70:24:   
+2026-10-27T17:17:56.9101567Z Signal is not used: 'A_BIST_REN'                                                
+2026-10-27T17:17:56.9107849Z                                                                                 
+2026-10-27T17:17:56.9108511Z                    : ... note: In instance                                      
+2026-10-27T17:17:56.9109215Z 'tt_um_RaghuvPotdar_Leonidas.imem.sram'                                         
+2026-10-27T17:17:56.9113728Z    70 |     input  wire        A_BIST_REN,                                      
+2026-10-27T17:17:56.9118562Z       |                        ^~~~~~~~~~                                       
+2026-10-27T17:17:56.9125719Z %Warning-UNUSEDSIGNAL:                                                          
+2026-10-27T17:17:56.9127138Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:71:24:   
+2026-10-27T17:17:56.9128215Z Signal is not used: 'A_BIST_ADDR'                                               
+2026-10-27T17:17:56.9133184Z                                                                                 
+2026-10-27T17:17:56.9134084Z                    : ... note: In instance                                      
+2026-10-27T17:17:56.9148945Z 'tt_um_RaghuvPotdar_Leonidas.imem.sram'                                         
+2026-10-27T17:17:56.9149934Z    71 |     input  wire [7:0]  A_BIST_ADDR,                                     
+2026-10-27T17:17:56.9150597Z       |                        ^~~~~~~~~~~                                      
+2026-10-27T17:17:56.9173163Z %Warning-UNUSEDSIGNAL:                                                          
+2026-10-27T17:17:56.9174110Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:72:24:   
+2026-10-27T17:17:56.9174733Z Signal is not used: 'A_BIST_DIN'                                                
+2026-10-27T17:17:56.9175141Z                                                                                 
+2026-10-27T17:17:56.9175523Z                    : ... note: In instance                                      
+2026-10-27T17:17:56.9175967Z 'tt_um_RaghuvPotdar_Leonidas.imem.sram'                                         
+2026-10-27T17:17:56.9177051Z    72 |     input  wire [15:0] A_BIST_DIN,                                      
+2026-10-27T17:17:56.9177465Z       |                        ^~~~~~~~~~                                       
+2026-10-27T17:17:56.9180834Z %Warning-UNUSEDSIGNAL:                                                          
+2026-10-27T17:17:56.9181970Z /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:73:24:   
+2026-10-27T17:17:56.9182495Z Signal is not used: 'A_BIST_BM'                                                 
+2026-10-27T17:17:56.9188508Z                                                                                 
+2026-10-27T17:17:56.9189205Z                    : ... note: In instance                                      
+2026-10-27T17:17:56.9189716Z 'tt_um_RaghuvPotdar_Leonidas.imem.sram'                                         
+2026-10-27T17:17:56.9194409Z    73 |     input  wire [15:0] A_BIST_BM                                        
+2026-10-27T17:17:56.9199318Z       |                        ^~~~~~~~~                                        
+2026-10-27T17:17:56.9205168Z %Error: Exiting due to 4 error(s)                                               
+2026-10-27T17:17:56.9799484Z ────────────────────────── Lint Timing Errors Checker ──────────────────────────
+2026-10-27T17:17:56.9812857Z [17:17:56] VERBOSE  Running 'Checker.LintTimingConstructs' at       step.py:1138
+2026-10-27T17:17:56.9814142Z                     'runs/wokwi/02-checker-linttimingconstructs'…               
+2026-10-27T17:17:56.9830443Z [17:17:56] INFO     Check for Lint Timing Errors clear.           checker.py:412
+2026-10-27T17:17:56.9862242Z ───────────────────────────── Lint Errors Checker ──────────────────────────────
+2026-10-27T17:17:56.9874762Z [17:17:56] VERBOSE  Running 'Checker.LintErrors' at                 step.py:1138
+2026-10-27T17:17:56.9876226Z                     'runs/wokwi/03-checker-linterrors'…                         
+2026-10-27T17:17:56.9893203Z [17:17:56] ERROR    4 Lint errors found.                          checker.py:127
+2026-10-27T17:17:56.9895669Z 
+2026-10-27T17:17:56.9910046Z [17:17:56] ERROR    The following error was encountered while    __main__.py:189
+2026-10-27T17:17:56.9910954Z                     running the flow:                                           
+2026-10-27T17:17:56.9911774Z                     4 Lint errors found.                                        
+2026-10-27T17:17:56.9921208Z [17:17:56] ERROR    LibreLane will now quit.                     __main__.py:190
+2026-10-27T17:17:58.6733202Z 2026-10-27 17:17:58,673 - project    - ERROR    - harden failed
+2026-10-27T17:17:58.7329473Z ##[error]Process completed with exit code 1.
+2026-10-27T17:17:58.7337567Z ##[end-action id=__TinyTapeout_tt-gds-action.__run_5;outcome=failure;conclusion=failure;duration_ms=126849]
+2026-10-27T17:17:58.7341462Z ##[start-action display=Show build files (for debugging);id=__TinyTapeout_tt-gds-action.__run_6]
+2026-10-27T17:17:58.7344046Z ##[end-action id=__TinyTapeout_tt-gds-action.__run_6;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-27T17:17:58.7345941Z ##[start-action display=Linter output;id=__TinyTapeout_tt-gds-action.__run_7]
+2026-10-27T17:17:58.7365707Z ##[group]Run LINTER_LOG=(runs/wokwi/*-verilator-lint/verilator-lint.log)
+2026-10-27T17:17:58.7366278Z [36;1mLINTER_LOG=(runs/wokwi/*-verilator-lint/verilator-lint.log)[0m
+2026-10-27T17:17:58.7366943Z [36;1mLINTER_LOG=${LINTER_LOG[0]}[0m
+2026-10-27T17:17:58.7367380Z [36;1m[0m
+2026-10-27T17:17:58.7367614Z [36;1mecho "DEBUG LINTER_LOG *$LINTER_LOG*"[0m
+2026-10-27T17:17:58.7367911Z [36;1mcat $LINTER_LOG[0m
+2026-10-27T17:17:58.7368144Z [36;1mecho "END DEBUG"[0m
+2026-10-27T17:17:58.7368370Z [36;1m[0m
+2026-10-27T17:17:58.7368572Z [36;1mif [ -s "$LINTER_LOG" ]; then[0m
+2026-10-27T17:17:58.7368833Z [36;1m  set +e[0m
+2026-10-27T17:17:58.7369128Z [36;1m  count_error=$(egrep -i "^%Error"   $LINTER_LOG | wc -l)[0m
+2026-10-27T17:17:58.7369548Z [36;1m  count_warn=$( egrep -i "^%Warning" $LINTER_LOG | wc -l)[0m
+2026-10-27T17:17:58.7370247Z [36;1m  count_other=$(egrep -i "^%"        $LINTER_LOG | egrep -v "%(Warning|Error)" | wc -l)[0m
+2026-10-27T17:17:58.7370665Z [36;1m  set -e[0m
+2026-10-27T17:17:58.7370866Z [36;1m[0m
+2026-10-27T17:17:58.7371057Z [36;1m  open=""[0m
+2026-10-27T17:17:58.7371445Z [36;1m  summary=""[0m
+2026-10-27T17:17:58.7371675Z [36;1m  icon=":green_circle:"[0m
+2026-10-27T17:17:58.7371946Z [36;1m  if [ $count_other -gt 0 ]; then[0m
+2026-10-27T17:17:58.7372250Z [36;1m    summary="$count_other message(s)"[0m
+2026-10-27T17:17:58.7372545Z [36;1m    icon=":orange_circle:"[0m
+2026-10-27T17:17:58.7372804Z [36;1m  fi[0m
+2026-10-27T17:17:58.7373024Z [36;1m  if [ $count_warn -gt 0 ]; then[0m
+2026-10-27T17:17:58.7373313Z [36;1m    summary="$count_warn warning(s)"[0m
+2026-10-27T17:17:58.7373603Z [36;1m    icon=":orange_circle:"[0m
+2026-10-27T17:17:58.7373855Z [36;1m  fi[0m
+2026-10-27T17:17:58.7374067Z [36;1m  if [ $count_error -gt 0 ]; then[0m
+2026-10-27T17:17:58.7374362Z [36;1m    summary="$count_error error(s)"[0m
+2026-10-27T17:17:58.7374660Z [36;1m    icon=":red_circle:"[0m
+2026-10-27T17:17:58.7374915Z [36;1m    open="open"[0m
+2026-10-27T17:17:58.7375140Z [36;1m  fi[0m
+2026-10-27T17:17:58.7375342Z [36;1m  if [ -n "$summary" ]; then[0m
+2026-10-27T17:17:58.7375613Z [36;1m    summary="[$summary]"[0m
+2026-10-27T17:17:58.7375857Z [36;1m  fi[0m
+2026-10-27T17:17:58.7376043Z [36;1m[0m
+2026-10-27T17:17:58.7376286Z [36;1m  echo "<details ${open}>" >> $GITHUB_STEP_SUMMARY[0m
+2026-10-27T17:17:58.7377134Z [36;1m  echo "<summary><h1>Linter output&nbsp;&nbsp;<h4>${summary} ${icon}</h4></h1></summary>" >> $GITHUB_STEP_SUMMARY[0m
+2026-10-27T17:17:58.7377681Z [36;1m  echo "<pre>" >> $GITHUB_STEP_SUMMARY[0m
+2026-10-27T17:17:58.7378065Z [36;1m  # Print each line of the file preceeded by four spaces:[0m
+2026-10-27T17:17:58.7378479Z [36;1m  sed 's/^/    /' < $LINTER_LOG >> $GITHUB_STEP_SUMMARY[0m
+2026-10-27T17:17:58.7378838Z [36;1m  echo "</pre>" >> $GITHUB_STEP_SUMMARY[0m
+2026-10-27T17:17:58.7379167Z [36;1m  echo "</details>" >> $GITHUB_STEP_SUMMARY[0m
+2026-10-27T17:17:58.7379464Z [36;1mfi[0m
+2026-10-27T17:17:58.7444146Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-27T17:17:58.7444535Z env:
+2026-10-27T17:17:58.7444764Z   PDK: ihp-sg13g2
+2026-10-27T17:17:58.7445000Z   TT_ARGS: --ihp
+2026-10-27T17:17:58.7445259Z   CACHE_KEY: c64598ebb40a937a93d97cceb7dfde03
+2026-10-27T17:17:58.7445621Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:17:58.7446059Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-27T17:17:58.7446514Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:17:58.7447516Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:17:58.7447930Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:17:58.7448343Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-27T17:17:58.7448702Z ##[endgroup]
+2026-10-27T17:17:58.7541860Z DEBUG LINTER_LOG *runs/wokwi/01-verilator-lint/verilator-lint.log*
+2026-10-27T17:17:58.7552830Z %Error-MULTIDRIVEN: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/datapath.sv:346:12: Variable also written to in always_comb (IEEE 1800-2023 9.2.2.2): 'i'
+2026-10-27T17:17:58.7554749Z                                                                                               : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.datapath'
+2026-10-27T17:17:58.7555957Z                     /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/datapath.sv:346:12: 
+2026-10-27T17:17:58.7557278Z   346 |       for (i = 0; i < 8; i++)
+2026-10-27T17:17:58.7557668Z       |            ^
+2026-10-27T17:17:58.7558273Z                     /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/datapath.sv:153:26: ... Location of always_comb write
+2026-10-27T17:17:58.7558957Z   153 |       for (i = 0; i < 8; i++)
+2026-10-27T17:17:58.7559275Z       |                          ^
+2026-10-27T17:17:58.7559792Z                     ... For error description see https://verilator.org/warn/MULTIDRIVEN?v=5.044
+2026-10-27T17:17:58.7561661Z %Error-MULTIDRIVEN: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/datapath.sv:346:26: Variable also written to in always_comb (IEEE 1800-2023 9.2.2.2): 'i'
+2026-10-27T17:17:58.7563686Z                                                                                               : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.datapath'
+2026-10-27T17:17:58.7564915Z                     /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/datapath.sv:346:26: 
+2026-10-27T17:17:58.7565751Z   346 |       for (i = 0; i < 8; i++)
+2026-10-27T17:17:58.7566358Z       |                          ^
+2026-10-27T17:17:58.7567621Z                     /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/datapath.sv:346:12: ... Location of always_comb write
+2026-10-27T17:17:58.7568744Z   346 |       for (i = 0; i < 8; i++)
+2026-10-27T17:17:58.7569249Z       |            ^
+2026-10-27T17:17:58.7570515Z %Error-MULTIDRIVEN: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/datapath.sv:361:12: Variable also written to in always_comb (IEEE 1800-2023 9.2.2.2): 'i'
+2026-10-27T17:17:58.7572203Z                                                                                               : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.datapath'
+2026-10-27T17:17:58.7573055Z                     /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/datapath.sv:361:12: 
+2026-10-27T17:17:58.7573490Z   361 |       for (i = 0; i < 8; i++)
+2026-10-27T17:17:58.7573745Z       |            ^
+2026-10-27T17:17:58.7574271Z                     /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/datapath.sv:346:26: ... Location of always_comb write
+2026-10-27T17:17:58.7574823Z   346 |       for (i = 0; i < 8; i++)
+2026-10-27T17:17:58.7575092Z       |                          ^
+2026-10-27T17:17:58.7575759Z %Error-MULTIDRIVEN: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/datapath.sv:361:26: Variable also written to in always_comb (IEEE 1800-2023 9.2.2.2): 'i'
+2026-10-27T17:17:58.7576967Z                                                                                               : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.datapath'
+2026-10-27T17:17:58.7577613Z                     /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/datapath.sv:361:26: 
+2026-10-27T17:17:58.7578366Z   361 |       for (i = 0; i < 8; i++)
+2026-10-27T17:17:58.7578818Z       |                          ^
+2026-10-27T17:17:58.7579711Z                     /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/datapath.sv:361:12: ... Location of always_comb write
+2026-10-27T17:17:58.7580355Z   361 |       for (i = 0; i < 8; i++)
+2026-10-27T17:17:58.7580607Z       |            ^
+2026-10-27T17:17:58.7581121Z %Warning-UNUSEDSIGNAL: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:57:24: Signal is not used: 'A_CLK'
+2026-10-27T17:17:58.7582283Z                                                                                                    : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.imem.sram'
+2026-10-27T17:17:58.7583139Z    57 |     input  wire        A_CLK,
+2026-10-27T17:17:58.7583631Z       |                        ^~~~~
+2026-10-27T17:17:58.7584317Z                        ... For warning description see https://verilator.org/warn/UNUSEDSIGNAL?v=5.044
+2026-10-27T17:17:58.7584979Z                        ... Use "/* verilator lint_off UNUSEDSIGNAL */" and lint_on around source to disable this message.
+2026-10-27T17:17:58.7585779Z %Warning-UNUSEDSIGNAL: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:58:24: Signal is not used: 'A_MEN'
+2026-10-27T17:17:58.7586548Z                                                                                                    : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.imem.sram'
+2026-10-27T17:17:58.7587670Z    58 |     input  wire        A_MEN,
+2026-10-27T17:17:58.7588141Z       |                        ^~~~~
+2026-10-27T17:17:58.7589140Z %Warning-UNUSEDSIGNAL: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:59:24: Signal is not used: 'A_WEN'
+2026-10-27T17:17:58.7590786Z                                                                                                    : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.imem.sram'
+2026-10-27T17:17:58.7591839Z    59 |     input  wire        A_WEN,
+2026-10-27T17:17:58.7592408Z       |                        ^~~~~
+2026-10-27T17:17:58.7593405Z %Warning-UNUSEDSIGNAL: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:60:24: Signal is not used: 'A_REN'
+2026-10-27T17:17:58.7594811Z                                                                                                    : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.imem.sram'
+2026-10-27T17:17:58.7595704Z    60 |     input  wire        A_REN,
+2026-10-27T17:17:58.7596177Z       |                        ^~~~~
+2026-10-27T17:17:58.7597447Z %Warning-UNUSEDSIGNAL: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:61:24: Signal is not used: 'A_ADDR'
+2026-10-27T17:17:58.7598752Z                                                                                                    : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.imem.sram'
+2026-10-27T17:17:58.7599246Z    61 |     input  wire [7:0]  A_ADDR,
+2026-10-27T17:17:58.7599506Z       |                        ^~~~~~
+2026-10-27T17:17:58.7600058Z %Warning-UNUSEDSIGNAL: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:62:24: Signal is not used: 'A_DIN'
+2026-10-27T17:17:58.7600816Z                                                                                                    : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.imem.sram'
+2026-10-27T17:17:58.7601291Z    62 |     input  wire [15:0] A_DIN,
+2026-10-27T17:17:58.7601547Z       |                        ^~~~~
+2026-10-27T17:17:58.7602094Z %Warning-UNUSEDSIGNAL: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:63:24: Signal is not used: 'A_DLY'
+2026-10-27T17:17:58.7602858Z                                                                                                    : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.imem.sram'
+2026-10-27T17:17:58.7603315Z    63 |     input  wire        A_DLY,
+2026-10-27T17:17:58.7603575Z       |                        ^~~~~
+2026-10-27T17:17:58.7604461Z %Warning-UNDRIVEN: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:64:24: Signal is not driven: 'A_DOUT'
+2026-10-27T17:17:58.7605761Z                                                                                                : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.imem.sram'
+2026-10-27T17:17:58.7606238Z    64 |     output wire [15:0] A_DOUT,
+2026-10-27T17:17:58.7606500Z       |                        ^~~~~~
+2026-10-27T17:17:58.7607251Z                    ... For warning description see https://verilator.org/warn/UNDRIVEN?v=5.044
+2026-10-27T17:17:58.7608340Z                    ... Use "/* verilator lint_off UNDRIVEN */" and lint_on around source to disable this message.
+2026-10-27T17:17:58.7609752Z %Warning-UNUSEDSIGNAL: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:65:24: Signal is not used: 'A_BM'
+2026-10-27T17:17:58.7610562Z                                                                                                    : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.imem.sram'
+2026-10-27T17:17:58.7611039Z    65 |     input  wire [15:0] A_BM,
+2026-10-27T17:17:58.7611302Z       |                        ^~~~
+2026-10-27T17:17:58.7611872Z %Warning-UNUSEDSIGNAL: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:66:24: Signal is not used: 'A_BIST_CLK'
+2026-10-27T17:17:58.7612806Z                                                                                                    : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.imem.sram'
+2026-10-27T17:17:58.7613627Z    66 |     input  wire        A_BIST_CLK,
+2026-10-27T17:17:58.7614115Z       |                        ^~~~~~~~~~
+2026-10-27T17:17:58.7615387Z %Warning-UNUSEDSIGNAL: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:67:24: Signal is not used: 'A_BIST_EN'
+2026-10-27T17:17:58.7617018Z                                                                                                    : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.imem.sram'
+2026-10-27T17:17:58.7618190Z    67 |     input  wire        A_BIST_EN,
+2026-10-27T17:17:58.7618712Z       |                        ^~~~~~~~~
+2026-10-27T17:17:58.7619783Z %Warning-UNUSEDSIGNAL: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:68:24: Signal is not used: 'A_BIST_MEN'
+2026-10-27T17:17:58.7621216Z                                                                                                    : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.imem.sram'
+2026-10-27T17:17:58.7622081Z    68 |     input  wire        A_BIST_MEN,
+2026-10-27T17:17:58.7622551Z       |                        ^~~~~~~~~~
+2026-10-27T17:17:58.7623573Z %Warning-UNUSEDSIGNAL: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:69:24: Signal is not used: 'A_BIST_WEN'
+2026-10-27T17:17:58.7624986Z                                                                                                    : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.imem.sram'
+2026-10-27T17:17:58.7625949Z    69 |     input  wire        A_BIST_WEN,
+2026-10-27T17:17:58.7626437Z       |                        ^~~~~~~~~~
+2026-10-27T17:17:58.7627723Z %Warning-UNUSEDSIGNAL: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:70:24: Signal is not used: 'A_BIST_REN'
+2026-10-27T17:17:58.7629149Z                                                                                                    : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.imem.sram'
+2026-10-27T17:17:58.7630014Z    70 |     input  wire        A_BIST_REN,
+2026-10-27T17:17:58.7630499Z       |                        ^~~~~~~~~~
+2026-10-27T17:17:58.7631579Z %Warning-UNUSEDSIGNAL: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:71:24: Signal is not used: 'A_BIST_ADDR'
+2026-10-27T17:17:58.7633022Z                                                                                                    : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.imem.sram'
+2026-10-27T17:17:58.7633882Z    71 |     input  wire [7:0]  A_BIST_ADDR,
+2026-10-27T17:17:58.7634384Z       |                        ^~~~~~~~~~~
+2026-10-27T17:17:58.7635433Z %Warning-UNUSEDSIGNAL: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:72:24: Signal is not used: 'A_BIST_DIN'
+2026-10-27T17:17:58.7637067Z                                                                                                    : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.imem.sram'
+2026-10-27T17:17:58.7637581Z    72 |     input  wire [15:0] A_BIST_DIN,
+2026-10-27T17:17:58.7637857Z       |                        ^~~~~~~~~~
+2026-10-27T17:17:58.7638499Z %Warning-UNUSEDSIGNAL: /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/src/sram_256x16.sv:73:24: Signal is not used: 'A_BIST_BM'
+2026-10-27T17:17:58.7639916Z                                                                                                    : ... note: In instance 'tt_um_RaghuvPotdar_Leonidas.imem.sram'
+2026-10-27T17:17:58.7640846Z    73 |     input  wire [15:0] A_BIST_BM
+2026-10-27T17:17:58.7641313Z       |                        ^~~~~~~~~
+2026-10-27T17:17:58.7641790Z %Error: Exiting due to 4 error(s)
+2026-10-27T17:17:58.7642237Z END DEBUG
+2026-10-27T17:17:58.7700061Z ##[end-action id=__TinyTapeout_tt-gds-action.__run_7;outcome=success;conclusion=success;duration_ms=35]
+2026-10-27T17:17:58.7702511Z ##[start-action display=Yosys warnings;id=__TinyTapeout_tt-gds-action.__run_8]
+2026-10-27T17:17:58.7704852Z ##[end-action id=__TinyTapeout_tt-gds-action.__run_8;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-27T17:17:58.7707173Z ##[start-action display=Routing summary;id=__TinyTapeout_tt-gds-action.__run_9]
+2026-10-27T17:17:58.7709602Z ##[end-action id=__TinyTapeout_tt-gds-action.__run_9;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-27T17:17:58.7711413Z ##[start-action display=Cell usage summary;id=__TinyTapeout_tt-gds-action.__run_10]
+2026-10-27T17:17:58.7713421Z ##[end-action id=__TinyTapeout_tt-gds-action.__run_10;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-27T17:17:58.7715222Z ##[start-action display=Publish build logs;id=__TinyTapeout_tt-gds-action.__actions_upload-artifact]
+2026-10-27T17:17:58.7754702Z ##[group]Run actions/upload-artifact@v7
+2026-10-27T17:17:58.7754994Z with:
+2026-10-27T17:17:58.7755204Z   name: GDS_logs
+2026-10-27T17:17:58.7755424Z   path: src/*
+runs/wokwi/*
+
+2026-10-27T17:17:58.7755677Z   if-no-files-found: warn
+2026-10-27T17:17:58.7755916Z   compression-level: 6
+2026-10-27T17:17:58.7756138Z   overwrite: false
+2026-10-27T17:17:58.7756361Z   include-hidden-files: false
+2026-10-27T17:17:58.7756844Z   archive: true
+2026-10-27T17:17:58.7757058Z env:
+2026-10-27T17:17:58.7757253Z   PDK: ihp-sg13g2
+2026-10-27T17:17:58.7757478Z   TT_ARGS: --ihp
+2026-10-27T17:17:58.7757720Z   CACHE_KEY: c64598ebb40a937a93d97cceb7dfde03
+2026-10-27T17:17:58.7758086Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:17:58.7758566Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+2026-10-27T17:17:58.7759029Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:17:58.7759428Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:17:58.7759827Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+2026-10-27T17:17:58.7760225Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+2026-10-27T17:17:58.7760555Z ##[endgroup]
+2026-10-27T17:17:58.9408349Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-10-27T17:17:58.9411651Z The least common ancestor is /home/runner/work/jstreet_Leonidas/jstreet_Leonidas. This will be the root directory of the artifact
+2026-10-27T17:17:58.9413169Z With the provided path, there will be 31 files uploaded
+2026-10-27T17:17:58.9414565Z Artifact name is valid!
+2026-10-27T17:17:58.9415289Z Root directory input is valid!
+2026-10-27T17:17:59.3755997Z Uploading artifact: GDS_logs.zip
+2026-10-27T17:17:59.3799167Z Beginning upload of artifact content to blob storage
+2026-10-27T17:17:59.7918984Z Uploaded bytes 31923
+2026-10-27T17:17:59.8629083Z Finished uploading artifact content to blob storage!
+2026-10-27T17:17:59.8630425Z SHA256 digest of uploaded artifact is ae644c7b3fc943b33ed4ea46754c677135d84581aed1a3deaea5b5347c58de3d
+2026-10-27T17:17:59.8631251Z Finalizing artifact upload
+2026-10-27T17:18:00.5276095Z Artifact GDS_logs successfully finalized. Artifact ID 12753448448
+2026-10-27T17:18:00.5277858Z Artifact GDS_logs has been successfully uploaded! Final size is 31923 bytes. Artifact ID is 12753448448
+2026-10-27T17:18:00.5282056Z Artifact download URL: https://github.com/RaghuvPotdar/jstreet_Leonidas/actions/runs/40548460214/artifacts/12753448448
+2026-10-27T17:18:00.5391500Z ##[end-action id=__TinyTapeout_tt-gds-action.__actions_upload-artifact;outcome=success;conclusion=success;duration_ms=1767]
+2026-10-27T17:18:00.5395939Z ##[start-action display=Prepare tt_submission artifact;id=__TinyTapeout_tt-gds-action.__run_11]
+2026-10-27T17:18:00.5400902Z ##[end-action id=__TinyTapeout_tt-gds-action.__run_11;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-27T17:18:00.5404424Z ##[start-action display=Publish tt_submission artifact;id=__TinyTapeout_tt-gds-action.__actions_upload-artifact_2]
+2026-10-27T17:18:00.5408645Z ##[end-action id=__TinyTapeout_tt-gds-action.__actions_upload-artifact_2;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-27T17:18:00.5412322Z ##[start-action display=Render PNG from GDS;id=__TinyTapeout_tt-gds-action.__run_12]
+2026-10-27T17:18:00.5416127Z ##[end-action id=__TinyTapeout_tt-gds-action.__run_12;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-27T17:18:00.5434985Z ##[start-action display=Upload gds_render (png) artifact;id=__TinyTapeout_tt-gds-action.__actions_upload-artifact_3]
+2026-10-27T17:18:00.5439704Z ##[end-action id=__TinyTapeout_tt-gds-action.__actions_upload-artifact_3;outcome=skipped;conclusion=skipped;duration_ms=0]

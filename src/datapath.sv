@@ -88,7 +88,6 @@ module datapath (
   logic        level2;
   logic [3:0]  pin_i;
   logic [3:0]  pin2_i;
-  integer      i;
 
   assign uo_out  = uo_q;
   assign uio_out = uio_q;
@@ -117,8 +116,8 @@ module datapath (
     defer_addr_n = defer_addr;
     halted_n     = halted;
     next_addr_n  = next_addr;
-    for (i = 0; i < 8; i++)
-      rf_n[i] = rf[i];
+    for (int ri = 0; ri < 8; ri++)
+      rf_n[ri] = rf[ri];
     uo_n         = uo_q;
     uio_n        = uio_q;
     oe_n         = oe_q;
@@ -150,8 +149,8 @@ module datapath (
       defer_addr_n = 8'h00;
       halted_n     = 1'b0;
       next_addr_n  = 8'h00;
-      for (i = 0; i < 8; i++)
-        rf_n[i] = 8'h00;
+      for (int ri = 0; ri < 8; ri++)
+        rf_n[ri] = 8'h00;
       uo_n         = 8'hFF;
       uio_n        = 8'h00;
       oe_n         = 8'h00;
@@ -343,8 +342,8 @@ module datapath (
       defer_addr <= 8'h00;
       halted     <= 1'b0;
       next_addr  <= 8'h00;
-      for (i = 0; i < 8; i++)
-        rf[i] <= 8'h00;
+      for (int ri = 0; ri < 8; ri++)
+        rf[ri] <= 8'h00;
       uo_q       <= 8'hFF;
       uio_q      <= 8'h00;
       oe_q       <= 8'h00;
@@ -358,8 +357,8 @@ module datapath (
       defer_addr <= defer_addr_n;
       halted     <= halted_n;
       next_addr  <= next_addr_n;
-      for (i = 0; i < 8; i++)
-        rf[i] <= rf_n[i];
+      for (int ri = 0; ri < 8; ri++)
+        rf[ri] <= rf_n[ri];
       uo_q       <= uo_n;
       uio_q      <= uio_n;
       oe_q       <= oe_n;

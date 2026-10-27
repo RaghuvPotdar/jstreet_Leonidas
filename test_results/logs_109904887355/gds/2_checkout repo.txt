@@ -1,0 +1,104 @@
+﻿2026-10-27T17:13:40.3447650Z ##[group]Run actions/checkout@v6
+2026-10-27T17:13:40.3448386Z with:
+2026-10-27T17:13:40.3448671Z   submodules: recursive
+2026-10-27T17:13:40.3449025Z   repository: RaghuvPotdar/jstreet_Leonidas
+2026-10-27T17:13:40.3452067Z   token: ***
+2026-10-27T17:13:40.3452335Z   ssh-strict: true
+2026-10-27T17:13:40.3452604Z   ssh-user: git
+2026-10-27T17:13:40.3452891Z   persist-credentials: true
+2026-10-27T17:13:40.3453179Z   clean: true
+2026-10-27T17:13:40.3453458Z   sparse-checkout-cone-mode: true
+2026-10-27T17:13:40.3453768Z   fetch-depth: 1
+2026-10-27T17:13:40.3454022Z   fetch-tags: false
+2026-10-27T17:13:40.3454286Z   show-progress: true
+2026-10-27T17:13:40.3454567Z   lfs: false
+2026-10-27T17:13:40.3454822Z   set-safe-directory: true
+2026-10-27T17:13:40.3455129Z   allow-unsafe-pr-checkout: false
+2026-10-27T17:13:40.3455647Z ##[endgroup]
+2026-10-27T17:13:40.6107767Z Syncing repository: RaghuvPotdar/jstreet_Leonidas
+2026-10-27T17:13:40.6109974Z ##[group]Getting Git version info
+2026-10-27T17:13:40.6110623Z Working directory is '/home/runner/work/jstreet_Leonidas/jstreet_Leonidas'
+2026-10-27T17:13:40.6111507Z [command]/usr/bin/git version
+2026-10-27T17:13:40.6196558Z git version 2.55.0
+2026-10-27T17:13:40.6223681Z ##[endgroup]
+2026-10-27T17:13:40.6241872Z Temporarily overriding HOME='/home/runner/work/_temp/f5abd228-4483-4f47-82d7-f98ee6976f1e' before making global git config changes
+2026-10-27T17:13:40.6243367Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-27T17:13:40.6249270Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/jstreet_Leonidas/jstreet_Leonidas
+2026-10-27T17:13:40.6312153Z Deleting the contents of '/home/runner/work/jstreet_Leonidas/jstreet_Leonidas'
+2026-10-27T17:13:40.6317973Z ##[group]Determining repository object format
+2026-10-27T17:13:40.6320928Z ##[endgroup]
+2026-10-27T17:13:40.6321803Z ##[group]Initializing the repository
+2026-10-27T17:13:40.6327834Z [command]/usr/bin/git init /home/runner/work/jstreet_Leonidas/jstreet_Leonidas
+2026-10-27T17:13:40.6440991Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-27T17:13:40.6442276Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-27T17:13:40.6443310Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-27T17:13:40.6444076Z hint: call:
+2026-10-27T17:13:40.6444444Z hint:
+2026-10-27T17:13:40.6445001Z hint: 	git config --global init.defaultBranch <name>
+2026-10-27T17:13:40.6445647Z hint:
+2026-10-27T17:13:40.6446271Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-27T17:13:40.6447480Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-27T17:13:40.6448266Z hint:
+2026-10-27T17:13:40.6448709Z hint: 	git branch -m <name>
+2026-10-27T17:13:40.6449163Z hint:
+2026-10-27T17:13:40.6449809Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-27T17:13:40.6451048Z Initialized empty Git repository in /home/runner/work/jstreet_Leonidas/jstreet_Leonidas/.git/
+2026-10-27T17:13:40.6457900Z [command]/usr/bin/git remote add origin https://github.com/RaghuvPotdar/jstreet_Leonidas
+2026-10-27T17:13:40.6530053Z ##[endgroup]
+2026-10-27T17:13:40.6531335Z ##[group]Disabling automatic garbage collection
+2026-10-27T17:13:40.6534818Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-27T17:13:40.6583182Z ##[endgroup]
+2026-10-27T17:13:40.6584547Z ##[group]Setting up auth
+2026-10-27T17:13:40.6585539Z Removing SSH command configuration
+2026-10-27T17:13:40.6592887Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-27T17:13:40.6641794Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-27T17:13:40.7082615Z Removing HTTP extra header
+2026-10-27T17:13:40.7100604Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-27T17:13:40.7152795Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-27T17:13:40.7407495Z Removing includeIf entries pointing to credentials config files
+2026-10-27T17:13:40.7414735Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-27T17:13:40.7453749Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-27T17:13:40.7685910Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-44c2ad16-c7cc-4592-9902-8cd5aecac35b.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-27T17:13:40.7730427Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/jstreet_Leonidas/jstreet_Leonidas/.git.path /home/runner/work/_temp/git-credentials-44c2ad16-c7cc-4592-9902-8cd5aecac35b.config
+2026-10-27T17:13:40.7768234Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/jstreet_Leonidas/jstreet_Leonidas/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-44c2ad16-c7cc-4592-9902-8cd5aecac35b.config
+2026-10-27T17:13:40.7807548Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-44c2ad16-c7cc-4592-9902-8cd5aecac35b.config
+2026-10-27T17:13:40.7867176Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-44c2ad16-c7cc-4592-9902-8cd5aecac35b.config
+2026-10-27T17:13:40.7897962Z ##[endgroup]
+2026-10-27T17:13:40.7898495Z ##[group]Fetching the repository
+2026-10-27T17:13:40.7907400Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +618cb6b3691aafc4abb9bf32042dc88d3d506fac:refs/remotes/origin/main
+2026-10-27T17:13:41.2276548Z From https://github.com/RaghuvPotdar/jstreet_Leonidas
+2026-10-27T17:13:41.2278020Z  * [new ref]         618cb6b3691aafc4abb9bf32042dc88d3d506fac -> origin/main
+2026-10-27T17:13:41.2288674Z [command]/usr/bin/git branch --list --remote origin/main
+2026-10-27T17:13:41.2319283Z   origin/main
+2026-10-27T17:13:41.2330059Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+2026-10-27T17:13:41.2356894Z 618cb6b3691aafc4abb9bf32042dc88d3d506fac
+2026-10-27T17:13:41.2362871Z ##[endgroup]
+2026-10-27T17:13:41.2363663Z ##[group]Determining the checkout info
+2026-10-27T17:13:41.2364540Z ##[endgroup]
+2026-10-27T17:13:41.2369715Z [command]/usr/bin/git sparse-checkout disable
+2026-10-27T17:13:41.2429273Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-27T17:13:41.2461258Z ##[group]Checking out the ref
+2026-10-27T17:13:41.2465205Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-10-27T17:13:41.2639593Z Switched to a new branch 'main'
+2026-10-27T17:13:41.2646191Z branch 'main' set up to track 'origin/main'.
+2026-10-27T17:13:41.2653016Z ##[endgroup]
+2026-10-27T17:13:41.2654565Z ##[group]Setting up auth for fetching submodules
+2026-10-27T17:13:41.2661499Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-44c2ad16-c7cc-4592-9902-8cd5aecac35b.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-27T17:13:41.2704428Z [command]/usr/bin/git config --global include.path /home/runner/work/_temp/git-credentials-44c2ad16-c7cc-4592-9902-8cd5aecac35b.config
+2026-10-27T17:13:41.2740265Z [command]/usr/bin/git config --global --unset-all url.https://github.com/.insteadOf
+2026-10-27T17:13:41.2776971Z [command]/usr/bin/git config --global --add url.https://github.com/.insteadOf git@github.com:
+2026-10-27T17:13:41.2812694Z [command]/usr/bin/git config --global --add url.https://github.com/.insteadOf org-146029018@github.com:
+2026-10-27T17:13:41.2844130Z ##[endgroup]
+2026-10-27T17:13:41.2844822Z ##[group]Fetching submodules
+2026-10-27T17:13:41.2849487Z [command]/usr/bin/git submodule sync --recursive
+2026-10-27T17:13:41.3095496Z [command]/usr/bin/git -c protocol.version=2 submodule update --init --force --depth=1 --recursive
+2026-10-27T17:13:41.3349126Z [command]/usr/bin/git submodule foreach --recursive git config --local gc.auto 0
+2026-10-27T17:13:41.3582681Z ##[endgroup]
+2026-10-27T17:13:41.3583599Z ##[group]Persisting credentials for submodules
+2026-10-27T17:13:41.3592669Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'url\.https\:\/\/github\.com\/\.insteadOf' && git config --local --unset-all 'url.https://github.com/.insteadOf' || :"
+2026-10-27T17:13:41.3829556Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-27T17:13:41.4058437Z [command]/usr/bin/git submodule foreach --recursive git config --local --add 'url.https://github.com/.insteadOf' 'git@github.com:'
+2026-10-27T17:13:41.4301503Z [command]/usr/bin/git submodule foreach --recursive git config --local --add 'url.https://github.com/.insteadOf' 'org-146029018@github.com:'
+2026-10-27T17:13:41.4529248Z ##[endgroup]
+2026-10-27T17:13:41.4577328Z [command]/usr/bin/git log -1 --format=%H
+2026-10-27T17:13:41.4605219Z 618cb6b3691aafc4abb9bf32042dc88d3d506fac

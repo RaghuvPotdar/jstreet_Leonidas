@@ -72,5 +72,11 @@ module RM_IHPSG13_1P_256x16_c2_bm_bist (
     input  wire [15:0] A_BIST_DIN,
     input  wire [15:0] A_BIST_BM
 );
+  // Body is ignored by synthesis (blackbox). Kept so Verilator lint of the
+  // GDS elaboration (no `SIM`) does not see undriven / unused ports.
+  assign A_DOUT = 16'h0000;
+  wire _unused = &{1'b0, A_CLK, A_MEN, A_WEN, A_REN, A_ADDR, A_DIN, A_DLY,
+                   A_BM, A_BIST_CLK, A_BIST_EN, A_BIST_MEN, A_BIST_WEN,
+                   A_BIST_REN, A_BIST_ADDR, A_BIST_DIN, A_BIST_BM, 1'b0};
 endmodule
 `endif
