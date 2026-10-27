@@ -13,72 +13,99 @@ The first byte stored for a word is bits 7 through 0. The second byte is bits 15
 
 | Opcode | Name | Bits 11–8 | Bits 7–0 |
 |---|---|---|---|
-| `0000` | `LDI` | ignored | byte loaded into the shifter |
-| `0001` | `LOW` | pin | duration |
-| `0010` | `HIGH` | pin | duration |
-| `0011` | `SETX` | ignored | value loaded into X |
-| `0100` | `OUT_L` | pin | duration |
-| `0101` | `DJNZ` | ignored | jump target |
-| `0110` | `HALT` | ignored | ignored |
-| `0111` | `OUT_M` | pin | duration |
-| `1000` | `REL` | pin | duration |
-| `1001` | `JL` | pin | jump target |
-| `1010`–`1111` | unused | ignored | ignored |
+| `0000` | `LDI` | `0` ‖ `Rn` (3 bits) | immediate byte |
+| `0001` | `PSET` | pin | level + duration (see below) |
+| `0010` | `OUT` | pin | duration |
+| `0011` | `DJNZ` | `0` ‖ `Rn` (3 bits) | jump target |
+| `0100` | `HALT` | ignored | ignored |
+| `0101` | `REL` | pin | duration |
+| `0110` | `JL` | pin | jump target |
+| `0111` | `PSETH` | dual-pin snap + wait index (see below) |
+| `1000`–`1111` | unused | ignored | ignored |
+
+## Register file
+
+Eight architectural registers, `R0`–`R7`, each 8 bits. There is no separate shifter or `X` outside this file.
+
+| Regs | Conventional use |
+|---|---|
+| `R0`–`R3` | Prefer for data / loop counts. **`OUT` reads `R0`** as the shift register (bit 0 out, shift right, fill 0). |
+| `R4`–`R7` | Prefer for **durations** consumed by `PSETH`. |
+
+The compiler allocates and tracks free regs. `PSETH` can only name four wait sources (2-bit index); those map to **`R4`–`R7`** (`ridx 00` → `R4`, …, `11` → `R7`). No way around that with the current `PSETH` layout.
+
+`LDI` only writes the register file. Loading the program into SRAM is still the host strobe path, not `LDI`.
 
 ## Pins and duration
 
 A pin number is 4 bits. Pins 0 through 7 are `uo_out[0]` through `uo_out[7]`. Pins 8 through 15 are `uio[0]` through `uio[7]`. `ui_in` cannot be driven. `uo_out` resets high. `uio` resets to inputs.
 
-`LOW`, `HIGH`, `OUT_L`, `OUT_M`, and `REL` use the numbered pin and wait for the duration. The duration is that many chip clocks, and the clock that starts the level is one of them. A duration of 0 waits 256 clocks. When the wait ends, the pin keeps its level until a later instruction writes that same pin.
+Timed ops wait for a duration in chip clocks. The clock that starts the level is one of those clocks. When the wait ends, the pin **keeps its level** until a later instruction writes that same pin.
 
-Driving a `uio` pin with `LOW`, `HIGH`, `OUT_L`, or `OUT_M` turns that bit of `uio_oe` on. `REL` turns it off.
+`PSET`, `OUT`, `REL`, and `PSETH` are timed (see each). Driving a `uio` pin with `PSET`, `OUT`, or `PSETH` turns that bit of `uio_oe` on. `REL` turns it off.
 
 ## LDI — `0000`
 
-Loads bits 7 through 0 into the shifter. The shifter is 8 bits. This does not drive a pin. The next instruction is the next word.
+```
+15    12 11 10     8 7          0
+| 0000  | 0 |  Rn  | immediate |
+```
 
-`OUT_L` will emit bit 0 of this byte first. `OUT_M` will emit bit 7 first.
+Writes the immediate into `Rn` (`Rn` is bits 10–8). Bit 11 is reserved (`0`).
 
-## LOW — `0001`
+## PSET — `0001`
 
-Drives the pin to 0 and waits for the duration.
+```
+15    12 11    8 7 6          0
+| 0001  |  pin  |L| duration  |
+```
 
-## HIGH — `0010`
+- **L (bit 7):** level (`0` or `1`).
+- **duration (bits 6–0):** hold length. `0` means 128 clocks. (Compiler should
+  prefer explicit counts; silicon still defines `0`.)
 
-Drives the pin to 1 and waits for the duration.
+Single-pin set + wait. For one-pin protocols (UART/SPI edges) and for raising idle **J** after USB SE0.
 
-## SETX — `0011`
+## OUT — `0010`
 
-Loads bits 7 through 0 into X. X is an 8-bit counter used by `DJNZ`. This does not drive a pin. The next instruction is the next word.
+Uses **`R0`** as the shift register. Drives the pin from `R0[0]`, then `R0 ← {0, R0[7:1]}`. Waits for the duration in bits 7–0 (`0` means 256 clocks).
 
-## OUT_L — `0100`
+MSB-first on the wire is a compiler bit-reverse before `LDI R0, …`.
 
-Drives the pin from bit 0 of the shifter, then shifts the shifter right by one, filling bit 7 with 0. Waits for the duration.
+## DJNZ — `0011`
 
-Eight `OUT_L` instructions emit the loaded byte low bit first. The shifter is 0 afterwards.
+```
+15    12 11 10     8 7          0
+| 0011  | 0 |  Rn  |   target  |
+```
 
-## DJNZ — `0101`
+`Rn ← Rn - 1` (wraps). If the result is not 0, next instruction is `target`; else the next word. Bit 11 reserved (`0`). Nested loops use different `Rn`s.
 
-Subtracts 1 from X. The subtraction wraps, so 0 becomes 255. If the result is not 0, the next instruction is the word at the address in bits 7 through 0. If the result is 0, the next instruction is the next word.
+## HALT — `0100`
 
-## HALT — `0110`
+Stops advancing the program. A level already in progress finishes its duration. Pins stay. **`halted`** stops new issue; `running` stays set.
 
-Stops fetching. A level already in progress runs for its full duration. After that, the pins stay where they are.
+## REL — `0101`
 
-## OUT_M — `0111`
+Releases a `uio` pin (`oe` off, driven bit 0), waits duration bits 7–0 (`0` ⇒ 256). Pull-up defines the line. On `uo_out`, drives 0.
 
-Drives the pin from bit 7 of the shifter, then shifts the shifter left by one, filling bit 0 with 0. Waits for the duration.
+## JL — `0110`
 
-Eight `OUT_M` instructions emit the loaded byte high bit first. The shifter is 0 afterwards.
+If the `uio` pin reads 0, jump to bits 7–0; else fall through. `uo_out` reads as 1.
 
-## REL — `1000`
+## PSETH — `0111`
 
-Turns the driver off for a `uio` pin, leaves the driven bit at 0, and waits for the duration. The external pull-up decides the line. On a `uo_out` pin, which cannot be released, this drives 0.
+```
+15    12 11    8 7     4 3 2 1 0
+| 0111  |  pin1 |  pin2 |A|B|idx|
+```
 
-## JL — `1001`
+- **pin1, pin2:** two pads (each 4 bits).
+- **A, B:** levels for pin1 and pin2.
+- **idx (bits 1–0):** which duration reg → **`R4+idx`**.
 
-Reads a `uio` pin. If it is 0, the next instruction is the word at the address in bits 7 through 0. If it is 1, the next instruction is the next word. A `uo_out` pin has no input and reads as 1, so `JL` falls through.
+In one instruction, drives both pins to A/B and waits `R[4+idx]` clocks. Used when two lines must change together (e.g. USB J/K/SE0). Sticky afterward; EOP can SE0 here, then `PSET` to idle J.
 
-## Unused opcodes — `1010` through `1111`
+## Unused opcodes — `1000` through `1111`
 
-The instruction does nothing and the next instruction is the next word.
+Eight free opcodes. No-op: next word.
