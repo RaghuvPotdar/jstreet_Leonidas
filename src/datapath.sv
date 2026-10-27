@@ -19,6 +19,8 @@
 // clocks. Prefetch while holding keeps OUT/DJNZ/OUT gapless when the hold
 // is long enough. Pins stick after the hold until rewritten.
 // JL samples a 2-flop-synced copy of uio_in, using pin1 of Rp.
+// LD is two cycles (1W): issue reads dmem[Rm] and writes Rm+1; next
+// clock writes Rn. Do not prefetch past an LD the way DJNZ is handled.
 module datapath (
     input  wire        clk,
     input  wire        rst_n,
@@ -28,7 +30,10 @@ module datapath (
     output logic [7:0] pc,
     output wire [7:0]  uo_out,
     output wire [7:0]  uio_out,
-    output wire [7:0]  uio_oe
+    output wire [7:0]  uio_oe,
+    output logic [7:0] dmem_addr,
+    output logic       dmem_ren,
+    input  wire [7:0]  dmem_rdata
 );
 
   localparam logic [3:0] OP_LDI  = 4'h0;
@@ -38,6 +43,7 @@ module datapath (
   localparam logic [3:0] OP_HALT = 4'h4;
   localparam logic [3:0] OP_REL  = 4'h5;
   localparam logic [3:0] OP_JL   = 4'h6;
+  localparam logic [3:0] OP_LD   = 4'h7;
 
   logic [7:0]  shown;
   logic        issue_q;
@@ -53,6 +59,9 @@ module datapath (
   logic [15:0] defer_word;
   logic [7:0]  defer_addr;
   logic        halted;
+  logic        ld_pend;
+  logic [2:0]  ld_dest;
+  logic [7:0]  ld_ret;
   logic [7:0]  uo_q;
   logic [7:0]  uio_q;
   logic [7:0]  oe_q;
@@ -71,6 +80,9 @@ module datapath (
   logic [15:0] defer_n;
   logic [7:0]  defer_addr_n;
   logic        halted_n;
+  logic        ld_pend_n;
+  logic [2:0]  ld_dest_n;
+  logic [7:0]  ld_ret_n;
   logic [7:0]  next_addr_n;
   logic [7:0]  uo_n;
   logic [7:0]  uio_n;
@@ -130,7 +142,7 @@ module datapath (
   endfunction
 
   function automatic logic [2:0] field_rs(input logic [15:0] w);
-    field_rs = (w[15:12] == OP_OUT) ? w[8:6] : w[10:8];
+    field_rs = (w[15:12] == OP_OUT || w[15:12] == OP_LD) ? w[8:6] : w[10:8];
   endfunction
 
   function automatic logic [2:0] field_rd(input logic [15:0] w);
@@ -172,7 +184,8 @@ module datapath (
         rf_raddr_d = field_rd(buf_word);
       end
     end else if (hold == 8'd2 && buf_v && !is_pin(buf_word[15:12])
-                 && buf_word[15:12] != OP_HALT) begin
+                 && buf_word[15:12] != OP_HALT
+                 && buf_word[15:12] != OP_LD) begin
       rf_raddr_p = field_rp(buf_word);
       rf_raddr_s = field_rs(buf_word);
       rf_raddr_d = field_rd(buf_word);
@@ -189,7 +202,12 @@ module datapath (
     defer_n      = defer_word;
     defer_addr_n = defer_addr;
     halted_n     = halted;
+    ld_pend_n    = ld_pend;
+    ld_dest_n    = ld_dest;
+    ld_ret_n     = ld_ret;
     next_addr_n  = next_addr;
+    dmem_ren     = 1'b0;
+    dmem_addr    = 8'h00;
     uo_n         = uo_q;
     uio_n        = uio_q;
     oe_n         = oe_q;
@@ -224,11 +242,22 @@ module datapath (
       defer_n      = 16'h0000;
       defer_addr_n = 8'h00;
       halted_n     = 1'b0;
+      ld_pend_n    = 1'b0;
+      ld_dest_n    = 3'd0;
+      ld_ret_n     = 8'h00;
       next_addr_n  = 8'h00;
       rf_clear     = 1'b1;
       uo_n         = 8'hFF;
       uio_n        = 8'h00;
       oe_n         = 8'h00;
+    end else if (ld_pend) begin
+      rf_we       = 1'b1;
+      rf_waddr    = ld_dest;
+      rf_wdata    = dmem_rdata;
+      ld_pend_n   = 1'b0;
+      next_addr_n = ld_ret + 8'd1;
+      issue       = 1'b1;
+      issue_addr  = next_addr_n;
     end else if (halted) begin
     end else if (defer_v) begin
       do_start     = 1'b1;
@@ -265,7 +294,8 @@ module datapath (
         buf_addr_n = asked_addr;
         hold_n     = hold - 8'd1;
       end else if (hold == 8'd2 && buf_v && !is_pin(buf_word[15:12])
-                   && buf_word[15:12] != OP_HALT) begin
+                   && buf_word[15:12] != OP_HALT
+                   && buf_word[15:12] != OP_LD) begin
         hold_n = hold - 8'd1;
         rn     = buf_word[10:8];
         rn_dec = rf_rdata_s - 8'd1;
@@ -321,6 +351,16 @@ module datapath (
           else
             next_addr_n = op_addr + 8'd1;
           issue = !fetched;
+        end
+        OP_LD: begin
+          dmem_ren    = 1'b1;
+          dmem_addr   = rf_rdata_s;
+          rf_we       = 1'b1;
+          rf_waddr    = op_word[8:6];
+          rf_wdata    = rf_rdata_s + 8'd1;
+          ld_pend_n   = 1'b1;
+          ld_dest_n   = op_word[11:9];
+          ld_ret_n    = op_addr;
         end
         OP_HALT: halted_n = 1'b1;
         default: begin
@@ -427,6 +467,9 @@ module datapath (
       defer_word <= 16'h0000;
       defer_addr <= 8'h00;
       halted     <= 1'b0;
+      ld_pend    <= 1'b0;
+      ld_dest    <= 3'd0;
+      ld_ret     <= 8'h00;
       next_addr  <= 8'h00;
       uo_q       <= 8'hFF;
       uio_q      <= 8'h00;
@@ -440,6 +483,9 @@ module datapath (
       defer_word <= defer_n;
       defer_addr <= defer_addr_n;
       halted     <= halted_n;
+      ld_pend    <= ld_pend_n;
+      ld_dest    <= ld_dest_n;
+      ld_ret     <= ld_ret_n;
       next_addr  <= next_addr_n;
       uo_q       <= uo_n;
       uio_q      <= uio_n;

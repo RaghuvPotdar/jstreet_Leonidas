@@ -9,9 +9,10 @@ vmap work work
 
 set SRC ../src
 vlog -sv -work work +define+SIM +incdir+$SRC \
-    $SRC/uart.sv \
     $SRC/sram_256x16.sv \
+    $SRC/sram_256x8.sv \
     $SRC/imem.sv \
+    $SRC/dmem.sv \
     $SRC/rf.sv \
     $SRC/datapath.sv \
     $SRC/leonidas.sv \

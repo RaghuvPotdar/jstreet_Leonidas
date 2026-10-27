@@ -36,7 +36,8 @@
   "FP_MACRO_HORIZONTAL_HALO": 2,
   "PDN_CFG": "dir::pdn_cfg.tcl",
   "PDN_MACRO_CONNECTIONS": [
-    "imem\\.sram VPWR VGND VDD.* VSS.*"
+    "imem\\.sram VPWR VGND VDD.* VSS.*",
+    "dmem\\.sram VPWR VGND VDD.* VSS.*"
   ],
   "MACROS": {
     "RM_IHPSG13_1P_256x16_c2_bm_bist": {
@@ -52,6 +53,21 @@
       },
       "instances": {
         "imem.sram": { "location": [5.815, 200], "orientation": "N" }
+      }
+    },
+    "RM_IHPSG13_1P_256x8_c3_bm_bist": {
+      "gds": ["pdk_dir::libs.ref/sg13g2_sram/gds/RM_IHPSG13_1P_256x8_c3_bm_bist.gds"],
+      "lef": ["pdk_dir::libs.ref/sg13g2_sram/lef/RM_IHPSG13_1P_256x8_c3_bm_bist.lef"],
+      "spice": ["pdk_dir::libs.ref/sg13g2_sram/cdl/RM_IHPSG13_1P_256x8_c3_bm_bist.cdl"],
+      "nl": [],
+      "spef": {},
+      "lib": {
+        "nom_typ_1p20V_25C": ["pdk_dir::libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_256x8_c3_bm_bist_typ_1p20V_25C.lib"],
+        "nom_fast_1p32V_m40C": ["pdk_dir::libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_256x8_c3_bm_bist_fast_1p32V_m55C.lib"],
+        "nom_slow_1p08V_125C": ["pdk_dir::libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_256x8_c3_bm_bist_slow_1p08V_125C.lib"]
+      },
+      "instances": {
+        "dmem.sram": { "location": [5.815, 20], "orientation": "N" }
       }
     }
   },

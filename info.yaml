@@ -17,9 +17,10 @@ project:
   # Source files must be in ./src and you must list each source file separately, one per line.
   # Don't forget to also update `PROJECT_SOURCES` in test/Makefile.
   source_files:
-    - "uart.sv"
     - "sram_256x16.sv"
+    - "sram_256x8.sv"
     - "imem.sv"
+    - "dmem.sv"
     - "rf.sv"
     - "datapath.sv"
     - "leonidas.sv"
@@ -47,7 +48,7 @@ pinout:
   uo[6]: "out6"
   uo[7]: "out7"
 
-  # 00 idle, 01 load byte, 10 last byte and start, 11 reserved.
+  # 00 idle, 01 imem byte, 10 imem byte and start, 11 dmem byte.
   uio[0]: "strobe[0]"
   uio[1]: "strobe[1]"
   uio[2]: ""

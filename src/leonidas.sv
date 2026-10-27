@@ -19,11 +19,13 @@ module tt_um_RaghuvPotdar_Leonidas (
     logic        running;
     logic [15:0] dout;
     logic [7:0]  pc;
+    logic [7:0]  dmem_addr;
+    logic        dmem_ren;
+    logic [7:0]  dmem_dout;
 
-    // ui_in is one byte of an instruction. uio_in[1:0] says what to do with
-    // it: 00 idle, 01 store the byte, 10 store the byte and start once the
-    // word is complete, 11 ignored. After start, datapath reads the SRAM
-    // through pc and drives the pins.
+    // ui_in is one byte. uio_in[1:0]: 00 idle, 01 imem byte, 10 imem byte
+    // and start, 11 dmem byte. After start, datapath fetches imem through
+    // pc and reads dmem with LD.
     imem imem (
         .clk    (clk),
         .rst_n  (rst_n),
@@ -34,16 +36,30 @@ module tt_um_RaghuvPotdar_Leonidas (
         .dout   (dout)
     );
 
-    datapath datapath (
+    dmem dmem (
         .clk    (clk),
         .rst_n  (rst_n),
         .running(running),
-        .instr  (dout),
-        .uio_in (uio_in),
-        .pc     (pc),
-        .uo_out (uo_out),
-        .uio_out(uio_out),
-        .uio_oe (uio_oe)
+        .byte_in(ui_in),
+        .strobe (uio_in[1:0]),
+        .raddr  (dmem_addr),
+        .ren    (dmem_ren),
+        .dout   (dmem_dout)
+    );
+
+    datapath datapath (
+        .clk       (clk),
+        .rst_n     (rst_n),
+        .running   (running),
+        .instr     (dout),
+        .uio_in    (uio_in),
+        .pc        (pc),
+        .uo_out    (uo_out),
+        .uio_out   (uio_out),
+        .uio_oe    (uio_oe),
+        .dmem_addr (dmem_addr),
+        .dmem_ren  (dmem_ren),
+        .dmem_rdata(dmem_dout)
     );
 
     wire _unused = &{1'b0, ena, 1'b0};

@@ -51,6 +51,18 @@ def engine(dut):
         return None
 
 
+def payload(dut):
+    try:
+        return dut.DUT.dmem
+    except AttributeError:
+        return None
+
+
+async def load_dmem(dut, data):
+    for byte in data:
+        await byte_strobe(dut, 0b11, byte)
+
+
 def pin_byte(level):
     return 0xFF if level else 0xFD
 
@@ -110,6 +122,10 @@ async def test_uart_program(dut):
     if imem is not None:
         assert int(imem.half.value) == 1
         assert int(imem.running.value) == 0
+    mem = payload(dut)
+    if mem is not None:
+        assert int(mem.wptr.value) == 1
+        assert int(mem.sram.mem[0].value) == 0x55
 
     dut.rst_n.value = 0
     dut.uio_in.value = 0
@@ -458,3 +474,51 @@ async def test_ldi_then_out(dut):
     if dp is not None:
         assert int(dp.halted.value) == 1
         assert rf_at(dp, 0) == 0
+
+
+@cocotb.test()
+async def test_dmem_ld(dut):
+    """Strobe 11 fills dmem; LD Rn, [Rm] reads it and post-increments Rm."""
+    from assemble import OP_HALT, OP_LDI, encode, encode_ld, encode_out, reg_field
+
+    await reset_dut(dut)
+    await load_dmem(dut, [0x5A, 0x3C])
+    mem = payload(dut)
+    if mem is not None:
+        assert int(mem.wptr.value) == 2
+        assert int(mem.sram.mem[0].value) == 0x5A
+        assert int(mem.sram.mem[1].value) == 0x3C
+
+    words = [
+        encode(OP_LDI, reg_field(2), 0x11),
+        encode(OP_LDI, reg_field(3), 8),
+        encode(OP_LDI, reg_field(5), 0),
+        encode_ld(0, 5),
+        encode_out(2, 0, 3),
+        encode_ld(1, 5),
+        encode(OP_HALT, 0, 0),
+    ]
+    await load_program(dut, words)
+
+    samples = [int(dut.uo_out.value)]
+    for _ in range(64):
+        await clock_edge(dut)
+        samples.append(int(dut.uo_out.value))
+
+    bits = [((s >> 1) & 1) for s in samples]
+    while bits and bits[0] == 1:
+        bits.pop(0)
+    assert bits, "pin 1 never left idle high"
+    lows = 0
+    while bits and bits[0] == 0:
+        lows += 1
+        bits.pop(0)
+    # 0x5A LSB is 0; OUT holds it for 8, then sticky
+    assert lows >= 8, f"OUT from dmem[0]=0x5A held {lows}, want >= 8"
+
+    dp = engine(dut)
+    if dp is not None:
+        assert int(dp.halted.value) == 1
+        assert rf_at(dp, 0) == 0x2D
+        assert rf_at(dp, 1) == 0x3C
+        assert rf_at(dp, 5) == 2

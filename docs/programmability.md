@@ -8,9 +8,10 @@ Leonidas is a dumb pin machine. The opcode is a verb. The protocol is the progra
 |---|---|
 | Drive pin(s) named by a descriptor for `Rd` clocks | UART / SPI / I2C / USB packet layout |
 | Release a descriptor (`REL`) | NRZI, bit stuffing, CRC |
-| Shift `Rs` LSB first (`OUT`) | Line-level bytes in `R0` |
+| Shift `Rs` LSB first (`OUT`) | Line-level **bytes in dmem**; listing holds **addresses** |
 | Count, jump, halt, `JL` on `pin1` | LS vs FS polarity (which pin is high in J) |
-| 3R1W so issue is one cycle | Fit non-timed ops inside the previous hold |
+| 3R1W so issue is one cycle | Fit non-timed ops (and 2-cycle `LD`) inside the previous hold |
+| Two SRAMs: imem `256x16`, dmem `256x8` | Strobe `01`/`10` → imem, `11` → dmem |
 
 No USB opcode, no PID comparator, no protocol-select pin.
 
@@ -29,13 +30,33 @@ One read port would serialize those into extra clocks. FS is 5 clocks/bit; that 
 ```
 LDI  R1, desc        ; two pin nibbles (same pin twice if one pad)
 LDI  R3, clocks
-LDI  R0, byte
-LDI  R4, 8
-L:   OUT  R1, R0, R3
+LDI  R5, pkt         ; dmem address (compiler), not the payload
+LDI  R4, nbytes
+L:   LD   R0, [R5]   ; 2 clocks, post-inc R5
+     OUT  R1, R0, R3
      DJNZ R4, L
 ```
 
-UART, SPI, and USB data differ in the descriptor and `R3`, not the opcode. `PSET Rp, 0, Rd` with two different pins is both lines low (USB SE0). Sticky pins plus a later `PSET`/`OUT` restore idle J. `LDI` after a timed op does not move the old pin.
+UART, SPI, and USB data differ in the descriptor, `R3`, and the dmem image, not the opcode. `PSET Rp, 0, Rd` with two different pins is both lines low (USB SE0). Sticky pins plus a later `PSET`/`OUT` restore idle J. `LDI` after a timed op does not move the old pin.
+
+## Dmem
+
+`RM_IHPSG13_1P_256x8_c3_bm_bist`. Byte address = one `Rn` (0–255). No shift.
+
+Host: `ui_in` is the byte. `uio[1:0]`:
+
+| Strobe | Goes to |
+|---|---|
+| `00` | idle |
+| `01` | imem (low then high byte of a 16-bit word) |
+| `10` | imem, then **start** once that word is complete |
+| `11` | dmem[`wptr`], then `wptr++` (wraps) |
+
+`11` is a write to dmem, not a sticky “mode bit.” `01`/`10` always mean imem.
+
+Fill **dmem before** the `10` that starts the program. Both macros are 1-port: no host write to dmem while `pc` is fetching. `wptr` resets on `rst_n`.
+
+`LD Rn, [Rm]` is two clocks (REN + `Rm++`, then `Rn ← dout`). Hide it in a hold ≥ 3. Current USB dummy listings still `LDI` a byte into `R0`.
 
 ## Clock and timing
 
@@ -50,16 +71,20 @@ UART, SPI, and USB data differ in the descriptor and `R3`, not the opcode. `PSET
 ## Compiler pipeline (planned)
 
 ```
-protocol dict  →  protocol lowering  →  ISA asm  →  assemble.py  →  hex
+protocol dict  →  protocol lowering  →  ISA asm + dmem image  →  assemble.py  →  hex
 ```
+
+Two artifacts: instruction words and payload bytes. The listing contains addresses into dmem.
 
 ## What we do not do
 
 - Protocol-named opcodes, XOR/MOV, PID hardware, auto detect.
-- Spending `0111`–`1111` for foresight. Empty slots are for RX verbs that unblock a program.
+- Spending `1000`–`1111` for foresight. Next slot is RX verbs that unblock a program.
 
 ## Open (next)
 
-- Compiler (protocol → asm).
+- More protocol listings on the verbs we have. Refine the ISA after that.
+- Compiler (protocol → asm + dmem).
+- USB dummy packets via dmem + `LD` instead of unrolled `LDI`.
 - RX: `IN` / `JH` if `JL` is not enough; FS RX sampler if we take that on.
 - Multi-protocol / second SM (not lockstep dual-issue on one RF).

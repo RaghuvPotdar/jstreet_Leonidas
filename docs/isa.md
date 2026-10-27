@@ -20,7 +20,8 @@ The first byte stored for a word is bits 7 through 0. The second byte is bits 15
 | `0100` | `HALT` | ignored |
 | `0101` | `REL` | `Rp`(3) ‖ `Rd`(3) ‖ 0 |
 | `0110` | `JL` | `Rp`(3) ‖ `0` ‖ target(8) |
-| `0111`–`1111` | unused | ignored |
+| `0111` | `LD` | `Rn`(3) ‖ `Rm`(3) ‖ 0 |
+| `1000`–`1111` | unused | ignored |
 
 ## Register file
 
@@ -28,7 +29,7 @@ Eight architectural registers, `R0`–`R7`, each 8 bits. The file is **3R1W**: c
 
 A timed op (`PSET` / `OUT` / `REL`) issues in **one cycle** and needs those three values at once. That is why there are three read ports, not one. Serializing the reads would add issue clocks and break 5-clock FS bits.
 
-`LDI` only writes the file. Loading SRAM is still the host strobe path.
+`LDI` writes a register (descriptors, counts, **dmem addresses**). Payload bytes do not live in the instruction stream. They live in a second SRAM (`256x8` dmem). The compiler emits `LDI Rn, addr`; `LD Rn, [Rm]` reads `dmem[Rm]` and post-increments `Rm`. Loading either SRAM is the host strobe path in [info.md](info.md).
 
 A register is read only when an op **issues**. Pin levels live in `uo` / `uio` / `oe` flops after that. `LDI` into a register does not change a pin that already holds a level. Overwriting a descriptor does not release the old pin — `PSET` / `REL` that pin first.
 
@@ -85,16 +86,17 @@ Drive every distinct pin in `Rp` to `L`. Wait `Rd` clocks.
 
 Low nibble ← `Rs[0]`; if the two pin fields differ, high nibble ← `~Rs[0]`; then `Rs ← {0, Rs[7:1]}`. Wait `Rd` clocks.
 
-UART / SPI duplicate one pin in both nibbles. USB puts D+ and D− in the two nibbles. Same loop:
+UART / SPI duplicate one pin in both nibbles. USB puts D+ and D− in the two nibbles. Small immediates (one UART byte) can still `LDI R0, byte`. Long payloads use dmem:
 
 ```
-LDI  R0, byte
-LDI  R4, 8
-L:   OUT  R1, R0, R3
+LDI  R5, pkt        ; address in dmem, not the bytes
+LDI  R4, nbytes
+L:   LD   R0, [R5]  ; 2 clocks: REN+R5++ then R0 ← dout
+     OUT  R1, R0, R3
      DJNZ R4, L
 ```
 
-NRZI and stuffing are compiler work (bytes in `R0` are line levels).
+NRZI and stuffing are compiler work (bytes in dmem are line levels).
 
 ## DJNZ — `0011`
 
@@ -127,12 +129,22 @@ Release every distinct pin in `Rp`. Wait `Rd` clocks.
 
 If `pin1` of `Rp` reads 0 on `uio`, jump; else fall through. `uo_out` reads as 1. Sample is **two flops** behind the pad.
 
-## Unused opcodes — `0111` through `1111`
+## LD — `0111`
 
-Nine free opcodes. No-op: next word. Next spend is RX (`IN` / `JH`) if `JL` is not enough.
+```
+15    12 11  9 8   6 5        0
+| 0111  |  Rn |  Rm |    0     |
+```
+
+`Rn ← dmem[Rm]`, then `Rm ← Rm + 1`. Two clocks because the file is 1W: cycle 0 asserts REN and writes `Rm`; cycle 1 writes `Rn` from `A_DOUT`. Hide it inside a hold of 3 or more, not on an FS bit boundary.
+
+## Unused opcodes — `1000` through `1111`
+
+Eight free opcodes. No-op: next word. Next spend is RX (`IN` / `JH`) if `JL` is not enough.
 
 ## Scope notes
 
 - **FS TX** is in scope (5 clocks/bit). **FS RX is not** until a hardware sampler.
 - No PID comparator, no protocol-select pin, no ALU. A PID check is a program of `JL`s.
 - No `PSETH` / `OUTD`. Two pins live in the descriptor nibbles.
+- No circular imem. Payload is dmem (`256x8`), 8-bit address in an `Rn`.

@@ -6,7 +6,7 @@ SIM ?= icarus
 FST ?= -fst # Use more efficient FST format
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
-PROJECT_SOURCES = uart.sv sram_256x16.sv imem.sv rf.sv datapath.sv leonidas.sv
+PROJECT_SOURCES = sram_256x16.sv sram_256x8.sv imem.sv dmem.sv rf.sv datapath.sv leonidas.sv
 
 ifneq ($(GATES),yes)
 
@@ -38,6 +38,7 @@ VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_io/verilog/sg13g2_io.v
 VERILOG_SOURCES += $(FUNCTIONAL_STDCELLS)
 CUSTOM_COMPILE_DEPS += $(FUNCTIONAL_STDCELLS)
 VERILOG_SOURCES += $(SRC_DIR)/sram_256x16.sv
+VERILOG_SOURCES += $(SRC_DIR)/sram_256x8.sv
 
 # this gets copied in by the GDS action workflow
 VERILOG_SOURCES += $(PWD)/gate_level_netlist.v

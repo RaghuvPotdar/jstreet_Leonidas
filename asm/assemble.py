@@ -18,6 +18,7 @@ OP_DJNZ = 0x3
 OP_HALT = 0x4
 OP_REL = 0x5
 OP_JL = 0x6
+OP_LD = 0x7
 
 
 def parse_number(token: str, symbols: dict[str, int]) -> int:
@@ -89,6 +90,18 @@ def encode_rel(rp: int, rd: int) -> int:
 def encode_jl(rp: int, target: int) -> int:
     # [11:9]=Rp, [7:0]=target
     return (OP_JL << 12) | ((rp & 7) << 9) | (target & 0xFF)
+
+
+def encode_ld(rn: int, rm: int) -> int:
+    # [11:9]=Rn dest, [8:6]=Rm addr (post-inc)
+    return (OP_LD << 12) | ((rn & 7) << 9) | ((rm & 7) << 6)
+
+
+def parse_mem_reg(token: str, symbols: dict[str, int]) -> int:
+    t = token.strip()
+    if t.startswith("[") and t.endswith("]"):
+        t = t[1:-1].strip()
+    return parse_reg(t, symbols)
 
 
 def assemble(text: str) -> list[int]:
@@ -176,6 +189,12 @@ def assemble(text: str) -> list[int]:
                 raise ValueError(f"JL needs Rp, target: {raw}")
             words.append(
                 encode_jl(parse_reg(args[0], symbols), parse_number(args[1], symbols))
+            )
+        elif mnemonic == "LD":
+            if len(args) != 2:
+                raise ValueError(f"LD needs Rn, [Rm]: {raw}")
+            words.append(
+                encode_ld(parse_reg(args[0], symbols), parse_mem_reg(args[1], symbols))
             )
         else:
             raise ValueError(f"unknown instruction: {mnemonic}")

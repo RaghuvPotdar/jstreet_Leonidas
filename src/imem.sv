@@ -11,7 +11,7 @@
 //   00 idle
 //   01 load the byte on ui_in
 //   10 load the byte on ui_in and, once the word is complete, start
-//   11 reserved, ignored
+//   11 dmem byte (ignored here; dmem.sv writes that SRAM)
 // The first byte of a word is instr[7:0]. The second is instr[15:8].
 // After start, every clock is a read of `pc`. The word comes back on the
 // next clock. `pc` is the datapath's address, not a pin.
