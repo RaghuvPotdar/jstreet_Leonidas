@@ -42,9 +42,9 @@ pinout:
   uo[1]: "out1"
   uo[2]: "out2"
   uo[3]: "out3"
-  uo[4]: "out4"
-  uo[5]: "usb_dp"
-  uo[6]: "usb_dm"
+  uo[4]: "usb_dp"
+  uo[5]: "usb_dm"
+  uo[6]: "out6"
   uo[7]: "out7"
 
   # 00 idle, 01 load byte, 10 last byte and start, 11 reserved.

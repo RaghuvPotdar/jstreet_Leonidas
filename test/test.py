@@ -10,6 +10,7 @@ from cocotb.triggers import RisingEdge, ReadOnly, Timer
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "asm"))
 from assemble import assemble  # noqa: E402
+from usb_tx import DUMMY_PACKETS, USB_DM, USB_DP, build_dummy_tx  # noqa: E402
 
 ASM = Path(__file__).resolve().parents[1] / "asm" / "examples"
 
@@ -119,16 +120,18 @@ async def test_uart_program(dut):
     uart = assemble((ASM / "uart.asm").read_text(encoding="utf-8"))
     await load_program(dut, uart)
 
-    expect = [pin_byte(1)] * 4
-    expect += [pin_byte(0)] * 16
+    expect = [pin_byte(0)] * 16
     for bit in (1, 0, 0, 0, 1, 1, 0, 1):
         expect += [pin_byte(bit)] * 16
     expect += [pin_byte(1)] * 16
 
     got = [int(dut.uo_out.value)]
-    for _ in range(len(expect) - 1):
+    for _ in range(4 + len(expect) + 16):
         await clock_edge(dut)
         got.append(int(dut.uo_out.value))
+    while got and got[0] == pin_byte(1):
+        got.pop(0)
+    got = got[: len(expect)]
     assert got == expect, f"UART pin mismatch\n got {got}\n exp {expect}"
 
     for _ in range(4):
@@ -196,74 +199,48 @@ async def test_uart_program(dut):
     dut.rst_n.value = 1
     await clock_edge(dut)
 
-    sda_pin, scl_pin = 10, 11
+    # R1=SDA pin10, R2=SCL pin11, R3=4, R4=8, R5=1
+    lines = [
+        "LDI R1, 0xAA",
+        "LDI R2, 0xBB",
+        "LDI R3, 4",
+        "LDI R4, 8",
+        "LDI R5, 1",
+        "PSET R1, 0, R4",
+        "PSET R2, 0, R4",
+    ]
 
-    def enc(opcode, field, payload):
-        word = (opcode << 12) | ((field & 0xF) << 8) | (payload & 0xFF)
-        return word & 0xFF, (word >> 8) & 0xFF
-
-    def pset_payload(level, dur):
-        coded = 0 if dur == 128 else dur
-        return ((level & 1) << 7) | (coded & 0x7F)
-
-    def build_i2c(ops):
-        labels = {}
-        address = 0
-        for op in ops:
-            if op[0] == "label":
-                labels[op[1]] = address
-            else:
-                address += 1
-        program = []
-        for op in ops:
-            kind = op[0]
-            if kind == "label":
-                continue
-            if kind == "pset":
-                program.append(enc(0x1, op[1], pset_payload(op[2], op[3])))
-            elif kind == "rel":
-                program.append(enc(0x5, op[1], op[2]))
-            elif kind == "jl":
-                program.append(enc(0x6, op[1], labels[op[2]]))
-            else:
-                program.append(enc(0x4, 0, 0))
-        return program
-
-    def add_byte(ops, value, ok_label):
+    def add_byte(value, ok):
         for shift in range(7, -1, -1):
-            b = (value >> shift) & 1
-            if b:
-                ops.append(("rel", sda_pin, 4))
+            if (value >> shift) & 1:
+                lines.append("REL R1, R3")
             else:
-                ops.append(("pset", sda_pin, 0, 4))
-            ops.append(("rel", scl_pin, 8))
-            ops.append(("pset", scl_pin, 0, 8))
-        ops.append(("rel", sda_pin, 4))
-        ops.append(("label", f"stretch_{ok_label}"))
-        ops.append(("rel", scl_pin, 1))
-        ops.append(("jl", scl_pin, f"stretch_{ok_label}"))
-        ops.append(("jl", sda_pin, ok_label))
-        ops.append(("pset", scl_pin, 0, 4))
-        ops.append(("pset", sda_pin, 0, 4))
-        ops.append(("rel", scl_pin, 8))
-        ops.append(("rel", sda_pin, 4))
-        ops.append(("halt",))
+                lines.append("PSET R1, 0, R3")
+            lines.append("REL R2, R4")
+            lines.append("PSET R2, 0, R4")
+        lines.append("REL R1, R3")
+        lines.append(f"stretch_{ok}:")
+        lines.append("REL R2, R5")
+        lines.append(f"JL R2, stretch_{ok}")
+        lines.append(f"JL R1, {ok}")
+        lines.append("PSET R2, 0, R3")
+        lines.append("PSET R1, 0, R3")
+        lines.append("REL R2, R4")
+        lines.append("REL R1, R3")
+        lines.append("HALT")
 
-    listing = [("pset", sda_pin, 0, 8), ("pset", scl_pin, 0, 8)]
-    add_byte(listing, 0xA0, "data")
-    listing.append(("label", "data"))
-    listing.append(("pset", scl_pin, 0, 8))
-    add_byte(listing, 0xB1, "stop")
-    listing.append(("label", "stop"))
-    listing.append(("pset", scl_pin, 0, 8))
-    listing.append(("pset", sda_pin, 0, 4))
-    listing.append(("rel", scl_pin, 8))
-    listing.append(("rel", sda_pin, 4))
-    listing.append(("halt",))
+    add_byte(0xA0, "data")
+    lines.append("data:")
+    lines.append("PSET R2, 0, R4")
+    add_byte(0xB1, "stop")
+    lines.append("stop:")
+    lines.append("PSET R2, 0, R4")
+    lines.append("PSET R1, 0, R3")
+    lines.append("REL R2, R4")
+    lines.append("REL R1, R3")
+    lines.append("HALT")
 
-    i2c_bytes = build_i2c(listing)
-    i2c_words = [low | (high << 8) for low, high in i2c_bytes]
-    await load_program(dut, i2c_words)
+    await load_program(dut, assemble("\n".join(lines)))
 
     dut.uio_in.value = 0b1100
 
@@ -335,12 +312,7 @@ async def test_uart_program(dut):
         assert int(dp.halted.value) == 1
 
 
-# USB D+/D- on uo_out[5]/[6] (see info.yaml / usb_*_ack.asm).
-USB_DP = 5
-USB_DM = 6
-
-
-def usb_pair(uo):
+def usb_dp_dm(uo):
     return ((int(uo) >> USB_DP) & 1, (int(uo) >> USB_DM) & 1)
 
 
@@ -355,29 +327,7 @@ def usb_runs(samples):
     return runs
 
 
-def usb_ack_bit_states(j, k, se0):
-    # establish J, SYNC KJKJKJKK, PID ACK JJKJJKKK, EOP SE0, idle J
-    return (
-        [j]
-        + [k, j, k, j, k, j, k, k]
-        + [j, j, k, j, j, k, k, k]
-        + [se0, j]
-    )
-
-
-def usb_ack_expect_runs(j, k, se0, bit_time, se0_time):
-    """Merge consecutive identical line states (PSETH KK → one 2× hold)."""
-    raw = []
-    for state in usb_ack_bit_states(j, k, se0):
-        dur = se0_time if state == se0 else bit_time
-        if raw and raw[-1][0] == state:
-            raw[-1] = (state, raw[-1][1] + dur)
-        else:
-            raw.append((state, dur))
-    return raw
-
-
-async def run_usb_ack(dut, asm_name, bit_time, se0_time, j, k, se0):
+async def reset_dut(dut):
     dut.ena.value = 1
     dut.ui_in.value = 0
     dut.uio_in.value = 0
@@ -385,81 +335,126 @@ async def run_usb_ack(dut, asm_name, bit_time, se0_time, j, k, se0):
     dut.rst_n.value = 0
     await Timer(1, unit="ns")
     Clock(dut.clk, 10, unit="us").start()
-
     await clock_edge(dut)
     dut.rst_n.value = 1
     await clock_edge(dut)
 
-    words = assemble((ASM / asm_name).read_text(encoding="utf-8"))
+
+async def run_usb_words(dut, label, words, expect, bit_time, se0_time):
     await load_program(dut, words)
 
-    # Enough room for two LDIs, the packet, and sticky idle after HALT.
-    n = 2 * bit_time + 18 * bit_time + se0_time + bit_time + 64
-    samples = [usb_pair(dut.uo_out.value)]
+    total_bits = sum(n for _, n in expect)
+    n = total_bits + 64
+    samples = [usb_dp_dm(dut.uo_out.value)]
     for _ in range(n - 1):
         await clock_edge(dut)
-        samples.append(usb_pair(dut.uo_out.value))
+        samples.append(usb_dp_dm(dut.uo_out.value))
 
-    # Drop leading SE1 / undriven idle (both high after reset).
     while samples and samples[0] == (1, 1):
         samples.pop(0)
-    assert samples, "USB never left idle SE1"
+    assert samples, f"{label}: USB never left idle SE1"
 
     runs = usb_runs(samples)
-    expect = usb_ack_expect_runs(j, k, se0, bit_time, se0_time)
     assert len(runs) >= len(expect), (
-        f"{asm_name} too few runs\n got {runs}\n exp {expect}"
+        f"{label}: too few runs\n got {runs}\n exp {expect}"
     )
 
     for i, ((got_s, got_n), (exp_s, exp_n)) in enumerate(
         zip(runs[: len(expect)], expect)
     ):
         assert got_s == exp_s, (
-            f"{asm_name} state[{i}] {got_s}, want {exp_s}\n runs {runs}"
+            f"{label}: state[{i}] {got_s}, want {exp_s}\n runs {runs}"
         )
-        # Final idle J merges with post-HALT sticky drive → only a floor.
         if i == len(expect) - 1:
             assert got_n >= exp_n, (
-                f"{asm_name} idle J held {got_n}, want >= {exp_n}"
+                f"{label}: idle J held {got_n}, want >= {exp_n}"
             )
         else:
             assert got_n == exp_n, (
-                f"{asm_name} state[{i}] {got_s} held {got_n}, want {exp_n} "
-                f"(stretch or early cut)"
+                f"{label}: state[{i}] {got_s} held {got_n}, want {exp_n}"
             )
 
     dp = engine(dut)
     if dp is not None:
         assert int(dp.halted.value) == 1
-        assert rf_at(dp, 4) == bit_time
-        assert rf_at(dp, 5) == se0_time
+        assert rf_at(dp, 0) == 0
 
 
 @cocotb.test()
 async def test_usb_ls_ack(dut):
-    """USB Low-Speed ACK: PSETH J/K/SE0 at 40 / 80 clocks (60 MHz → 1.5 Mbit/s)."""
-    # LS: J=D- high, K=D+ high
-    await run_usb_ack(
-        dut,
-        "usb_ls_ack.asm",
-        bit_time=40,
-        se0_time=80,
-        j=(0, 1),
-        k=(1, 0),
-        se0=(0, 0),
-    )
+    """Hand asm: USB LS ACK handshake on D+/D-."""
+    await reset_dut(dut)
+    words = assemble((ASM / "usb_ls_ack.asm").read_text(encoding="utf-8"))
+    _, expect, bit_time, se0_time = build_dummy_tx("ack", fs=False)
+    await run_usb_words(dut, "usb_ls_ack.asm", words, expect, bit_time, se0_time)
 
 
 @cocotb.test()
 async def test_usb_fs_ack(dut):
-    """USB Full-Speed ACK: same packet, flipped J/K, 5 / 10 clocks (60 MHz → 12 Mbit/s)."""
-    # FS: J=D+ high, K=D- high
-    await run_usb_ack(
-        dut,
-        "usb_fs_ack.asm",
-        bit_time=5,
-        se0_time=10,
-        j=(1, 0),
-        k=(0, 1),
-        se0=(0, 0),
-    )
+    """Hand asm: USB FS ACK handshake on D+/D-."""
+    await reset_dut(dut)
+    words = assemble((ASM / "usb_fs_ack.asm").read_text(encoding="utf-8"))
+    _, expect, bit_time, se0_time = build_dummy_tx("ack", fs=True)
+    await run_usb_words(dut, "usb_fs_ack.asm", words, expect, bit_time, se0_time)
+
+
+@cocotb.test()
+async def test_usb_dummy_packets(dut):
+    """Dummy TOKEN/DATA/handshake/SOF packets, LS and FS (fake CRC, no stuffing)."""
+    await reset_dut(dut)
+    for fs in (False, True):
+        speed = "fs" if fs else "ls"
+        for name in DUMMY_PACKETS:
+            dut.rst_n.value = 0
+            dut.uio_in.value = 0
+            await clock_edge(dut)
+            dut.rst_n.value = 1
+            await clock_edge(dut)
+
+            words, expect, bit_time, se0_time = build_dummy_tx(name, fs=fs)
+            await run_usb_words(
+                dut, f"{speed}/{name}", words, expect, bit_time, se0_time
+            )
+
+
+@cocotb.test()
+async def test_ldi_then_out(dut):
+    """LDI R0 immediately before OUT must be visible (1-cycle write/read)."""
+    from assemble import OP_HALT, OP_LDI, encode, encode_out, encode_pset, reg_field
+
+    await reset_dut(dut)
+    words = [
+        encode(OP_LDI, reg_field(2), 0x11),
+        encode(OP_LDI, reg_field(3), 4),
+        encode(OP_LDI, reg_field(4), 8),
+        encode_pset(2, 0, 3),
+        encode(OP_LDI, reg_field(0), 0x01),
+        encode_out(2, 0, 4),
+        encode(OP_HALT, 0, 0),
+    ]
+    await load_program(dut, words)
+
+    samples = [int(dut.uo_out.value)]
+    for _ in range(32):
+        await clock_edge(dut)
+        samples.append(int(dut.uo_out.value))
+
+    bits = [((s >> 1) & 1) for s in samples]
+    # idle 1, PSET 0 for 4, then OUT of R0[0]=1 for 8, sticky 1
+    while bits and bits[0] == 1:
+        bits.pop(0)
+    assert bits, "pin 1 never left idle high"
+    lows = 0
+    while bits and bits[0] == 0:
+        lows += 1
+        bits.pop(0)
+    assert lows >= 4, f"PSET low held {lows}, want >= 4"
+    highs = 0
+    while bits and bits[0] == 1:
+        highs += 1
+        bits.pop(0)
+    assert highs >= 8, f"OUT high from LDI R0=1 held {highs}, want >= 8"
+    dp = engine(dut)
+    if dp is not None:
+        assert int(dp.halted.value) == 1
+        assert rf_at(dp, 0) == 0

@@ -11,38 +11,52 @@ The first byte stored for a word is bits 7 through 0. The second byte is bits 15
 +-----------+-----------+-----------+
 ```
 
-| Opcode | Name | Bits 11–8 | Bits 7–0 |
-|---|---|---|---|
-| `0000` | `LDI` | `0` ‖ `Rn` (3 bits) | immediate byte |
-| `0001` | `PSET` | pin | level + duration (see below) |
-| `0010` | `OUT` | pin | duration |
-| `0011` | `DJNZ` | `0` ‖ `Rn` (3 bits) | jump target |
-| `0100` | `HALT` | ignored | ignored |
-| `0101` | `REL` | pin | duration |
-| `0110` | `JL` | pin | jump target |
-| `0111` | `PSETH` | dual-pin snap + wait index (see below) |
-| `1000`–`1111` | unused | ignored | ignored |
+| Opcode | Name | Encoding |
+|---|---|---|
+| `0000` | `LDI` | `0` ‖ `Rn`(3) ‖ imm(8) |
+| `0001` | `PSET` | `Rp`(3) ‖ `L` ‖ `Rd`(3) ‖ 0 |
+| `0010` | `OUT` | `Rp`(3) ‖ `Rs`(3) ‖ `Rd`(3) ‖ 0 |
+| `0011` | `DJNZ` | `0` ‖ `Rn`(3) ‖ target(8) |
+| `0100` | `HALT` | ignored |
+| `0101` | `REL` | `Rp`(3) ‖ `Rd`(3) ‖ 0 |
+| `0110` | `JL` | `Rp`(3) ‖ `0` ‖ target(8) |
+| `0111`–`1111` | unused | ignored |
 
 ## Register file
 
-Eight architectural registers, `R0`–`R7`, each 8 bits. There is no separate shifter or `X` outside this file.
+Eight architectural registers, `R0`–`R7`, each 8 bits. The file is **3R1W**: combinational reads on ports **P** (descriptor), **S** (shifter / `DJNZ`), **D** (duration); one clocked write.
 
-| Regs | Conventional use |
-|---|---|
-| `R0`–`R3` | Prefer for data / loop counts. **`OUT` reads `R0`** as the shift register (bit 0 out, shift right, fill 0). |
-| `R4`–`R7` | Prefer for **durations** consumed by `PSETH`. |
+A timed op (`PSET` / `OUT` / `REL`) issues in **one cycle** and needs those three values at once. That is why there are three read ports, not one. Serializing the reads would add issue clocks and break 5-clock FS bits.
 
-The compiler allocates and tracks free regs. `PSETH` can only name four wait sources (2-bit index); those map to **`R4`–`R7`** (`ridx 00` → `R4`, …, `11` → `R7`). No way around that with the current `PSETH` layout.
+`LDI` only writes the file. Loading SRAM is still the host strobe path.
 
-`LDI` only writes the register file. Loading the program into SRAM is still the host strobe path, not `LDI`.
+A register is read only when an op **issues**. Pin levels live in `uo` / `uio` / `oe` flops after that. `LDI` into a register does not change a pin that already holds a level. Overwriting a descriptor does not release the old pin — `PSET` / `REL` that pin first.
 
-## Pins and duration
+## Pin descriptor
 
-A pin number is 4 bits. Pins 0 through 7 are `uo_out[0]` through `uo_out[7]`. Pins 8 through 15 are `uio[0]` through `uio[7]`. `ui_in` cannot be driven. `uo_out` resets high. `uio` resets to inputs.
+An 8-bit descriptor is two pin numbers:
 
-Timed ops wait for a duration in chip clocks. The clock that starts the level is one of those clocks. When the wait ends, the pin **keeps its level** until a later instruction writes that same pin.
+```
+7        4 3        0
+|  pin    |  pin    |
+```
 
-`PSET`, `OUT`, `REL`, and `PSETH` are timed (see each). Driving a `uio` pin with `PSET`, `OUT`, or `PSETH` turns that bit of `uio_oe` on. `REL` turns it off.
+Write the same pin in both nibbles for one pin. Write two different pins to touch both in one op. There is no pair type and no 2p/2p+1 index.
+
+- `PSET`: both fields get `L` (a duplicated field is one write).
+- `OUT`: low nibble ← `Rs[0]`; if the nibbles differ, high nibble ← `~Rs[0]`.
+- `REL`: release every distinct pin in the descriptor.
+- `JL`: tests the low nibble.
+
+Pin numbers are 4 bits. Pins 0–7 are `uo_out[0]`–`[7]`. Pins 8–15 are `uio[0]`–`[7]`. **`ui_in` is not in the pin space**. `uo_out` resets high. `uio` resets to inputs.
+
+USB D+/D− is `0x54` (pins 5 and 4). One pin, e.g. D− only, is `0x55`.
+
+## Duration
+
+`Rd` is a register. `0` means 256 clocks. The start clock is one of the duration clocks. After the hold, the pin **keeps its level** until a later op writes that same pin.
+
+Driving a `uio` pin turns `uio_oe` on. `REL` turns it off (`uo` is driven 0).
 
 ## LDI — `0000`
 
@@ -51,26 +65,36 @@ Timed ops wait for a duration in chip clocks. The clock that starts the level is
 | 0000  | 0 |  Rn  | immediate |
 ```
 
-Writes the immediate into `Rn` (`Rn` is bits 10–8). Bit 11 is reserved (`0`).
+Writes the immediate into `Rn`.
 
 ## PSET — `0001`
 
 ```
-15    12 11    8 7 6          0
-| 0001  |  pin  |L| duration  |
+15    12 11  9 8 7   5 4     0
+| 0001  |  Rp |L|  Rd |  0    |
 ```
 
-- **L (bit 7):** level (`0` or `1`).
-- **duration (bits 6–0):** hold length. `0` means 128 clocks. (Compiler should
-  prefer explicit counts; silicon still defines `0`.)
-
-Single-pin set + wait. For one-pin protocols (UART/SPI edges) and for raising idle **J** after USB SE0.
+Drive every distinct pin in `Rp` to `L`. Wait `Rd` clocks.
 
 ## OUT — `0010`
 
-Uses **`R0`** as the shift register. Drives the pin from `R0[0]`, then `R0 ← {0, R0[7:1]}`. Waits for the duration in bits 7–0 (`0` means 256 clocks).
+```
+15    12 11  9 8   6 5   3 2  0
+| 0010  |  Rp |  Rs |  Rd | 0  |
+```
 
-MSB-first on the wire is a compiler bit-reverse before `LDI R0, …`.
+Low nibble ← `Rs[0]`; if the two pin fields differ, high nibble ← `~Rs[0]`; then `Rs ← {0, Rs[7:1]}`. Wait `Rd` clocks.
+
+UART / SPI duplicate one pin in both nibbles. USB puts D+ and D− in the two nibbles. Same loop:
+
+```
+LDI  R0, byte
+LDI  R4, 8
+L:   OUT  R1, R0, R3
+     DJNZ R4, L
+```
+
+NRZI and stuffing are compiler work (bytes in `R0` are line levels).
 
 ## DJNZ — `0011`
 
@@ -79,33 +103,36 @@ MSB-first on the wire is a compiler bit-reverse before `LDI R0, …`.
 | 0011  | 0 |  Rn  |   target  |
 ```
 
-`Rn ← Rn - 1` (wraps). If the result is not 0, next instruction is `target`; else the next word. Bit 11 reserved (`0`). Nested loops use different `Rn`s.
+`Rn ← Rn - 1`. If not 0, jump to `target`.
 
 ## HALT — `0100`
 
-Stops advancing the program. A level already in progress finishes its duration. Pins stay. **`halted`** stops new issue; `running` stays set.
+Stops new issue. An in-progress hold finishes. Pins stay. `running` stays set.
 
 ## REL — `0101`
 
-Releases a `uio` pin (`oe` off, driven bit 0), waits duration bits 7–0 (`0` ⇒ 256). Pull-up defines the line. On `uo_out`, drives 0.
+```
+15    12 11  9 8   6 5        0
+| 0101  |  Rp |  Rd |    0     |
+```
+
+Release every distinct pin in `Rp`. Wait `Rd` clocks.
 
 ## JL — `0110`
 
-If the `uio` pin reads 0, jump to bits 7–0; else fall through. `uo_out` reads as 1.
-
-## PSETH — `0111`
-
 ```
-15    12 11    8 7     4 3 2 1 0
-| 0111  |  pin1 |  pin2 |A|B|idx|
+15    12 11  9 8 7          0
+| 0110  |  Rp |0|   target   |
 ```
 
-- **pin1, pin2:** two pads (each 4 bits).
-- **A, B:** levels for pin1 and pin2.
-- **idx (bits 1–0):** which duration reg → **`R4+idx`**.
+If `pin1` of `Rp` reads 0 on `uio`, jump; else fall through. `uo_out` reads as 1. Sample is **two flops** behind the pad.
 
-In one instruction, drives both pins to A/B and waits `R[4+idx]` clocks. Used when two lines must change together (e.g. USB J/K/SE0). Sticky afterward; EOP can SE0 here, then `PSET` to idle J.
+## Unused opcodes — `0111` through `1111`
 
-## Unused opcodes — `1000` through `1111`
+Nine free opcodes. No-op: next word. Next spend is RX (`IN` / `JH`) if `JL` is not enough.
 
-Eight free opcodes. No-op: next word.
+## Scope notes
+
+- **FS TX** is in scope (5 clocks/bit). **FS RX is not** until a hardware sampler.
+- No PID comparator, no protocol-select pin, no ALU. A PID check is a program of `JL`s.
+- No `PSETH` / `OUTD`. Two pins live in the descriptor nibbles.

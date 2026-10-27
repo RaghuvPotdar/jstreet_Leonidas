@@ -10,12 +10,15 @@
 // Fetch and decode are separate. The word is on `instr` two clocks after
 // an address is issued. Decode writes the register file, pins, and hold.
 //
-// `rf` is 1R1W: combinational read on rf_raddr / rf_rdata, clocked write.
-// OUT uses R0 as the shifter. PSETH waits use R4-R7 via a 2-bit index.
+// `rf` is 3R1W. A timed op issues in one cycle and reads:
+//   P = pin descriptor, S = shifter (OUT), D = duration.
+// Descriptor: [7:4] and [3:0] are pin numbers. Same value twice is one
+// pin. Different values are two pins (OUT: pin1=bit, pin2=~bit).
 //
-// Timed pin ops (PSET, OUT, REL, PSETH): the start clock is one of the
-// duration clocks. Prefetch while holding keeps OUT/DJNZ/OUT gapless when
-// the hold is long enough. Pins stick after the hold until rewritten.
+// Timed pin ops (PSET, OUT, REL): the start clock is one of the duration
+// clocks. Prefetch while holding keeps OUT/DJNZ/OUT gapless when the hold
+// is long enough. Pins stick after the hold until rewritten.
+// JL samples a 2-flop-synced copy of uio_in, using pin1 of Rp.
 module datapath (
     input  wire        clk,
     input  wire        rst_n,
@@ -28,14 +31,13 @@ module datapath (
     output wire [7:0]  uio_oe
 );
 
-  localparam logic [3:0] OP_LDI   = 4'h0;
-  localparam logic [3:0] OP_PSET  = 4'h1;
-  localparam logic [3:0] OP_OUT   = 4'h2;
-  localparam logic [3:0] OP_DJNZ  = 4'h3;
-  localparam logic [3:0] OP_HALT  = 4'h4;
-  localparam logic [3:0] OP_REL   = 4'h5;
-  localparam logic [3:0] OP_JL    = 4'h6;
-  localparam logic [3:0] OP_PSETH = 4'h7;
+  localparam logic [3:0] OP_LDI  = 4'h0;
+  localparam logic [3:0] OP_PSET = 4'h1;
+  localparam logic [3:0] OP_OUT  = 4'h2;
+  localparam logic [3:0] OP_DJNZ = 4'h3;
+  localparam logic [3:0] OP_HALT = 4'h4;
+  localparam logic [3:0] OP_REL  = 4'h5;
+  localparam logic [3:0] OP_JL   = 4'h6;
 
   logic [7:0]  shown;
   logic        issue_q;
@@ -54,6 +56,8 @@ module datapath (
   logic [7:0]  uo_q;
   logic [7:0]  uio_q;
   logic [7:0]  oe_q;
+  logic [7:0]  uio_s0;
+  logic [7:0]  uio_s1;
 
   logic        issue;
   logic [7:0]  issue_addr;
@@ -76,8 +80,12 @@ module datapath (
   logic        rf_we;
   logic [2:0]  rf_waddr;
   logic [7:0]  rf_wdata;
-  logic [2:0]  rf_raddr;
-  wire  [7:0]  rf_rdata;
+  logic [2:0]  rf_raddr_p;
+  logic [2:0]  rf_raddr_s;
+  logic [2:0]  rf_raddr_d;
+  wire  [7:0]  rf_rdata_p;
+  wire  [7:0]  rf_rdata_s;
+  wire  [7:0]  rf_rdata_d;
 
   logic        do_start;
   logic        do_one;
@@ -92,73 +100,82 @@ module datapath (
   logic        level2;
   logic [3:0]  pin_i;
   logic [3:0]  pin2_i;
+  logic        two;
 
   assign uo_out  = uo_q;
   assign uio_out = uio_q;
   assign uio_oe  = oe_q;
 
   rf regs (
-      .clk   (clk),
-      .rst_n (rst_n),
-      .clear (rf_clear),
-      .we    (rf_we),
-      .waddr (rf_waddr),
-      .wdata (rf_wdata),
-      .raddr (rf_raddr),
-      .rdata (rf_rdata)
+      .clk     (clk),
+      .rst_n   (rst_n),
+      .clear   (rf_clear),
+      .we      (rf_we),
+      .waddr   (rf_waddr),
+      .wdata   (rf_wdata),
+      .raddr_p (rf_raddr_p),
+      .raddr_s (rf_raddr_s),
+      .raddr_d (rf_raddr_d),
+      .rdata_p (rf_rdata_p),
+      .rdata_s (rf_rdata_s),
+      .rdata_d (rf_rdata_d)
   );
 
   function automatic logic is_pin(input logic [3:0] op);
-    is_pin = (op == OP_PSET) || (op == OP_OUT) || (op == OP_REL) || (op == OP_PSETH);
+    is_pin = (op == OP_PSET) || (op == OP_OUT) || (op == OP_REL);
+  endfunction
+
+  function automatic logic [2:0] field_rp(input logic [15:0] w);
+    field_rp = w[11:9];
+  endfunction
+
+  function automatic logic [2:0] field_rs(input logic [15:0] w);
+    field_rs = (w[15:12] == OP_OUT) ? w[8:6] : w[10:8];
+  endfunction
+
+  function automatic logic [2:0] field_rd(input logic [15:0] w);
+    case (w[15:12])
+      OP_OUT:  field_rd = w[5:3];
+      OP_PSET: field_rd = w[7:5];
+      OP_REL:  field_rd = w[8:6];
+      default: field_rd = 3'd0;
+    endcase
   endfunction
 
   function automatic logic pin_low(input logic [3:0] pin);
-    pin_low = pin[3] && !uio_in[pin[2:0]];
+    pin_low = pin[3] && !uio_s1[pin[2:0]];
   endfunction
 
-  function automatic logic [7:0] pset_dur(input logic [6:0] raw);
-    pset_dur = (raw == 7'd0) ? 8'd128 : {1'b0, raw};
-  endfunction
-
-  // Read-port address. Separate from execute so rf_rdata sees this address
-  // before the decode body uses it (1R port).
+  // Read-port addresses. Separate from execute so rdata_* see this address
+  // before the decode body uses them.
   always_comb begin
-    rf_raddr = instr[10:8];
+    rf_raddr_p = 3'd0;
+    rf_raddr_s = 3'd0;
+    rf_raddr_d = 3'd0;
     if (!running || halted) begin
-      rf_raddr = 3'd0;
     end else if (defer_v) begin
-      if (defer_word[15:12] == OP_OUT)
-        rf_raddr = 3'd0;
-      else if (defer_word[15:12] == OP_PSETH)
-        rf_raddr = 3'd4 + {1'b0, defer_word[1:0]};
-      else
-        rf_raddr = defer_word[10:8];
+      rf_raddr_p = field_rp(defer_word);
+      rf_raddr_s = field_rs(defer_word);
+      rf_raddr_d = field_rd(defer_word);
     end else if (asked && hold == 8'h00 && !buf_v) begin
-      if (instr[15:12] == OP_OUT)
-        rf_raddr = 3'd0;
-      else if (instr[15:12] == OP_PSETH)
-        rf_raddr = 3'd4 + {1'b0, instr[1:0]};
-      else
-        rf_raddr = instr[10:8];
+      rf_raddr_p = field_rp(instr);
+      rf_raddr_s = field_rs(instr);
+      rf_raddr_d = field_rd(instr);
     end else if (hold == 8'd1 && (asked || buf_v)) begin
       if (asked) begin
-        if (instr[15:12] == OP_OUT)
-          rf_raddr = 3'd0;
-        else if (instr[15:12] == OP_PSETH)
-          rf_raddr = 3'd4 + {1'b0, instr[1:0]};
-        else
-          rf_raddr = instr[10:8];
+        rf_raddr_p = field_rp(instr);
+        rf_raddr_s = field_rs(instr);
+        rf_raddr_d = field_rd(instr);
       end else begin
-        if (buf_word[15:12] == OP_OUT)
-          rf_raddr = 3'd0;
-        else if (buf_word[15:12] == OP_PSETH)
-          rf_raddr = 3'd4 + {1'b0, buf_word[1:0]};
-        else
-          rf_raddr = buf_word[10:8];
+        rf_raddr_p = field_rp(buf_word);
+        rf_raddr_s = field_rs(buf_word);
+        rf_raddr_d = field_rd(buf_word);
       end
     end else if (hold == 8'd2 && buf_v && !is_pin(buf_word[15:12])
                  && buf_word[15:12] != OP_HALT) begin
-      rf_raddr = buf_word[10:8];
+      rf_raddr_p = field_rp(buf_word);
+      rf_raddr_s = field_rs(buf_word);
+      rf_raddr_d = field_rd(buf_word);
     end
   end
 
@@ -189,12 +206,13 @@ module datapath (
     op_word      = instr;
     op_addr      = asked_addr;
     rn           = instr[10:8];
-    rn_dec       = rf_rdata - 8'd1;
+    rn_dec       = rf_rdata_s - 8'd1;
     dur          = 8'h00;
     level        = 1'b0;
     level2       = 1'b0;
-    pin_i        = instr[11:8];
-    pin2_i       = instr[7:4];
+    pin_i        = 4'd0;
+    pin2_i       = 4'd0;
+    two          = 1'b0;
 
     if (!running) begin
       asked_addr_n = 8'h00;
@@ -250,10 +268,10 @@ module datapath (
                    && buf_word[15:12] != OP_HALT) begin
         hold_n = hold - 8'd1;
         rn     = buf_word[10:8];
-        rn_dec = rf_rdata - 8'd1;
+        rn_dec = rf_rdata_s - 8'd1;
         if (buf_word[15:12] == OP_DJNZ && rn_dec != 8'h00)
           next_addr_n = buf_word[7:0];
-        else if (buf_word[15:12] == OP_JL && pin_low(buf_word[11:8]))
+        else if (buf_word[15:12] == OP_JL && pin_low(rf_rdata_p[3:0]))
           next_addr_n = buf_word[7:0];
         else
           next_addr_n = buf_addr + 8'd1;
@@ -278,7 +296,7 @@ module datapath (
       next_addr_n  = op_addr + 8'd1;
     end else if (do_one) begin
       rn     = op_word[10:8];
-      rn_dec = rf_rdata - 8'd1;
+      rn_dec = rf_rdata_s - 8'd1;
       case (op_word[15:12])
         OP_LDI: begin
           rf_we       = 1'b1;
@@ -298,7 +316,7 @@ module datapath (
           issue = !fetched;
         end
         OP_JL: begin
-          if (pin_low(op_word[11:8]))
+          if (pin_low(rf_rdata_p[3:0]))
             next_addr_n = op_word[7:0];
           else
             next_addr_n = op_addr + 8'd1;
@@ -313,50 +331,53 @@ module datapath (
       if (issue)
         issue_addr = next_addr_n;
     end else if (do_start) begin
-      pin_i  = op_word[11:8];
-      pin2_i = op_word[7:4];
+      pin_i  = rf_rdata_p[3:0];
+      pin2_i = rf_rdata_p[7:4];
+      two    = (pin_i != pin2_i);
+      dur    = rf_rdata_d;
+
       if (op_word[15:12] == OP_OUT) begin
-        level    = rf_rdata[0];
+        level    = rf_rdata_s[0];
+        level2   = ~rf_rdata_s[0];
         rf_we    = 1'b1;
-        rf_waddr = 3'd0;
-        rf_wdata = {1'b0, rf_rdata[7:1]};
-        dur      = op_word[7:0];
+        rf_waddr = op_word[8:6];
+        rf_wdata = {1'b0, rf_rdata_s[7:1]};
       end else if (op_word[15:12] == OP_PSET) begin
-        level = op_word[7];
-        dur   = pset_dur(op_word[6:0]);
-      end else if (op_word[15:12] == OP_PSETH) begin
-        level  = op_word[3];
-        level2 = op_word[2];
-        dur    = rf_rdata;
-      end else if (op_word[15:12] == OP_REL) begin
-        level = 1'b0;
-        dur   = op_word[7:0];
+        level  = op_word[8];
+        level2 = op_word[8];
       end else begin
-        level = 1'b0;
-        dur   = op_word[7:0];
+        level  = 1'b0;
+        level2 = 1'b0;
       end
 
-      if (op_word[15:12] == OP_REL && pin_i[3] == 1'b1) begin
-        uio_n[pin_i[2:0]] = 1'b0;
-        oe_n[pin_i[2:0]]  = 1'b0;
-      end else if (op_word[15:12] == OP_PSETH) begin
+      if (op_word[15:12] == OP_REL) begin
+        if (pin_i[3] == 1'b1) begin
+          uio_n[pin_i[2:0]] = 1'b0;
+          oe_n[pin_i[2:0]]  = 1'b0;
+        end else
+          uo_n[pin_i[2:0]] = 1'b0;
+        if (two) begin
+          if (pin2_i[3] == 1'b1) begin
+            uio_n[pin2_i[2:0]] = 1'b0;
+            oe_n[pin2_i[2:0]]  = 1'b0;
+          end else
+            uo_n[pin2_i[2:0]] = 1'b0;
+        end
+      end else begin
         if (pin_i[3] == 1'b0)
           uo_n[pin_i[2:0]] = level;
         else begin
           uio_n[pin_i[2:0]] = level;
           oe_n[pin_i[2:0]]  = 1'b1;
         end
-        if (pin2_i[3] == 1'b0)
-          uo_n[pin2_i[2:0]] = level2;
-        else begin
-          uio_n[pin2_i[2:0]] = level2;
-          oe_n[pin2_i[2:0]]  = 1'b1;
+        if (two) begin
+          if (pin2_i[3] == 1'b0)
+            uo_n[pin2_i[2:0]] = level2;
+          else begin
+            uio_n[pin2_i[2:0]] = level2;
+            oe_n[pin2_i[2:0]]  = 1'b1;
+          end
         end
-      end else if (pin_i[3] == 1'b0) begin
-        uo_n[pin_i[2:0]] = level;
-      end else begin
-        uio_n[pin_i[2:0]] = level;
-        oe_n[pin_i[2:0]]  = 1'b1;
       end
 
       hold_n      = dur - 8'd1;
@@ -384,11 +405,15 @@ module datapath (
       issue_q    <= 1'b0;
       asked      <= 1'b0;
       asked_addr <= 8'h00;
+      uio_s0     <= 8'h00;
+      uio_s1     <= 8'h00;
     end else begin
       shown      <= pc;
       issue_q    <= issue;
       asked      <= issue_q;
       asked_addr <= asked_addr_n;
+      uio_s0     <= uio_in;
+      uio_s1     <= uio_s0;
     end
   end
 

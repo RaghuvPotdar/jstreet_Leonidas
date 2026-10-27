@@ -1,33 +1,35 @@
-# USB Low-Speed ACK handshake on uo_out[5]=D+, uo_out[6]=D-.
-# At 60 MHz: bit = 40 clocks, SE0 = 80 clocks (two bit times).
-#
-# LS idle J: D+=0 D-=1. K: D+=1 D-=0. SE0: both 0.
-# Line states after NRZI (compiler would emit these from the bit stream):
-#   establish J, SYNC KJKJKJKK, PID ACK -> JJKJJKKK, EOP SE0 SE0 J.
+# USB Low-Speed ACK on D+=pin4, D-=pin5 (descriptor 0x54: two pin nibbles).
+# At 60 MHz: bit = 40 clocks, SE0 = 80 clocks.
+# R0 = line levels (R0[0]=D+), R1 = pins, R3 = bit, R5 = SE0.
 
-.equ DP, 5
-.equ DM, 6
+.equ PINS, 0x54
+.equ BIT,  40
+.equ SE0,  80
 
-    LDI   R4, 40
-    LDI   R5, 80
-
-    PSETH DP, DM, 0, 1, R4
-    PSETH DP, DM, 1, 0, R4
-    PSETH DP, DM, 0, 1, R4
-    PSETH DP, DM, 1, 0, R4
-    PSETH DP, DM, 0, 1, R4
-    PSETH DP, DM, 1, 0, R4
-    PSETH DP, DM, 0, 1, R4
-    PSETH DP, DM, 1, 0, R4
-    PSETH DP, DM, 1, 0, R4
-    PSETH DP, DM, 0, 1, R4
-    PSETH DP, DM, 0, 1, R4
-    PSETH DP, DM, 1, 0, R4
-    PSETH DP, DM, 0, 1, R4
-    PSETH DP, DM, 0, 1, R4
-    PSETH DP, DM, 1, 0, R4
-    PSETH DP, DM, 1, 0, R4
-    PSETH DP, DM, 1, 0, R4
-    PSETH DP, DM, 0, 0, R5
-    PSETH DP, DM, 0, 1, R4
+    LDI   R1, PINS
+    LDI   R3, BIT
+    LDI   R5, SE0
+    LDI   R0, 0x00
+    OUT   R1, R0, R3
+    LDI   R0, 0xD5
+    OUT   R1, R0, R3
+    OUT   R1, R0, R3
+    OUT   R1, R0, R3
+    OUT   R1, R0, R3
+    OUT   R1, R0, R3
+    OUT   R1, R0, R3
+    OUT   R1, R0, R3
+    OUT   R1, R0, R3
+    LDI   R0, 0xE4
+    OUT   R1, R0, R3
+    OUT   R1, R0, R3
+    OUT   R1, R0, R3
+    OUT   R1, R0, R3
+    OUT   R1, R0, R3
+    OUT   R1, R0, R3
+    OUT   R1, R0, R3
+    OUT   R1, R0, R3
+    PSET  R1, 0, R5
+    LDI   R0, 0x00
+    OUT   R1, R0, R3
     HALT

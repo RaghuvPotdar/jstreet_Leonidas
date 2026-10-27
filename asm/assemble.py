@@ -18,7 +18,6 @@ OP_DJNZ = 0x3
 OP_HALT = 0x4
 OP_REL = 0x5
 OP_JL = 0x6
-OP_PSETH = 0x7
 
 
 def parse_number(token: str, symbols: dict[str, int]) -> int:
@@ -35,7 +34,10 @@ def parse_reg(token: str, symbols: dict[str, int]) -> int:
     t = token.upper()
     if re.fullmatch(r"R[0-7]", t):
         return int(t[1])
-    return parse_number(token, symbols)
+    n = parse_number(token, symbols)
+    if n < 0 or n > 7:
+        raise ValueError(f"register must be R0..R7, got {token}")
+    return n
 
 
 def strip_comment(line: str) -> str:
@@ -53,30 +55,40 @@ def encode(opcode: int, field: int, payload: int) -> int:
 def reg_field(rn: int) -> int:
     if rn < 0 or rn > 7:
         raise ValueError(f"register must be R0..R7, got {rn}")
-    # bit11 reserved 0, bits10-8 = Rn
     return rn & 0x7
 
 
-def encode_pset(pin: int, level: int, dur: int) -> int:
+def pin_desc(pin1: int, pin2: int | None = None) -> int:
+    """Descriptor byte: [7:4] and [3:0] are pin numbers. Omit pin2 to duplicate pin1."""
+    if pin2 is None:
+        pin2 = pin1
+    if pin1 < 0 or pin1 > 15 or pin2 < 0 or pin2 > 15:
+        raise ValueError(f"pin must be 0..15, got {pin1},{pin2}")
+    return ((pin2 & 0xF) << 4) | (pin1 & 0xF)
+
+
+def encode_pset(rp: int, level: int, rd: int) -> int:
     if level not in (0, 1):
         raise ValueError(f"PSET level must be 0 or 1, got {level}")
-    if dur < 0 or dur > 128:
-        raise ValueError(f"PSET duration must be 0..128, got {dur}")
-    coded = 0 if dur == 128 else dur
-    if dur != 128 and dur > 127:
-        raise ValueError(f"PSET duration must be 1..127 or 128, got {dur}")
-    payload = ((level & 1) << 7) | (coded & 0x7F)
-    return encode(OP_PSET, pin, payload)
+    # [11:9]=Rp, [8]=L, [7:5]=Rd
+    field = ((rp & 7) << 1) | (level & 1)
+    payload = (rd & 7) << 5
+    return encode(OP_PSET, field, payload)
 
 
-def encode_pseth(pin1: int, pin2: int, level1: int, level2: int, ridx: int) -> int:
-    if level1 not in (0, 1) or level2 not in (0, 1):
-        raise ValueError("PSETH levels must be 0 or 1")
-    if ridx < 0 or ridx > 3:
-        raise ValueError(f"PSETH ridx must be 0..3 (R4..R7), got {ridx}")
-    # [11:8]=pin1, [7:4]=pin2, [3]=A, [2]=B, [1:0]=idx
-    mid = ((pin2 & 0xF) << 4) | ((level1 & 1) << 3) | ((level2 & 1) << 2) | (ridx & 3)
-    return encode(OP_PSETH, pin1, mid)
+def encode_out(rp: int, rs: int, rd: int) -> int:
+    # [11:9]=Rp, [8:6]=Rs, [5:3]=Rd
+    return (OP_OUT << 12) | ((rp & 7) << 9) | ((rs & 7) << 6) | ((rd & 7) << 3)
+
+
+def encode_rel(rp: int, rd: int) -> int:
+    # [11:9]=Rp, [8:6]=Rd
+    return (OP_REL << 12) | ((rp & 7) << 9) | ((rd & 7) << 6)
+
+
+def encode_jl(rp: int, target: int) -> int:
+    # [11:9]=Rp, [7:0]=target
+    return (OP_JL << 12) | ((rp & 7) << 9) | (target & 0xFF)
 
 
 def assemble(text: str) -> list[int]:
@@ -117,72 +129,41 @@ def assemble(text: str) -> list[int]:
             words.append(encode(OP_LDI, reg_field(rn), imm))
         elif mnemonic == "PSET":
             if len(args) != 3:
-                raise ValueError(f"PSET needs pin, level, duration: {raw}")
+                raise ValueError(f"PSET needs Rp, level, Rd: {raw}")
             words.append(
                 encode_pset(
-                    parse_number(args[0], symbols),
+                    parse_reg(args[0], symbols),
                     parse_number(args[1], symbols),
-                    parse_number(args[2], symbols),
+                    parse_reg(args[2], symbols),
                 )
             )
         elif mnemonic == "LOW":
             if len(args) != 2:
-                raise ValueError(f"LOW needs pin, duration: {raw}")
+                raise ValueError(f"LOW needs Rp, Rd: {raw}")
             words.append(
-                encode_pset(
-                    parse_number(args[0], symbols),
-                    0,
-                    parse_number(args[1], symbols),
-                )
+                encode_pset(parse_reg(args[0], symbols), 0, parse_reg(args[1], symbols))
             )
         elif mnemonic == "HIGH":
             if len(args) != 2:
-                raise ValueError(f"HIGH needs pin, duration: {raw}")
+                raise ValueError(f"HIGH needs Rp, Rd: {raw}")
             words.append(
-                encode_pset(
-                    parse_number(args[0], symbols),
-                    1,
-                    parse_number(args[1], symbols),
-                )
+                encode_pset(parse_reg(args[0], symbols), 1, parse_reg(args[1], symbols))
             )
-        elif mnemonic == "PSETH":
-            # PSETH pin1, pin2, level1, level2, ridx
-            # or PSETH pin1, pin2, level1, level2, R4..R7
-            if len(args) != 5:
-                raise ValueError(
-                    f"PSETH needs pin1, pin2, level1, level2, ridx|R4..R7: {raw}"
-                )
-            pin1 = parse_number(args[0], symbols)
-            pin2 = parse_number(args[1], symbols)
-            level1 = parse_number(args[2], symbols)
-            level2 = parse_number(args[3], symbols)
-            last = args[4].upper()
-            if re.fullmatch(r"R[4-7]", last):
-                ridx = int(last[1]) - 4
-            else:
-                ridx = parse_number(args[4], symbols)
-                if ridx >= 4 and ridx <= 7:
-                    ridx = ridx - 4
-            words.append(encode_pseth(pin1, pin2, level1, level2, ridx))
         elif mnemonic == "OUT":
-            if len(args) != 2:
-                raise ValueError(f"OUT needs pin, duration: {raw}")
+            if len(args) != 3:
+                raise ValueError(f"OUT needs Rp, Rs, Rd: {raw}")
             words.append(
-                encode(
-                    OP_OUT,
-                    parse_number(args[0], symbols),
-                    parse_number(args[1], symbols),
+                encode_out(
+                    parse_reg(args[0], symbols),
+                    parse_reg(args[1], symbols),
+                    parse_reg(args[2], symbols),
                 )
             )
         elif mnemonic == "REL":
             if len(args) != 2:
-                raise ValueError(f"REL needs pin, duration: {raw}")
+                raise ValueError(f"REL needs Rp, Rd: {raw}")
             words.append(
-                encode(
-                    OP_REL,
-                    parse_number(args[0], symbols),
-                    parse_number(args[1], symbols),
-                )
+                encode_rel(parse_reg(args[0], symbols), parse_reg(args[1], symbols))
             )
         elif mnemonic == "DJNZ":
             if len(args) != 2:
@@ -192,13 +173,9 @@ def assemble(text: str) -> list[int]:
             words.append(encode(OP_DJNZ, reg_field(rn), target))
         elif mnemonic == "JL":
             if len(args) != 2:
-                raise ValueError(f"JL needs pin, target: {raw}")
+                raise ValueError(f"JL needs Rp, target: {raw}")
             words.append(
-                encode(
-                    OP_JL,
-                    parse_number(args[0], symbols),
-                    parse_number(args[1], symbols),
-                )
+                encode_jl(parse_reg(args[0], symbols), parse_number(args[1], symbols))
             )
         else:
             raise ValueError(f"unknown instruction: {mnemonic}")

@@ -1,25 +1,51 @@
 # Programmability
 
-Leonidas is a dumb pin machine. True programmability means the silicon stays a small set of verbs; new protocols and protocol details appear as **programs** and as **compiler lowering**, not as new named engines in the chip.
+Leonidas is a dumb pin machine. The opcode is a verb. The protocol is the program. Load a different listing to change protocol.
 
 ## Split of responsibility
 
-| In the chip (ISA / datapath) | In the compiler / host |
+| In the chip | In the compiler / host |
 |---|---|
-| Drive a pin high or low for N clocks | UART / SPI / I2C / USB packet layout |
-| Release a `uio` pin (open-drain) | NRZI encode |
-| Shift a byte out LSB first (`OUT`) | MSB-first bit-reverse before `LDI` |
-| Count, jump, halt, jump-if-pin-low | USB bit stuffing, CRC5 / CRC16 |
-| Hold counts and pin numbers in the word | Idle J/K polarity for LS vs FS |
-| | Turning a protocol dict into `.asm` / `.hex` |
+| Drive pin(s) named by a descriptor for `Rd` clocks | UART / SPI / I2C / USB packet layout |
+| Release a descriptor (`REL`) | NRZI, bit stuffing, CRC |
+| Shift `Rs` LSB first (`OUT`) | Line-level bytes in `R0` |
+| Count, jump, halt, `JL` on `pin1` | LS vs FS polarity (which pin is high in J) |
+| 3R1W so issue is one cycle | Fit non-timed ops inside the previous hold |
 
-The opcode is a verb. The protocol is a program. An unused opcode stays unused until a listing **cannot** be written with the verbs that exist.
+No USB opcode, no PID comparator, no protocol-select pin.
+
+## Why three reads
+
+`OUT Rp, Rs, Rd` (and `PSET` / `REL`) must, in the **same** issue cycle:
+
+1. **P** — read the descriptor (which pad(s) to touch)
+2. **S** — read the shifter bit (and write the shifted value back)
+3. **D** — read the hold count
+
+One read port would serialize those into extra clocks. FS is 5 clocks/bit; that serialization is the bit. 3R1W is still a register file with address inputs, not eight named `r0`–`r7` wires.
+
+## One loop shape
+
+```
+LDI  R1, desc        ; two pin nibbles (same pin twice if one pad)
+LDI  R3, clocks
+LDI  R0, byte
+LDI  R4, 8
+L:   OUT  R1, R0, R3
+     DJNZ R4, L
+```
+
+UART, SPI, and USB data differ in the descriptor and `R3`, not the opcode. `PSET Rp, 0, Rd` with two different pins is both lines low (USB SE0). Sticky pins plus a later `PSET`/`OUT` restore idle J. `LDI` after a timed op does not move the old pin.
 
 ## Clock and timing
 
-Hold counts are in chip clocks. Absolute bit rate is `CLOCK_HZ / hold`. STA / target clock: **60 MHz** (`CLOCK_PERIOD` 16.667 ns) → LS = 40 clocks/bit, FS = 5 clocks/bit. Other protocols keep the same verbs; only the numbers in the listing change.
+60 MHz target → LS = 40 clocks/bit, FS = 5. Pins are sticky: extra instructions between timed ops stretch the previous level. If the gap does not fit in the hold, shorten that hold (FS: last `OUT` before a mid-packet `LDI` uses 4 so the tail restores 5). LS 40 hides an `LDI`.
 
-Continuity on the wire comes from prefetch while a hold counts down, not from the chip understanding frames. If a hold is too short for the next word to be ready, the bit stretches; measure before trusting very small counts (FS at 5 is the tight case).
+`JL` sees `uio` +2 clocks (2-flop sync).
+
+## FS
+
+**TX** at 5 clocks/bit is required. **RX** at 5 will not be software-sampled.
 
 ## Compiler pipeline (planned)
 
@@ -27,17 +53,13 @@ Continuity on the wire comes from prefetch while a hold counts down, not from th
 protocol dict  →  protocol lowering  →  ISA asm  →  assemble.py  →  hex
 ```
 
-- `assemble.py` only knows the ISA.
-- Protocol frontends (UART, SPI, I2C, USB, …) append as new lowering steps. Example: USB bit stuffing and NRZI run in Python when expanding a packet into `PSET` on D+/D−.
-- Future ISA verbs get a mnemonic in `assemble.py`; future protocols get a new dict shape and lowering function, not a rewrite of the chip.
-
 ## What we do not do
 
-- A `USB` / `I2C` / baud opcode or a strobed “FS mode” bit that names the protocol in silicon.
-- Widening the instruction past 16 bits for protocol fields (PID, ADDR, ENDP live on the wire, as many pin instructions, not in one instruction word).
-- Spending the remaining opcodes for foresight. Empty slots are for verbs that unblock a program that cannot be written today.
+- Protocol-named opcodes, XOR/MOV, PID hardware, auto detect.
+- Spending `0111`–`1111` for foresight. Empty slots are for RX verbs that unblock a program.
 
 ## Open (next)
 
+- Compiler (protocol → asm).
+- RX: `IN` / `JH` if `JL` is not enough; FS RX sampler if we take that on.
 - Multi-protocol / second SM (not lockstep dual-issue on one RF).
-- ISA polish after more protocol listings (shared duration regs, PSETH vs PSET redundancy) — keep silicon dumb until a real program cannot be written.
