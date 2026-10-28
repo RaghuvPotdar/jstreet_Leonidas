@@ -1,13 +1,42 @@
+# //  Questa Altera Starter FPGA Edition-64
+# //  Version 2025.3 win64 Sep 15 2025
+# //
+# // Unpublished work. Copyright 2025 Siemens
+# //
+# // This material contains trade secrets or otherwise confidential information
+# // owned by Siemens Industry Software Inc. or its affiliates (collectively,
+# // "SISW"), or its licensors. Access to and use of this information is strictly
+# // limited as set forth in the Customer's applicable agreements with SISW.
+# //
+# // This material may not be copied, distributed, or otherwise disclosed outside
+# // of the Customer's facilities without the express written permission of SISW,
+# // and may not be used in any way not expressly authorized by SISW.
+# //
 # ** Note: (vsim-220) 'modelsim.ini' is used as the ini file.
-# vsim -c -voptargs="+acc" work.tb -wlf vsim.wlf -do "log -r /*; run -all; quit -f" "+PROGRAM=program.hex" 
-# Start time: 21:36:48 on Oct 26,2026
+# vsim -voptargs="+acc" work.tb -do "onfinish stop; log -r /*; view wave; do wave.do; run -all" "+PROGRAM=program.hex" "+TESTNAME=eth_10t_loop" "+DMEM=program.dmem" 
+# Start time: 18:21:06 on Oct 28,2026
 # ** Note: (vsim-3812) Design is being optimized...
 # ** Warning: (vopt-10908) Some optimizations are turned off because the +acc switch is in effect.
 # ** Note: (vopt-220) 'modelsim.ini' is used as the ini file.
 # ** Note: (vsim-12126) Error and warning message counts have been restored: Errors=0, Warnings=1.
-# ** License Issue: License request for intelqsimstarter feature failed
-# ** License Issue: Feature start date is in the future. (C:\licenses\flexlm\LR-204936_License.dat)
-# ** Error: Failure to obtain a Verilog simulation license. Unable to checkout 'intelqsimstarter' license.
-# Error loading design
-# End time: 21:36:53 on Oct 26,2026, Elapsed time: 0:00:05
-# Errors: 0, Warnings: 1
+# Loading sv_std.std
+# Loading work.tb(fast)
+# Loading work.tt_um_RaghuvPotdar_Leonidas(fast)
+# Loading work.imem(fast)
+# Loading work.RM_IHPSG13_1P_256x16_c2_bm_bist(fast)
+# Loading work.dmem(fast)
+# Loading work.RM_IHPSG13_1P_256x8_c3_bm_bist(fast)
+# Loading work.datapath(fast)
+# Loading work.rf(fast)
+# onfinish stop
+#  log -r /*
+#  view wave
+# .main_pane.wave.interior.cs.body.pw.wf
+#  do wave.do
+#  run -all
+# loaded 10 words from program.hex
+# loaded 27 dmem bytes from program.dmem
+# test 1 eth_10t_loop: 1495 clocks halted=1 uo=bf
+# ** Note: $finish    : tb.sv(215)
+#    Time: 31811 ns  Iteration: 0  Instance: /tb
+# Break in Module tb at tb.sv line 215

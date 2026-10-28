@@ -37,7 +37,7 @@ L:   LD   R0, [R5]   ; 2 clocks, post-inc R5
      DJNZ R4, L
 ```
 
-UART, SPI, and USB data differ in the descriptor, `R3`, and the dmem image, not the opcode. 10BASE-T TX is `OUTM` with `R3=6` (IEEE Manchester; one data bit per issue). `PSET Rp, 0, Rd` with two different pins is both lines low (USB SE0). Sticky pins plus a later `PSET`/`OUT` restore idle J. `LDI` after a timed op does not move the old pin.
+UART, SPI, and USB data differ in the descriptor, `R3`, and the dmem image, not the opcode. 10BASE-T TX is `OUTM` with `R3=6` on **one** pin (IEEE Manchester). Complement is off-chip. `PSET Rp, 0, Rd` with two different pins is both lines low (USB SE0). Sticky pins plus a later `PSET`/`OUT` restore idle J. `LDI` after a timed op does not move the old pin.
 
 ## Dmem
 

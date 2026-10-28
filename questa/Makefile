@@ -5,8 +5,26 @@
 QUESTASIM_HOME ?=
 SRC_DIR        := ../src
 ASM_DIR        := ../asm
+EXAMPLES       := $(ASM_DIR)/examples
 WORK           := work
 PROGRAM        := program.hex
+
+# make sim eth_10t.asm  →  ../asm/examples/eth_10t.asm
+# Bare name or path; examples/ is implied when the file is not here.
+ASM_ARG := $(firstword $(filter %.asm,$(MAKECMDGOALS)))
+ifeq ($(ASM_ARG),)
+  ASM :=
+else ifneq ($(wildcard $(ASM_ARG)),)
+  ASM := $(ASM_ARG)
+else
+  ASM := $(EXAMPLES)/$(notdir $(ASM_ARG))
+endif
+
+ifneq ($(ASM_ARG),)
+.PHONY: $(ASM_ARG)
+$(ASM_ARG):
+	@:
+endif
 
 PROJECT_SOURCES := \
 	$(SRC_DIR)/sram_256x16.sv \
@@ -29,7 +47,7 @@ else
   VMAP_BIN := $(QUESTASIM_HOME)/linux_x86_64/vmap
 endif
 
-.PHONY: all check compile sim gui wave clean asm
+.PHONY: all check compile sim gui wave clean asm suite
 
 all: sim
 
@@ -50,19 +68,46 @@ compile: $(WORK) tb.sv $(PROJECT_SOURCES)
 	"$(VLOG_BIN)" -sv -work $(WORK) +define+SIM \
 		+incdir+$(SRC_DIR) $(PROJECT_SOURCES) tb.sv
 
-# Assemble the default program if asm/ exists and PROGRAM is missing.
+# One listing → program.hex. This is not the cocotb suite.
+#   make sim eth_10t.asm
+#   make gui eth_10t.asm
+SUITE_NAMES := uart spi usb_ls_ack usb_fs_ack eth_10t
+
+suite:
+	mkdir -p suite
+	@for n in $(SUITE_NAMES); do \
+		python $(ASM_DIR)/assemble.py $(EXAMPLES)/$$n.asm -o suite/$$n.hex; \
+	done
+
+DMEM := $(basename $(PROGRAM)).dmem
+
 asm:
-	@if [ -f $(ASM_DIR)/assemble.py ]; then \
-		python $(ASM_DIR)/assemble.py $(ASM_DIR)/examples/uart.asm -o $(PROGRAM); \
+	@if [ -z "$(ASM)" ]; then $(MAKE) suite; else \
+		python $(ASM_DIR)/assemble.py $(ASM) -o $(PROGRAM); \
+		if [ -f "$(basename $(ASM)).dmem" ]; then cp "$(basename $(ASM)).dmem" "$(DMEM)"; fi; \
 	fi
 
-sim: compile
-	@test -f $(PROGRAM) || (echo "Missing $(PROGRAM). Run the assembler first."; exit 1)
-	"$(VSIM_BIN)" -c -do "do scripts/sim.do" -wlf vsim.wlf
+PLUS :=
+ifneq ($(ASM),)
+  PLUS += +PROGRAM=$(PROGRAM)
+  ifneq ($(wildcard $(DMEM)),)
+    PLUS += +DMEM=$(DMEM)
+  endif
+endif
 
-gui: compile
-	@test -f $(PROGRAM) || (echo "Missing $(PROGRAM). Run the assembler first."; exit 1)
-	"$(VSIM_BIN)" -do "do scripts/sim.do; do scripts/wave.do"
+sim: asm compile
+ifeq ($(ASM),)
+	"$(VSIM_BIN)" -c -do "do scripts/sim.do" -wlf vsim.wlf
+else
+	"$(VSIM_BIN)" -c -do "do scripts/sim.do" -wlf vsim.wlf $(PLUS)
+endif
+
+gui: asm compile
+ifeq ($(ASM),)
+	"$(VSIM_BIN)" -voptargs=+acc work.tb -do "onfinish stop; log -r /*; view wave; do wave.do; run -all"
+else
+	"$(VSIM_BIN)" -voptargs=+acc work.tb -do "onfinish stop; log -r /*; view wave; do wave.do; run -all" $(PLUS)
+endif
 
 wave: check
 	"$(VSIM_BIN)" -view vsim.wlf -do "do scripts/wave.do"

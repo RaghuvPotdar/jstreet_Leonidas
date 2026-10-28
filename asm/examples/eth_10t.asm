@@ -1,11 +1,11 @@
 # 10BASE-T TX. IEEE Manchester, OUTM, 6 clocks/bit at 60 MHz.
-# TD+=pin6, TD-=pin7 (descriptor 0x76). R0 shifter, R1 pins, R3 duration.
+# One pin: uo[6] (descriptor 0x66). Not D+/D-. Magnetics make the complement.
 # Preamble 7*0x55, SFD 0xD5, then runt frame (no 64-byte pad):
 #   dest ff:ff:ff:ff:ff:ff  src 02:00:00:00:00:01  type 88b5  data 42
 #   FCS little-endian (IEEE CRC32).
 # Unrolled LDI+OUTM so halves stay on the 3-clock grid. RX is not in silicon.
 
-.equ PINS, 0x76
+.equ PINS, 0x66
 .equ BIT,  6
 
     LDI   R1, PINS

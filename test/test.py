@@ -10,7 +10,7 @@ from cocotb.triggers import RisingEdge, ReadOnly, Timer
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "asm"))
 from assemble import assemble  # noqa: E402
-from eth_tx import ETH_TN, ETH_TP, WIRE, expect_runs  # noqa: E402
+from eth_tx import ETH_BIT, ETH_TX, WIRE, expect_runs, lsb_bits, recover_bits  # noqa: E402
 from usb_tx import DUMMY_PACKETS, USB_DM, USB_DP, build_dummy_tx  # noqa: E402
 
 ASM = Path(__file__).resolve().parents[1] / "asm" / "examples"
@@ -596,25 +596,25 @@ async def test_outm_mid_invert(dut):
         assert rf_at(dp, 0) == 0
 
 
-def eth_td(uo):
-    return ((int(uo) >> ETH_TP) & 1, (int(uo) >> ETH_TN) & 1)
+def eth_tx(uo):
+    return (int(uo) >> ETH_TX) & 1
 
 
 @cocotb.test()
 async def test_eth_10t(dut):
-    """Hand asm: 10BASE-T TX, IEEE Manchester on TD+/TD-."""
+    """Hand asm: 10BASE-T TX, IEEE Manchester on one pin."""
     await reset_dut(dut)
     words = assemble((ASM / "eth_10t.asm").read_text(encoding="utf-8"))
     expect = expect_runs(WIRE)
 
     await load_program(dut, words)
     total = sum(n for _, n in expect) + 64
-    samples = [eth_td(dut.uo_out.value)]
+    samples = [eth_tx(dut.uo_out.value)]
     for _ in range(total - 1):
         await clock_edge(dut)
-        samples.append(eth_td(dut.uo_out.value))
+        samples.append(eth_tx(dut.uo_out.value))
 
-    while samples and samples[0] == (1, 1):
+    while samples and samples[0] == 1:
         samples.pop(0)
     assert samples, "10BASE-T never left idle"
 
@@ -641,3 +641,32 @@ async def test_eth_10t(dut):
     if dp is not None:
         assert int(dp.halted.value) == 1
         assert rf_at(dp, 0) == 0
+
+
+@cocotb.test()
+async def test_eth_10t_loop(dut):
+    """Same runt frame as eth_10t, but OUTM+DJNZ with payload in dmem."""
+    await reset_dut(dut)
+    await load_dmem(dut, list(WIRE))
+    words = assemble((ASM / "eth_10t_loop.asm").read_text(encoding="utf-8"))
+    await load_program(dut, words)
+
+    nbits = len(WIRE) * 8
+    samples = [eth_tx(dut.uo_out.value)]
+    for _ in range(nbits * ETH_BIT + nbits * 4 + 64):
+        await clock_edge(dut)
+        samples.append(eth_tx(dut.uo_out.value))
+
+    while samples and samples[0] == 1:
+        samples.pop(0)
+    assert samples, "10BASE-T loop never left idle"
+    got = recover_bits(samples)
+    want = lsb_bits(WIRE)
+    assert got[: len(want)] == want, (
+        f"eth_10t_loop bits\n got {got[: len(want)]}\n exp {want}"
+    )
+    dp = engine(dut)
+    if dp is not None:
+        assert int(dp.halted.value) == 1
+        assert rf_at(dp, 5) == len(WIRE)
+        assert rf_at(dp, 4) == 0

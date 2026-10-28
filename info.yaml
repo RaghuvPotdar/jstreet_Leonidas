@@ -45,8 +45,8 @@ pinout:
   uo[3]: "out3"
   uo[4]: "usb_dp"
   uo[5]: "usb_dm"
-  uo[6]: "td_p"
-  uo[7]: "td_n"
+  uo[6]: "td"
+  uo[7]: "out7"
 
   # 00 idle, 01 imem byte, 10 imem byte and start, 11 dmem byte.
   uio[0]: "strobe[0]"
