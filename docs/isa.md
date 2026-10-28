@@ -49,7 +49,7 @@ Write the same pin in both nibbles for one pin. Write two different pins to touc
 - `REL`: release every distinct pin in the descriptor.
 - `JL`: tests the low nibble.
 
-Pin numbers are 4 bits. Pins 0–7 are `uo_out[0]`–`[7]`. Pins 8–15 are `uio[0]`–`[7]`. **`ui_in` is not in the pin space**. `uo_out` resets high. `uio` resets to inputs.
+Pin numbers are 4 bits. Pins 0–7 are `uo_out[0]`–`[7]`. Pins 8–15 are `uio[0]`–`[7]`. `**ui_in` is not in the pin space**. `uo_out` resets high. `uio` resets to inputs.
 
 USB D+/D− is `0x54` (pins 5 and 4). One pin, e.g. D− only, is `0x55`.
 
@@ -80,11 +80,13 @@ Drive every distinct pin in `Rp` to `L`. Wait `Rd` clocks.
 ## OUT — `0010`
 
 ```
-15    12 11  9 8   6 5   3 2  0
-| 0010  |  Rp |  Rs |  Rd | 0  |
+15    12 11  9 8   6 5   3 2 1 0
+| 0010  |  Rp |  Rs |  Rd |M| 0 |
 ```
 
 Low nibble ← `Rs[0]`; if the two pin fields differ, high nibble ← `~Rs[0]`; then `Rs ← {0, Rs[7:1]}`. Wait `Rd` clocks.
+
+`M` (`[2]`) is IEEE 802.3 Manchester. Issue drives `~Rs[0]` (pin2 `Rs[0]`); after `Rd >> 1` clocks those pins XOR, so a `1` is low then high and a `0` is high then low. `Rd=0` is 256 clocks, flip at 128. `Rd=1` never flips. Assembler: `OUT` has `M=0`, `OUTM` has `M=1`. `[1:0]` stay 0.
 
 UART / SPI duplicate one pin in both nibbles. USB puts D+ and D− in the two nibbles. Small immediates (one UART byte) can still `LDI R0, byte`. Long payloads use dmem:
 
@@ -96,7 +98,9 @@ L:   LD   R0, [R5]  ; 2 clocks: REN+R5++ then R0 ← dout
      DJNZ R4, L
 ```
 
-NRZI and stuffing are compiler work (bytes in dmem are line levels).
+10BASE-T TX is the same loop with `OUTM` and `R3=6` (one data bit per issue). RX is not in silicon.
+
+NRZI and stuffing are compiler work (bytes in dmem are line levels). Manchester polarity is IEEE in the chip.
 
 ## DJNZ — `0011`
 

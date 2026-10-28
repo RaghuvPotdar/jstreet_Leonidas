@@ -10,6 +10,7 @@ from cocotb.triggers import RisingEdge, ReadOnly, Timer
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "asm"))
 from assemble import assemble  # noqa: E402
+from eth_tx import ETH_TN, ETH_TP, WIRE, expect_runs  # noqa: E402
 from usb_tx import DUMMY_PACKETS, USB_DM, USB_DP, build_dummy_tx  # noqa: E402
 
 ASM = Path(__file__).resolve().parents[1] / "asm" / "examples"
@@ -522,3 +523,121 @@ async def test_dmem_ld(dut):
         assert rf_at(dp, 0) == 0x2D
         assert rf_at(dp, 1) == 0x3C
         assert rf_at(dp, 5) == 2
+
+
+@cocotb.test()
+async def test_outm_mid_invert(dut):
+    """OUTM IEEE: Rs[0]=1 → 3 clocks low then 3 high; two-pin stays complementary."""
+    from assemble import OP_HALT, OP_LDI, encode, encode_out, pin_desc, reg_field
+
+    await reset_dut(dut)
+    words = [
+        encode(OP_LDI, reg_field(2), pin_desc(1)),
+        encode(OP_LDI, reg_field(3), 6),
+        encode(OP_LDI, reg_field(0), 0x01),
+        encode_out(2, 0, 3, invert=True),
+        encode(OP_HALT, 0, 0),
+    ]
+    await load_program(dut, words)
+
+    bits = []
+    for _ in range(24):
+        bits.append((int(dut.uo_out.value) >> 1) & 1)
+        await clock_edge(dut)
+
+    while bits and bits[0] == 1:
+        bits.pop(0)
+    assert bits, "pin 1 never left idle high"
+    lows = 0
+    while bits and bits[0] == 0:
+        lows += 1
+        bits.pop(0)
+    assert lows == 3, f"OUTM first half held {lows}, want 3"
+    highs = 0
+    while bits and bits[0] == 1:
+        highs += 1
+        bits.pop(0)
+    assert highs >= 3, f"OUTM second half held {highs}, want >= 3"
+
+    dut.rst_n.value = 0
+    dut.uio_in.value = 0
+    await clock_edge(dut)
+    dut.rst_n.value = 1
+    await clock_edge(dut)
+
+    words = [
+        encode(OP_LDI, reg_field(2), pin_desc(USB_DP, USB_DM)),
+        encode(OP_LDI, reg_field(3), 6),
+        encode(OP_LDI, reg_field(0), 0x01),
+        encode_out(2, 0, 3, invert=True),
+        encode(OP_HALT, 0, 0),
+    ]
+    await load_program(dut, words)
+
+    samples = []
+    for _ in range(24):
+        samples.append(usb_dp_dm(dut.uo_out.value))
+        await clock_edge(dut)
+
+    while samples and samples[0] == (1, 1):
+        samples.pop(0)
+    assert samples, "USB pair never left idle SE1"
+    first = []
+    while samples and samples[0] == (0, 1):
+        first.append(samples.pop(0))
+    second = []
+    while samples and samples[0] == (1, 0):
+        second.append(samples.pop(0))
+    assert len(first) == 3, f"OUTM pair first half {len(first)}, want 3"
+    assert len(second) >= 3, f"OUTM pair second half {len(second)}, want >= 3"
+    dp = engine(dut)
+    if dp is not None:
+        assert int(dp.halted.value) == 1
+        assert rf_at(dp, 0) == 0
+
+
+def eth_td(uo):
+    return ((int(uo) >> ETH_TP) & 1, (int(uo) >> ETH_TN) & 1)
+
+
+@cocotb.test()
+async def test_eth_10t(dut):
+    """Hand asm: 10BASE-T TX, IEEE Manchester on TD+/TD-."""
+    await reset_dut(dut)
+    words = assemble((ASM / "eth_10t.asm").read_text(encoding="utf-8"))
+    expect = expect_runs(WIRE)
+
+    await load_program(dut, words)
+    total = sum(n for _, n in expect) + 64
+    samples = [eth_td(dut.uo_out.value)]
+    for _ in range(total - 1):
+        await clock_edge(dut)
+        samples.append(eth_td(dut.uo_out.value))
+
+    while samples and samples[0] == (1, 1):
+        samples.pop(0)
+    assert samples, "10BASE-T never left idle"
+
+    runs = usb_runs(samples)
+    assert len(runs) >= len(expect), (
+        f"eth_10t: too few runs\n got {runs}\n exp {expect}"
+    )
+    for i, ((got_s, got_n), (exp_s, exp_n)) in enumerate(
+        zip(runs[: len(expect)], expect)
+    ):
+        assert got_s == exp_s, (
+            f"eth_10t: state[{i}] {got_s}, want {exp_s}\n runs {runs}"
+        )
+        if i == len(expect) - 1:
+            assert got_n >= exp_n, (
+                f"eth_10t: last held {got_n}, want >= {exp_n}"
+            )
+        else:
+            assert got_n == exp_n, (
+                f"eth_10t: state[{i}] {got_s} held {got_n}, want {exp_n}"
+            )
+
+    dp = engine(dut)
+    if dp is not None:
+        assert int(dp.halted.value) == 1
+        assert rf_at(dp, 0) == 0

@@ -77,9 +77,12 @@ def encode_pset(rp: int, level: int, rd: int) -> int:
     return encode(OP_PSET, field, payload)
 
 
-def encode_out(rp: int, rs: int, rd: int) -> int:
-    # [11:9]=Rp, [8:6]=Rs, [5:3]=Rd
-    return (OP_OUT << 12) | ((rp & 7) << 9) | ((rs & 7) << 6) | ((rd & 7) << 3)
+def encode_out(rp: int, rs: int, rd: int, invert: bool = False) -> int:
+    # [11:9]=Rp, [8:6]=Rs, [5:3]=Rd, [2]=mid-hold invert
+    word = (OP_OUT << 12) | ((rp & 7) << 9) | ((rs & 7) << 6) | ((rd & 7) << 3)
+    if invert:
+        word |= 1 << 2
+    return word
 
 
 def encode_rel(rp: int, rd: int) -> int:
@@ -162,14 +165,15 @@ def assemble(text: str) -> list[int]:
             words.append(
                 encode_pset(parse_reg(args[0], symbols), 1, parse_reg(args[1], symbols))
             )
-        elif mnemonic == "OUT":
+        elif mnemonic in ("OUT", "OUTM"):
             if len(args) != 3:
-                raise ValueError(f"OUT needs Rp, Rs, Rd: {raw}")
+                raise ValueError(f"{mnemonic} needs Rp, Rs, Rd: {raw}")
             words.append(
                 encode_out(
                     parse_reg(args[0], symbols),
                     parse_reg(args[1], symbols),
                     parse_reg(args[2], symbols),
+                    invert=(mnemonic == "OUTM"),
                 )
             )
         elif mnemonic == "REL":

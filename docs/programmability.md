@@ -8,7 +8,7 @@ Leonidas is a dumb pin machine. The opcode is a verb. The protocol is the progra
 |---|---|
 | Drive pin(s) named by a descriptor for `Rd` clocks | UART / SPI / I2C / USB packet layout |
 | Release a descriptor (`REL`) | NRZI, bit stuffing, CRC |
-| Shift `Rs` LSB first (`OUT`) | Line-level **bytes in dmem**; listing holds **addresses** |
+| Shift `Rs` LSB first (`OUT`); `OUTM` flips at `Rd>>1` | Line-level **bytes in dmem**; listing holds **addresses** |
 | Count, jump, halt, `JL` on `pin1` | LS vs FS polarity (which pin is high in J) |
 | 3R1W so issue is one cycle | Fit non-timed ops (and 2-cycle `LD`) inside the previous hold |
 | Two SRAMs: imem `256x16`, dmem `256x8` | Strobe `01`/`10` → imem, `11` → dmem |
@@ -37,7 +37,7 @@ L:   LD   R0, [R5]   ; 2 clocks, post-inc R5
      DJNZ R4, L
 ```
 
-UART, SPI, and USB data differ in the descriptor, `R3`, and the dmem image, not the opcode. `PSET Rp, 0, Rd` with two different pins is both lines low (USB SE0). Sticky pins plus a later `PSET`/`OUT` restore idle J. `LDI` after a timed op does not move the old pin.
+UART, SPI, and USB data differ in the descriptor, `R3`, and the dmem image, not the opcode. 10BASE-T TX is `OUTM` with `R3=6` (IEEE Manchester; one data bit per issue). `PSET Rp, 0, Rd` with two different pins is both lines low (USB SE0). Sticky pins plus a later `PSET`/`OUT` restore idle J. `LDI` after a timed op does not move the old pin.
 
 ## Dmem
 
@@ -60,7 +60,7 @@ Fill **dmem before** the `10` that starts the program. Both macros are 1-port: n
 
 ## Clock and timing
 
-60 MHz target → LS = 40 clocks/bit, FS = 5. Pins are sticky: extra instructions between timed ops stretch the previous level. If the gap does not fit in the hold, shorten that hold (FS: last `OUT` before a mid-packet `LDI` uses 4 so the tail restores 5). LS 40 hides an `LDI`.
+60 MHz target → LS = 40 clocks/bit, FS = 5, 10BASE-T TX = 6 (`OUTM`). Pins are sticky: extra instructions between timed ops stretch the previous level. If the gap does not fit in the hold, shorten that hold (FS: last `OUT` before a mid-packet `LDI` uses 4 so the tail restores 5). LS 40 hides an `LDI`. 10BASE-T leftover hold is 5, so `LD`+`DJNZ` fit.
 
 `JL` sees `uio` +2 clocks (2-flop sync).
 
@@ -86,5 +86,6 @@ Two artifacts: instruction words and payload bytes. The listing contains address
 - More protocol listings on the verbs we have. Refine the ISA after that.
 - Compiler (protocol → asm + dmem).
 - USB dummy packets via dmem + `LD` instead of unrolled `LDI`.
+- 10BASE-T listing (NLP + frame via `OUTM`); RX later.
 - RX: `IN` / `JH` if `JL` is not enough; FS RX sampler if we take that on.
 - Multi-protocol / second SM (not lockstep dual-issue on one RF).

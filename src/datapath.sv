@@ -21,6 +21,7 @@
 // JL samples a 2-flop-synced copy of uio_in, using pin1 of Rp.
 // LD is two cycles (1W): issue reads dmem[Rm] and writes Rm+1; next
 // clock writes Rn. Do not prefetch past an LD the way DJNZ is handled.
+// OUT[2]: after Rd>>1 clocks, XOR the driven pins (mid-hold invert).
 module datapath (
     input  wire        clk,
     input  wire        rst_n,
@@ -62,6 +63,10 @@ module datapath (
   logic        ld_pend;
   logic [2:0]  ld_dest;
   logic [7:0]  ld_ret;
+  logic        man_v;
+  logic [7:0]  man_at;
+  logic [7:0]  man_uo;
+  logic [7:0]  man_uio;
   logic [7:0]  uo_q;
   logic [7:0]  uio_q;
   logic [7:0]  oe_q;
@@ -83,6 +88,10 @@ module datapath (
   logic        ld_pend_n;
   logic [2:0]  ld_dest_n;
   logic [7:0]  ld_ret_n;
+  logic        man_v_n;
+  logic [7:0]  man_at_n;
+  logic [7:0]  man_uo_n;
+  logic [7:0]  man_uio_n;
   logic [7:0]  next_addr_n;
   logic [7:0]  uo_n;
   logic [7:0]  uio_n;
@@ -205,6 +214,10 @@ module datapath (
     ld_pend_n    = ld_pend;
     ld_dest_n    = ld_dest;
     ld_ret_n     = ld_ret;
+    man_v_n      = man_v;
+    man_at_n     = man_at;
+    man_uo_n     = man_uo;
+    man_uio_n    = man_uio;
     next_addr_n  = next_addr;
     dmem_ren     = 1'b0;
     dmem_addr    = 8'h00;
@@ -245,6 +258,10 @@ module datapath (
       ld_pend_n    = 1'b0;
       ld_dest_n    = 3'd0;
       ld_ret_n     = 8'h00;
+      man_v_n      = 1'b0;
+      man_at_n     = 8'h00;
+      man_uo_n     = 8'h00;
+      man_uio_n    = 8'h00;
       next_addr_n  = 8'h00;
       rf_clear     = 1'b1;
       uo_n         = 8'hFF;
@@ -377,8 +394,14 @@ module datapath (
       dur    = rf_rdata_d;
 
       if (op_word[15:12] == OP_OUT) begin
-        level    = rf_rdata_s[0];
-        level2   = ~rf_rdata_s[0];
+        // OUTM (bit 2): IEEE 802.3 Manchester. 1 = low then high, 0 = high then low.
+        if (op_word[2]) begin
+          level  = ~rf_rdata_s[0];
+          level2 = rf_rdata_s[0];
+        end else begin
+          level  = rf_rdata_s[0];
+          level2 = ~rf_rdata_s[0];
+        end
         rf_we    = 1'b1;
         rf_waddr = op_word[8:6];
         rf_wdata = {1'b0, rf_rdata_s[7:1]};
@@ -424,6 +447,32 @@ module datapath (
       next_addr_n = op_addr + 8'd1;
       issue       = 1'b1;
       issue_addr  = next_addr_n;
+
+      man_v_n = 1'b0;
+      if (op_word[15:12] == OP_OUT && op_word[2]) begin
+        man_at_n = (dur == 8'h00) ? 8'd128 : {1'b0, dur[7:1]};
+        if (man_at_n != 8'h00) begin
+          man_v_n   = 1'b1;
+          man_uo_n  = 8'h00;
+          man_uio_n = 8'h00;
+          if (pin_i[3] == 1'b0)
+            man_uo_n[pin_i[2:0]] = 1'b1;
+          else
+            man_uio_n[pin_i[2:0]] = 1'b1;
+          if (two) begin
+            if (pin2_i[3] == 1'b0)
+              man_uo_n[pin2_i[2:0]] = 1'b1;
+            else
+              man_uio_n[pin2_i[2:0]] = 1'b1;
+          end
+        end
+      end
+    end
+
+    if (running && man_v && hold == man_at && !do_start) begin
+      uo_n    = uo_q ^ man_uo;
+      uio_n   = uio_q ^ man_uio;
+      man_v_n = 1'b0;
     end
 
     if (issue)
@@ -470,6 +519,10 @@ module datapath (
       ld_pend    <= 1'b0;
       ld_dest    <= 3'd0;
       ld_ret     <= 8'h00;
+      man_v      <= 1'b0;
+      man_at     <= 8'h00;
+      man_uo     <= 8'h00;
+      man_uio    <= 8'h00;
       next_addr  <= 8'h00;
       uo_q       <= 8'hFF;
       uio_q      <= 8'h00;
@@ -486,6 +539,10 @@ module datapath (
       ld_pend    <= ld_pend_n;
       ld_dest    <= ld_dest_n;
       ld_ret     <= ld_ret_n;
+      man_v      <= man_v_n;
+      man_at     <= man_at_n;
+      man_uo     <= man_uo_n;
+      man_uio    <= man_uio_n;
       next_addr  <= next_addr_n;
       uo_q       <= uo_n;
       uio_q      <= uio_n;
