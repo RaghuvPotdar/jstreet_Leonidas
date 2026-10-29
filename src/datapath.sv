@@ -22,6 +22,9 @@
 // LD is two cycles (1W): issue reads dmem[Rm] and writes Rm+1; next
 // clock writes Rn. Do not prefetch past an LD the way DJNZ is handled.
 // OUT[2]: after Rd>>1 clocks, XOR the driven pins (mid-hold invert).
+// A LD into Rs arms an OUTM dmem stream: after 8 OUTMs of that Rs,
+// leftover hold refills Rs from dmem[dptr] and write-backs Rm. OUT
+// does not. LDI into Rs disarms. Rs==0 is not byte-done.
 module datapath (
     input  wire        clk,
     input  wire        rst_n,
@@ -63,6 +66,14 @@ module datapath (
   logic        ld_pend;
   logic [2:0]  ld_dest;
   logic [7:0]  ld_ret;
+  logic        stream_v;
+  logic [2:0]  stream_rs;
+  logic [2:0]  ptr_r;
+  logic [7:0]  dptr;
+  logic [2:0]  bitcnt;
+  logic        refill_ren;
+  logic        refill_pend;
+  logic        refill_wb;
   logic        man_v;
   logic [7:0]  man_at;
   logic [7:0]  man_uo;
@@ -88,6 +99,14 @@ module datapath (
   logic        ld_pend_n;
   logic [2:0]  ld_dest_n;
   logic [7:0]  ld_ret_n;
+  logic        stream_v_n;
+  logic [2:0]  stream_rs_n;
+  logic [2:0]  ptr_r_n;
+  logic [7:0]  dptr_n;
+  logic [2:0]  bitcnt_n;
+  logic        refill_ren_n;
+  logic        refill_pend_n;
+  logic        refill_wb_n;
   logic        man_v_n;
   logic [7:0]  man_at_n;
   logic [7:0]  man_uo_n;
@@ -214,6 +233,14 @@ module datapath (
     ld_pend_n    = ld_pend;
     ld_dest_n    = ld_dest;
     ld_ret_n     = ld_ret;
+    stream_v_n   = stream_v;
+    stream_rs_n  = stream_rs;
+    ptr_r_n      = ptr_r;
+    dptr_n       = dptr;
+    bitcnt_n     = bitcnt;
+    refill_ren_n = refill_ren;
+    refill_pend_n = refill_pend;
+    refill_wb_n  = refill_wb;
     man_v_n      = man_v;
     man_at_n     = man_at;
     man_uo_n     = man_uo;
@@ -258,6 +285,14 @@ module datapath (
       ld_pend_n    = 1'b0;
       ld_dest_n    = 3'd0;
       ld_ret_n     = 8'h00;
+      stream_v_n   = 1'b0;
+      stream_rs_n  = 3'd0;
+      ptr_r_n      = 3'd0;
+      dptr_n       = 8'h00;
+      bitcnt_n     = 3'd0;
+      refill_ren_n = 1'b0;
+      refill_pend_n = 1'b0;
+      refill_wb_n  = 1'b0;
       man_v_n      = 1'b0;
       man_at_n     = 8'h00;
       man_uo_n     = 8'h00;
@@ -351,6 +386,10 @@ module datapath (
           rf_wdata    = op_word[7:0];
           next_addr_n = op_addr + 8'd1;
           issue       = !fetched;
+          if (stream_v && rn == stream_rs) begin
+            stream_v_n = 1'b0;
+            bitcnt_n   = 3'd0;
+          end
         end
         OP_DJNZ: begin
           rf_we    = 1'b1;
@@ -378,6 +417,11 @@ module datapath (
           ld_pend_n   = 1'b1;
           ld_dest_n   = op_word[11:9];
           ld_ret_n    = op_addr;
+          stream_v_n  = 1'b1;
+          stream_rs_n = op_word[11:9];
+          ptr_r_n     = op_word[8:6];
+          dptr_n      = rf_rdata_s + 8'd1;
+          bitcnt_n    = 3'd0;
         end
         OP_HALT: halted_n = 1'b1;
         default: begin
@@ -405,6 +449,13 @@ module datapath (
         rf_we    = 1'b1;
         rf_waddr = op_word[8:6];
         rf_wdata = {1'b0, rf_rdata_s[7:1]};
+        if (op_word[2] && stream_v && op_word[8:6] == stream_rs) begin
+          if (bitcnt == 3'd7) begin
+            refill_ren_n = 1'b1;
+            bitcnt_n     = 3'd0;
+          end else
+            bitcnt_n = bitcnt + 3'd1;
+        end
       end else if (op_word[15:12] == OP_PSET) begin
         level  = op_word[8];
         level2 = op_word[8];
@@ -475,6 +526,31 @@ module datapath (
       man_v_n = 1'b0;
     end
 
+    // OUTM stream refill lives in leftover hold. 1W: shift already wrote
+    // Rs on the start clock; REN, then Rs from dout, then Rm write-back.
+    if (running && refill_ren && !ld_pend) begin
+      dmem_ren     = 1'b1;
+      dmem_addr    = dptr;
+      refill_pend_n = 1'b1;
+      refill_ren_n = 1'b0;
+    end
+    if (running && refill_pend && !ld_pend) begin
+      rf_we         = 1'b1;
+      rf_waddr      = stream_rs;
+      rf_wdata      = dmem_rdata;
+      refill_pend_n = 1'b0;
+      dptr_n        = dptr + 8'd1;
+      refill_wb_n   = 1'b1;
+    end
+    if (running && refill_wb && !ld_pend && !refill_pend) begin
+      if (!rf_we) begin
+        rf_we       = 1'b1;
+        rf_waddr    = ptr_r;
+        rf_wdata    = dptr;
+        refill_wb_n = 1'b0;
+      end
+    end
+
     if (issue)
       asked_addr_n = issue_addr;
   end
@@ -519,6 +595,14 @@ module datapath (
       ld_pend    <= 1'b0;
       ld_dest    <= 3'd0;
       ld_ret     <= 8'h00;
+      stream_v   <= 1'b0;
+      stream_rs  <= 3'd0;
+      ptr_r      <= 3'd0;
+      dptr       <= 8'h00;
+      bitcnt     <= 3'd0;
+      refill_ren <= 1'b0;
+      refill_pend <= 1'b0;
+      refill_wb  <= 1'b0;
       man_v      <= 1'b0;
       man_at     <= 8'h00;
       man_uo     <= 8'h00;
@@ -539,6 +623,14 @@ module datapath (
       ld_pend    <= ld_pend_n;
       ld_dest    <= ld_dest_n;
       ld_ret     <= ld_ret_n;
+      stream_v   <= stream_v_n;
+      stream_rs  <= stream_rs_n;
+      ptr_r      <= ptr_r_n;
+      dptr       <= dptr_n;
+      bitcnt     <= bitcnt_n;
+      refill_ren <= refill_ren_n;
+      refill_pend <= refill_pend_n;
+      refill_wb  <= refill_wb_n;
       man_v      <= man_v_n;
       man_at     <= man_at_n;
       man_uo     <= man_uo_n;

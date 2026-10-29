@@ -10,7 +10,7 @@ from cocotb.triggers import RisingEdge, ReadOnly, Timer
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "asm"))
 from assemble import assemble  # noqa: E402
-from eth_tx import ETH_BIT, ETH_TX, WIRE, expect_runs, lsb_bits, recover_bits  # noqa: E402
+from eth_tx import ETH_TX, WIRE, expect_runs  # noqa: E402
 from usb_tx import DUMMY_PACKETS, USB_DM, USB_DP, build_dummy_tx  # noqa: E402
 
 ASM = Path(__file__).resolve().parents[1] / "asm" / "examples"
@@ -172,7 +172,7 @@ async def test_uart_program(dut):
     await load_program(dut, spi)
 
     samples = [int(dut.uo_out.value)]
-    for _ in range(499):
+    for _ in range(799):
         await clock_edge(dut)
         samples.append(int(dut.uo_out.value))
 
@@ -189,6 +189,16 @@ async def test_uart_program(dut):
 
     frame = samples[cs_low[0] : cs_low[-1] + 1]
     assert bit(frame[0], 3) == 0, "SCK high when CS fell"
+
+    sck = [bit(s, 3) for s in frame]
+    sck_runs = usb_runs(sck)
+    # Idle-low setup, then 8 highs. Interior lows are HALF; MOSI OUT is
+    # subtracted from the low PSET so visible high == visible low == 8.
+    highs = [n for level, n in sck_runs if level == 1]
+    lows = [n for level, n in sck_runs if level == 0]
+    assert highs == [8] * 8, f"SCK high runs {highs}, want eight 8s"
+    assert len(lows) >= 8, f"SCK low runs {lows}"
+    assert lows[1:8] == [8] * 7, f"SCK interior lows {lows[1:8]}, want seven 8s"
 
     bits = []
     for prev, cur in zip(frame, frame[1:]):
@@ -600,6 +610,31 @@ def eth_tx(uo):
     return (int(uo) >> ETH_TX) & 1
 
 
+def assert_eth_runs(samples, expect, name):
+    """Idle-high strip, then exact IEEE run lengths (3 / 6). Last run may stick."""
+    while samples and samples[0] == 1:
+        samples.pop(0)
+    assert samples, f"{name} never left idle"
+    runs = usb_runs(samples)
+    assert len(runs) >= len(expect), (
+        f"{name}: too few runs\n got {runs}\n exp {expect}"
+    )
+    for i, ((got_s, got_n), (exp_s, exp_n)) in enumerate(
+        zip(runs[: len(expect)], expect)
+    ):
+        assert got_s == exp_s, (
+            f"{name}: state[{i}] {got_s}, want {exp_s}\n runs {runs}"
+        )
+        if i == len(expect) - 1:
+            assert got_n >= exp_n, (
+                f"{name}: last held {got_n}, want >= {exp_n}"
+            )
+        else:
+            assert got_n == exp_n, (
+                f"{name}: state[{i}] {got_s} held {got_n}, want {exp_n}"
+            )
+
+
 @cocotb.test()
 async def test_eth_10t(dut):
     """Hand asm: 10BASE-T TX, IEEE Manchester on one pin."""
@@ -614,28 +649,7 @@ async def test_eth_10t(dut):
         await clock_edge(dut)
         samples.append(eth_tx(dut.uo_out.value))
 
-    while samples and samples[0] == 1:
-        samples.pop(0)
-    assert samples, "10BASE-T never left idle"
-
-    runs = usb_runs(samples)
-    assert len(runs) >= len(expect), (
-        f"eth_10t: too few runs\n got {runs}\n exp {expect}"
-    )
-    for i, ((got_s, got_n), (exp_s, exp_n)) in enumerate(
-        zip(runs[: len(expect)], expect)
-    ):
-        assert got_s == exp_s, (
-            f"eth_10t: state[{i}] {got_s}, want {exp_s}\n runs {runs}"
-        )
-        if i == len(expect) - 1:
-            assert got_n >= exp_n, (
-                f"eth_10t: last held {got_n}, want >= {exp_n}"
-            )
-        else:
-            assert got_n == exp_n, (
-                f"eth_10t: state[{i}] {got_s} held {got_n}, want {exp_n}"
-            )
+    assert_eth_runs(samples, expect, "eth_10t")
 
     dp = engine(dut)
     if dp is not None:
@@ -645,28 +659,23 @@ async def test_eth_10t(dut):
 
 @cocotb.test()
 async def test_eth_10t_loop(dut):
-    """Same runt frame as eth_10t, but OUTM+DJNZ with payload in dmem."""
+    """Same runt frame as eth_10t: first LD in idle, then OUTM+DJNZ bits."""
     await reset_dut(dut)
     await load_dmem(dut, list(WIRE))
     words = assemble((ASM / "eth_10t_loop.asm").read_text(encoding="utf-8"))
+    expect = expect_runs(WIRE)
     await load_program(dut, words)
 
-    nbits = len(WIRE) * 8
+    total = sum(n for _, n in expect) + 64
     samples = [eth_tx(dut.uo_out.value)]
-    for _ in range(nbits * ETH_BIT + nbits * 4 + 64):
+    for _ in range(total - 1):
         await clock_edge(dut)
         samples.append(eth_tx(dut.uo_out.value))
 
-    while samples and samples[0] == 1:
-        samples.pop(0)
-    assert samples, "10BASE-T loop never left idle"
-    got = recover_bits(samples)
-    want = lsb_bits(WIRE)
-    assert got[: len(want)] == want, (
-        f"eth_10t_loop bits\n got {got[: len(want)]}\n exp {want}"
-    )
+    assert_eth_runs(samples, expect, "eth_10t_loop")
     dp = engine(dut)
     if dp is not None:
         assert int(dp.halted.value) == 1
-        assert rf_at(dp, 5) == len(WIRE)
         assert rf_at(dp, 4) == 0
+        # Last OUTM prefetches one byte past the frame into R0 / R5.
+        assert rf_at(dp, 5) == len(WIRE) + 1

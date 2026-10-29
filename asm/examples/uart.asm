@@ -3,13 +3,13 @@
 .equ TX, 0x11
 .equ BIT, 16
 
-    LDI  R2, TX
-    LDI  R3, BIT
-    LDI  R0, 0xB1
-    PSET R2, 0, R3
-    LDI  R1, 8
+    LDI  R2, TX         # 0
+    LDI  R3, BIT        # 1
+    LDI  R0, 0xB1       # 2
+    PSET R2, 0, R3      # 3
+    LDI  R1, 8          # 4
 loop:
-    OUT  R2, R0, R3
-    DJNZ R1, loop
-    PSET R2, 1, R3
-    HALT
+    OUT  R2, R0, R3     # 5
+    DJNZ R1, loop       # 6
+    PSET R2, 1, R3      # 7
+    HALT                # 8

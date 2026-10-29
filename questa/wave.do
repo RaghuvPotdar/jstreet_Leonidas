@@ -22,7 +22,7 @@ add wave -noupdate -divider memory
 add wave -noupdate -label imem /tb/DUT/imem/sram/mem
 add wave -noupdate -label dmem /tb/DUT/dmem/sram/mem
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {27934900 ps} 0}
+WaveRestoreCursors {{Cursor 1} {1850000 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 120
 configure wave -valuecolwidth 80
@@ -38,4 +38,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {23957158 ps} {28140150 ps}
+WaveRestoreZoom {1411219 ps} {2559507 ps}

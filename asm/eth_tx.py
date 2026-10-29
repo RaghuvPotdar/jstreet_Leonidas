@@ -41,8 +41,9 @@ def ieee_halves(bit: int) -> tuple[int, int]:
 
 
 def recover_bits(samples: list[int], half: int = ETH_BIT // 2) -> list[int]:
-    """Turn pin samples into IEEE data bits. Extra sticky clocks (LD between
-    bytes) are dropped as run length % half.
+    """Turn pin samples into IEEE data bits. Remainder clocks and 00/11
+    half-pairs are illegal Manchester; this helper still drops them, so
+    do not use it as a pass/fail. Use expect_runs for wire timing.
     """
     runs: list[tuple[int, int]] = []
     for level in samples:

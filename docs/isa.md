@@ -15,7 +15,7 @@ The first byte stored for a word is bits 7 through 0. The second byte is bits 15
 |---|---|---|
 | `0000` | `LDI` | `0` ‖ `Rn`(3) ‖ imm(8) |
 | `0001` | `PSET` | `Rp`(3) ‖ `L` ‖ `Rd`(3) ‖ 0 |
-| `0010` | `OUT` | `Rp`(3) ‖ `Rs`(3) ‖ `Rd`(3) ‖ 0 |
+| `0010` | `OUT` | `Rp`(3) ‖ `Rs`(3) ‖ `Rd`(3) ‖ `M` ‖ 0 |
 | `0011` | `DJNZ` | `0` ‖ `Rn`(3) ‖ target(8) |
 | `0100` | `HALT` | ignored |
 | `0101` | `REL` | `Rp`(3) ‖ `Rd`(3) ‖ 0 |
@@ -49,15 +49,27 @@ Write the same pin in both nibbles for one pin. Write two different pins to touc
 - `REL`: release every distinct pin in the descriptor.
 - `JL`: tests the low nibble.
 
-Pin numbers are 4 bits. Pins 0–7 are `uo_out[0]`–`[7]`. Pins 8–15 are `uio[0]`–`[7]`. `**ui_in` is not in the pin space**. `uo_out` resets high. `uio` resets to inputs.
+Pin numbers are 4 bits. Pins 0–7 are `uo_out[0]`–`[7]`. Pins 8–15 are `uio[0]`–`[7]`. `ui_in` is not in the pin space. `uo_out` resets high. `uio` resets to inputs.
 
 USB D+/D− is `0x54` (pins 5 and 4). One pin, e.g. D− only, is `0x55`.
 
 ## Duration
 
-`Rd` is a register. `0` means 256 clocks. The start clock is one of the duration clocks. After the hold, the pin **keeps its level** until a later op writes that same pin.
+`Rd` is a register. That is the baud / bit-time. There is no baud generator. `LDI R3, N` then `OUT …, R3` / `PSET …, R3` holds the pin for `N` clocks (`N=0` means 256). The listing picks `N`; the chip does not.
+
+On issue, `hold ← Rd−1` (a datapath flop, not dmem, not the shifter). `hold` counts down every clock. The start clock is one of the duration clocks, so leftover is `Rd−1`. After `hold` hits 0 the pin **keeps its level** until a later op writes that same pin.
 
 Driving a `uio` pin turns `uio_oe` on. `REL` turns it off (`uo` is driven 0).
+
+## Fetch / `pc` / `asked`
+
+imem is 1-port SRAM: address this clock, word two clocks later. `issue` sends `issue_addr` into that SRAM. `asked` is `issue` delayed two flops: the word on `instr` belongs to `asked_addr`. `pc` is **the address being issued**, not the op that is executing. `shown` holds the last `pc` when `issue` is 0.
+
+A timed op (`PSET` / `OUT` / `REL`) issues the next sequential address on its start clock, then keeps issuing that same address every leftover clock until the word arrives and is buffered (`!buf_v`). Two consecutive `issue`s of the same address → **`asked` high for two clocks** and `instr` repeats. Once `buf_v` is set, leftover clocks do not re-issue.
+
+At `hold==2`, a buffered non-pin op (`DJNZ` / `LDI` / `JL`) may issue its **target** (or `addr+1`) so the next timed op is already in flight. At `hold==1` that op commits (RF write). Execute of a timed op is `do_start` (or `do_defer` at `hold==1` if the next op is also timed).
+
+`next_addr` is written by execute: `op_addr+1`, or the `DJNZ`/`JL` target. That is what advances `pc`.
 
 ## LDI — `0000`
 
@@ -88,7 +100,11 @@ Low nibble ← `Rs[0]`; if the two pin fields differ, high nibble ← `~Rs[0]`; 
 
 `M` (`[2]`) is IEEE 802.3 Manchester. Issue drives `~Rs[0]` (pin2 `Rs[0]`); after `Rd >> 1` clocks those pins XOR, so a `1` is low then high and a `0` is high then low. `Rd=0` is 256 clocks, flip at 128. `Rd=1` never flips. Assembler: `OUT` has `M=0`, `OUTM` has `M=1`. `[1:0]` stay 0.
 
-UART / SPI duplicate one pin in both nibbles. USB puts D+ and D− in the two nibbles. Small immediates (one UART byte) can still `LDI R0, byte`. Long payloads use dmem:
+UART / SPI duplicate one pin in both nibbles. USB puts D+ and D− in the two nibbles.
+
+**UART** (`asm/examples/uart.asm`): idle high, `PSET` low = start, eight `OUT`s = data LSB first, `PSET` high = stop. The byte is `LDI R0, 0xB1` — **not dmem**. `R3` is clocks/bit (16 in that listing; change the immediate). `R1` is the bit count (`DJNZ`). `R0` is the shifter: `LDI` fills it; each `OUT` writes `{0, R0[7:1]}`. After eight `OUT`s `R0` is 0. Nothing auto-reloads on `OUT`. The bit loop stops because `DJNZ R1` hits 0, not because the shifter is empty.
+
+Small immediates can stay `LDI R0, byte`. Long payloads use dmem:
 
 ```
 LDI  R5, pkt        ; address in dmem, not the bytes
@@ -98,7 +114,9 @@ L:   LD   R0, [R5]  ; 2 clocks: REN+R5++ then R0 ← dout
      DJNZ R4, L
 ```
 
-10BASE-T TX is the same loop with `OUTM` and `R3=6` (one data bit per issue). RX is not in silicon.
+`LD` into `Rs` also arms an **OUTM stream**. After 8 `OUTM`s of that `Rs`, leftover hold loads `dmem[dptr]` into `Rs` and write-backs `Rm`. Count is 8 issues, not `Rs==0` (`0x01` is empty after one shift). `OUT` does not refill. `LDI` into `Rs` disarms. First byte is a software `LD` in idle (legal high). Last `OUTM` prefetches one extra dmem byte. Needs leftover hold ≥ 3 (`Rd` ≥ 4).
+
+10BASE-T TX is `OUTM` with `R3=6` (one data bit per issue) and a bit-count `DJNZ`. RX is not in silicon.
 
 NRZI and stuffing are compiler work (bytes in dmem are line levels). Manchester polarity is IEEE in the chip.
 
@@ -140,7 +158,7 @@ If `pin1` of `Rp` reads 0 on `uio`, jump; else fall through. `uo_out` reads as 1
 | 0111  |  Rn |  Rm |    0     |
 ```
 
-`Rn ← dmem[Rm]`, then `Rm ← Rm + 1`. Two clocks because the file is 1W: cycle 0 asserts REN and writes `Rm`; cycle 1 writes `Rn` from `A_DOUT`. Hide it inside a hold of 3 or more, not on an FS bit boundary.
+`Rn ← dmem[Rm]`, then `Rm ← Rm + 1`. Two clocks because the file is 1W: cycle 0 asserts REN and writes `Rm`; cycle 1 writes `Rn` from `A_DOUT`. Hide a software `LD` inside a hold of 3 or more, not on an FS bit boundary. The same `LD` arms `OUTM` to consume the rest of dmem during leftover hold (see `OUT`).
 
 ## Unused opcodes — `1000` through `1111`
 

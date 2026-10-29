@@ -37,7 +37,7 @@ L:   LD   R0, [R5]   ; 2 clocks, post-inc R5
      DJNZ R4, L
 ```
 
-UART, SPI, and USB data differ in the descriptor, `R3`, and the dmem image, not the opcode. 10BASE-T TX is `OUTM` with `R3=6` on **one** pin (IEEE Manchester). Complement is off-chip. `PSET Rp, 0, Rd` with two different pins is both lines low (USB SE0). Sticky pins plus a later `PSET`/`OUT` restore idle J. `LDI` after a timed op does not move the old pin.
+UART, SPI, and USB data differ in the descriptor, `R3`, and the dmem image, not the opcode. 10BASE-T TX is `OUTM` with `R3=6` on **one** pin (IEEE Manchester). Complement is off-chip. A `LD` into the shifter arms `OUTM` to refill from dmem every 8 bits during leftover hold, so the listing is `OUTM`+`DJNZ` on **bits** with the first `LD` in idle. `OUT` is unchanged (one bit from a register). `PSET Rp, 0, Rd` with two different pins is both lines low (USB SE0). Sticky pins plus a later `PSET`/`OUT` restore idle J. `LDI` after a timed op does not move the old pin.
 
 ## Dmem
 
@@ -60,7 +60,7 @@ Fill **dmem before** the `10` that starts the program. Both macros are 1-port: n
 
 ## Clock and timing
 
-60 MHz target → LS = 40 clocks/bit, FS = 5, 10BASE-T TX = 6 (`OUTM`). Pins are sticky: extra instructions between timed ops stretch the previous level. If the gap does not fit in the hold, shorten that hold (FS: last `OUT` before a mid-packet `LDI` uses 4 so the tail restores 5). LS 40 hides an `LDI`. 10BASE-T leftover hold is 5, so `LD`+`DJNZ` fit.
+60 MHz target → LS = 40 clocks/bit, FS = 5, 10BASE-T TX = 6 (`OUTM`). Pins are sticky: extra instructions between timed ops stretch the previous level. If the gap does not fit in the hold, shorten that hold (FS: last `OUT` before a mid-packet `LDI` uses 4 so the tail restores 5). LS 40 hides an `LDI`. 10BASE-T leftover hold is 5: `DJNZ` plus the armed `OUTM` dmem refill.
 
 `JL` sees `uio` +2 clocks (2-flop sync).
 
