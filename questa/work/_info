@@ -14,10 +14,10 @@ Z1 dC:/Desktop/jstreet_Leonidas/questa
 T_opt
 !i145 1
 !i144 0
-!s110 1793246850
-V1BUfP;ZzC?ETTUGRb[f^N0
+!s110 1793252572
+VHO==EEPE0]Jkgf9=V0]FX3
 04 2 4 work tb fast 0
-=1-089df4063394-6ae2c681-b-a370
+=1-089df4063394-6ae2dcdb-13a-9d78
 R0
 !s12f OEM100
 !s12b OEM100
@@ -30,7 +30,7 @@ OL;O;2025.3;82
 vdatapath
 Z2 2C:\Desktop\jstreet_Leonidas\src\sram_256x16.sv|C:\Desktop\jstreet_Leonidas\src\sram_256x8.sv|C:\Desktop\jstreet_Leonidas\src\imem.sv|C:\Desktop\jstreet_Leonidas\src\dmem.sv|C:\Desktop\jstreet_Leonidas\src\rf.sv|C:\Desktop\jstreet_Leonidas\src\datapath.sv|C:\Desktop\jstreet_Leonidas\src\leonidas.sv|tb.sv
 Z3 DXx6 sv_std 3 std 0 22 @5XbY]_OacJl=`ToSm<M^0
-Z4 !s110 1793246819
+Z4 !s110 1793252544
 !i10b 1
 !s100 ?zi0=ndJ57<=i6DCCH@H20
 I[E5S>Q=0;TbRoA`L8V[Rk1
@@ -46,7 +46,7 @@ Z6 OL;L;2025.3;82
 r1
 !s85 0
 31
-Z7 !s108 1793246819.000000
+Z7 !s108 1793252543.000000
 Z8 !s107 tb.sv|C:\\Desktop\\jstreet_Leonidas\\src\\leonidas.sv|C:\\Desktop\\jstreet_Leonidas\\src\\datapath.sv|C:\\Desktop\\jstreet_Leonidas\\src\\rf.sv|C:\\Desktop\\jstreet_Leonidas\\src\\dmem.sv|C:\\Desktop\\jstreet_Leonidas\\src\\imem.sv|C:\\Desktop\\jstreet_Leonidas\\src\\sram_256x8.sv|C:\\Desktop\\jstreet_Leonidas\\src\\sram_256x16.sv|
 Z9 !s90 -sv|-work|work|+define+SIM|+incdir+C:\Desktop\jstreet_Leonidas\src|C:\Desktop\jstreet_Leonidas\src\sram_256x16.sv|C:\Desktop\jstreet_Leonidas\src\sram_256x8.sv|C:\Desktop\jstreet_Leonidas\src\imem.sv|C:\Desktop\jstreet_Leonidas\src\dmem.sv|C:\Desktop\jstreet_Leonidas\src\rf.sv|C:\Desktop\jstreet_Leonidas\src\datapath.sv|C:\Desktop\jstreet_Leonidas\src\leonidas.sv|tb.sv|
 !i113 0
@@ -56,7 +56,7 @@ Z12 tCvgOpt 0 defaultOptions 1085729624
 vdmem
 R2
 R3
-R4
+Z13 !s110 1793252543
 !i10b 1
 !s100 dfO6;aX9R21XcWE@UPUF:3
 Izhz_Fb3h<jBZGI?@zSeJ80
@@ -82,13 +82,13 @@ R12
 vimem
 R2
 R3
-R4
+R13
 !i10b 1
 !s100 SA6XS=nYcj<;Z_^QPA>h13
 IXC0UAe`0X^eN3]11c[7MV2
 S1
 R1
-Z13 w1793139653
+Z14 w1793139653
 8C:\Desktop\jstreet_Leonidas\src\imem.sv
 FC:\Desktop\jstreet_Leonidas\src\imem.sv
 !i122 0
@@ -108,7 +108,7 @@ R12
 vrf
 R2
 R3
-R4
+R13
 !i10b 1
 !s100 i_9d?jh2d<zD`R`V=d2:o0
 IY_BNg>4CEfR=ka@HaDi063
@@ -134,7 +134,7 @@ R12
 vRM_IHPSG13_1P_256x16_c2_bm_bist
 R2
 R3
-R4
+R13
 !i10b 1
 !s100 ihj>hkjEeY>C:zC@?jbM42
 IM^;eISAneDzi=LLDLG5zO3
@@ -161,7 +161,7 @@ n@r@m_@i@h@p@s@g13_1@p_256x16_c2_bm_bist
 vRM_IHPSG13_1P_256x8_c3_bm_bist
 R2
 R3
-R4
+R13
 !i10b 1
 !s100 HT]HPDDWHXlPnUS1j>Q^12
 I6@?K:nezkelK5B`Ec4m:d1
@@ -220,7 +220,7 @@ R4
 IEmDk6D9nBR7k<Tz7X[mBN2
 S1
 R1
-R13
+R14
 8C:\Desktop\jstreet_Leonidas\src\leonidas.sv
 FC:\Desktop\jstreet_Leonidas\src\leonidas.sv
 !i122 0
