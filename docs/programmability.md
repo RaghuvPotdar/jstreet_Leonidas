@@ -81,11 +81,33 @@ Two artifacts: instruction words and payload bytes. The listing contains address
 - Protocol-named opcodes, XOR/MOV, PID hardware, auto detect.
 - Spending `1000`–`1111` for foresight. Next slot is RX verbs that unblock a program.
 
+## Pin input — when you take a bit
+
+Same idea as the output knobs. RX is not UART/SPI/eth. It is **when** a `uio` bit is allowed into the SR. Three strobes:
+
+| Strobe | What | Who |
+|---|---|---|
+| **Change on the data pin** | wait until `pin1` flips (or to 0/1); that event is the start or the bit | UART start, first energy, async |
+| **Level after `Rd` clocks** | wait `Rd`, then sample `pin1` | UART data, any baud grid |
+| **Edge of another pin** | sample `pin1` when `pin2` rises (or falls) | SPI MISO, I2C SDA, JTAG TDO |
+
+Descriptor already has two nibbles: data + clock. Rise vs fall is a mode bit, not a protocol bit. Halfway (`Rd>>1`) is a second sample on the duration strobe — Manchester, not a fourth family.
+
+Not a UART opcode: start = change-to-0, bits = duration. SPI = other-pin rise. 10BASE-T = change (lock phase) then duration+halfway. No token match in the chip: capture as sampled, store as captured. SFD / SYNC / start-bit checks are the listing or the host.
+
+I2C START is change-on-data **while** the clock pin is high. Two waits (level on `pin2`, then change on `pin1`) before adding a fourth strobe.
+
+**Strobe 3 is not “SCK samples MOSI/MISO.”** The chip does not know those names. If this core’s timed op **drives `pin2`**, that execute can also sample `pin1`. Same issue loop. No waiter, no matched `pc`, no protocol. The listing picks the two pin numbers.
+
+Two cores are for **independent timebases** (two `Rd`s, two pads). Each core locks to **its** pins. Do not lock two `pc`s. Do not wait on the other core.
+
+Idle “wait for start” on a receive-only listing is a pin lock, not inter-core sync. Clock-gate later if power matters. Not a barrier opcode.
+
 ## Open (next)
 
 - More protocol listings on the verbs we have. Refine the ISA after that.
 - Compiler (protocol → asm + dmem).
 - USB dummy packets via dmem + `LD` instead of unrolled `LDI`.
 - 10BASE-T listing (NLP + frame via `OUTM`); RX later.
-- RX: `IN` / `JH` if `JL` is not enough; FS RX sampler if we take that on.
-- Multi-protocol / second SM (not lockstep dual-issue on one RF).
+- RX deferred. Three strobes only (see Pin input). Clocked capture = this core drives `pin2` and samples `pin1` on that execute. Not leftover `IN`, not core1 spinning, not a protocol block.
+- Two cores (`core0` / `core1` named in the assembly) for independent timebases. Not lockstep, not matched `pc`s.

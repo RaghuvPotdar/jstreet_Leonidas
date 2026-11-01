@@ -65,7 +65,7 @@ Driving a `uio` pin turns `uio_oe` on. `REL` turns it off (`uo` is driven 0).
 
 imem is 1-port SRAM: address this clock, word two clocks later. `issue` sends `issue_addr` into that SRAM. `asked` is `issue` delayed two flops: the word on `instr` belongs to `asked_addr`. `pc` is **the address being issued**, not the op that is executing. `shown` holds the last `pc` when `issue` is 0.
 
-A timed op (`PSET` / `OUT` / `REL`) issues the next sequential address on its start clock, then keeps issuing that same address every leftover clock until the word arrives and is buffered (`!buf_v`). Two consecutive `issue`s of the same address → **`asked` high for two clocks** and `instr` repeats. Once `buf_v` is set, leftover clocks do not re-issue.
+A timed op (`PSET` / `OUT` / `REL`) issues the next sequential address on its start clock, then keeps issuing that same address every leftover clock until the word arrives and is buffered (`!buf_v`). Two consecutive `issue`s of the same address → `asked` **high for two clocks** and `instr` repeats. Once `buf_v` is set, leftover clocks do not re-issue.
 
 At `hold==2`, a buffered non-pin op (`DJNZ` / `LDI` / `JL`) may issue its **target** (or `addr+1`) so the next timed op is already in flight. At `hold==1` that op commits (RF write). Execute of a timed op is `do_start` (or `do_defer` at `hold==1` if the next op is also timed).
 
