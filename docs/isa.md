@@ -14,14 +14,15 @@ The first byte stored for a word is bits 7 through 0. The second byte is bits 15
 | Opcode | Name | Encoding |
 |---|---|---|
 | `0000` | `LDI` | `0` ‖ `Rn`(3) ‖ imm(8) |
-| `0001` | `PSET` | `Rp`(3) ‖ `L` ‖ `Rd`(3) ‖ 0 |
+| `0001` | `PSET` | `Rp`(3) ‖ `L1` ‖ `Rd`(3) ‖ `L2` ‖ 0 |
 | `0010` | `OUT` | `Rp`(3) ‖ `Rs`(3) ‖ `Rd`(3) ‖ `M` ‖ 0 |
 | `0011` | `DJNZ` | `0` ‖ `Rn`(3) ‖ target(8) |
 | `0100` | `HALT` | ignored |
 | `0101` | `REL` | `Rp`(3) ‖ `Rd`(3) ‖ 0 |
 | `0110` | `JL` | `Rp`(3) ‖ `0` ‖ target(8) |
 | `0111` | `LD` | `Rn`(3) ‖ `Rm`(3) ‖ 0 |
-| `1000`–`1111` | unused | ignored |
+| `1000` | `IN` | `Rp`(3) ‖ `Rs`(3) ‖ `Rd`(3) ‖ 0 ‖ `W` ‖ `M` |
+| `1001`–`1111` | unused | ignored |
 
 ## Register file
 
@@ -44,7 +45,7 @@ An 8-bit descriptor is two pin numbers:
 
 Write the same pin in both nibbles for one pin. Write two different pins to touch both in one op. There is no pair type and no 2p/2p+1 index.
 
-- `PSET`: both fields get `L` (a duplicated field is one write).
+- `PSET`: low nibble ← `L1`; if the nibbles differ, high nibble ← `L2`. Same pin twice uses `L1` only.
 - `OUT`: low nibble ← `Rs[0]`; if the nibbles differ, high nibble ← `~Rs[0]`.
 - `REL`: release every distinct pin in the descriptor.
 - `JL`: tests the low nibble.
@@ -83,11 +84,13 @@ Writes the immediate into `Rn`.
 ## PSET — `0001`
 
 ```
-15    12 11  9 8 7   5 4     0
-| 0001  |  Rp |L|  Rd |  0    |
+15    12 11  9 8  7   5  4  3    0
+| 0001  |  Rp |L1| Rd  |L2|  0   |
 ```
 
-Drive every distinct pin in `Rp` to `L`. Wait `Rd` clocks.
+Drive `pin1` to `L1`. If the descriptor has two pins, drive `pin2` to `L2`. One pin: `L2` is ignored. Wait `Rd` clocks.
+
+Assembler: `PSET Rp, L, Rd` writes `L1=L2=L`. `PSET Rp, L1, L2, Rd` sets them separately.
 
 ## OUT — `0010`
 
@@ -116,7 +119,7 @@ L:   LD   R0, [R5]  ; 2 clocks: REN+R5++ then R0 ← dout
 
 `LD` into `Rs` also arms an **OUTM stream**. After 8 `OUTM`s of that `Rs`, leftover hold loads `dmem[dptr]` into `Rs` and write-backs `Rm`. Count is 8 issues, not `Rs==0` (`0x01` is empty after one shift). `OUT` does not refill. `LDI` into `Rs` disarms. First byte is a software `LD` in idle (legal high). Last `OUTM` prefetches one extra dmem byte. Needs leftover hold ≥ 3 (`Rd` ≥ 4).
 
-10BASE-T TX is `OUTM` with `R3=6` (one data bit per issue) and a bit-count `DJNZ`. RX is not in silicon.
+10BASE-T TX is `OUTM` with `R3=6` (one data bit per issue) and a bit-count `DJNZ`. RX is `INW` (see `IN`).
 
 NRZI and stuffing are compiler work (bytes in dmem are line levels). Manchester polarity is IEEE in the chip.
 
@@ -160,13 +163,34 @@ If `pin1` of `Rp` reads 0 on `uio`, jump; else fall through. `uo_out` reads as 1
 
 `Rn ← dmem[Rm]`, then `Rm ← Rm + 1`. Two clocks because the file is 1W: cycle 0 asserts REN and writes `Rm`; cycle 1 writes `Rn` from `A_DOUT`. Hide a software `LD` inside a hold of 3 or more, not on an FS bit boundary. The same `LD` arms `OUTM` to consume the rest of dmem during leftover hold (see `OUT`).
 
-## Unused opcodes — `1000` through `1111`
+## IN — `1000`
 
-Eight free opcodes. No-op: next word. Next spend is RX (`IN` / `JH`) if `JL` is not enough.
+```
+15    12 11  9 8   6 5   3 2 1 0
+| 1000  |  Rp |  Rs |  Rd |0|mode|
+```
+
+Listen on `pin1` of `Rp`. Never drives, never sets `oe`. Shift `Rs ← {bit, Rs[7:1]}` (LSB first, same as `OUT`). `uo` pins read 1. Sample is the 2-flop synced `uio`, same as `JL`.
+
+| `[1:0]` | Asm | Behaviour |
+|---|---|---|
+| `00` | `IN Rp, Rs, Rd` | Timed op, hold `Rd`. Sample at the `Rd>>1` point (same clock as the `OUTM` flip). `Rd=1` samples on issue. |
+| `01` | `INW Rp, Rs, Rd` | Stall until `pin1` differs from its level at issue. Shift in the **new** level. Then hold `Rd` from that clock, like a timed op issued at the edge. `Rd=1` acts as 2. Waits forever. |
+| `1x` | — | Reserved. |
+
+`Rs` is read at issue and written at the sample. Do not write `Rs` with a hidden op between. If a hidden op writes the RF on the sample clock, the sample lands one clock later (`IN` with `Rd` 2–3 and a hidden op after it).
+
+UART RX: `INW` on the start edge with `Rd = bit`, then eight `IN …, bit` (`asm/examples/uart_rx_echo.asm`). Manchester RX: `INW` with `Rd` ≈ ¾ bit, looped. Each mid-bit edge re-locks, so sender clock error does not accumulate (`asm/examples/eth_10t_rx_echo.asm`).
+
+## Unused opcodes — `1001` through `1111`
+
+Seven free opcodes. No-op: next word. Next spend is **`EXT`** ([future.md](future.md)). Do not spend these for foresight. `JL` stays until a listing proves it is not enough.
 
 ## Scope notes
 
-- **FS TX** is in scope (5 clocks/bit). **FS RX is not** until a hardware sampler.
+- **FS TX** is in scope (5 clocks/bit). **FS RX is a limitation** (not software-sampled).
 - No PID comparator, no protocol-select pin, no ALU. A PID check is a program of `JL`s.
-- No `PSETH` / `OUTD`. Two pins live in the descriptor nibbles.
+- No `OUTD`. Two pins live in the descriptor nibbles. `PSET` has `L1`/`L2`.
 - No circular imem. Payload is dmem (`256x8`), 8-bit address in an `Rn`.
+- `OUT[1:0]` stay 0. RX is its own opcode (`IN`), not an `OUT` overload.
+- Programs, pins, and timings: [listings.md](listings.md). Drafts and ideas: [future.md](future.md). How to run sim: [sim.md](sim.md).

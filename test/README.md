@@ -1,7 +1,8 @@
-# Sample testbench for a Tiny Tapeout project
+# Tests
 
-This is a sample testbench for a Tiny Tapeout project. It uses [cocotb](https://docs.cocotb.org/en/stable/) to drive the DUT and check the outputs.
-See below to get started or for more information, check the [website](https://tinytapeout.com/hdl/testing/).
+cocotb + Icarus for Leonidas. Full command list (WSL venv, Questa, assembler): [docs/sim.md](../docs/sim.md).
+
+This uses [cocotb](https://docs.cocotb.org/en/stable/). Tiny Tapeout testing notes: https://tinytapeout.com/hdl/testing/
 
 ## Setting up
 

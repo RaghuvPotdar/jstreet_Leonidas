@@ -25,6 +25,9 @@
 // A LD into Rs arms an OUTM dmem stream: after 8 OUTMs of that Rs,
 // leftover hold refills Rs from dmem[dptr] and write-backs Rm. OUT
 // does not. LDI into Rs disarms. Rs==0 is not byte-done.
+// IN (1000) listens on pin1 of Rp, never drives. Rs <= {bit, Rs[7:1]}.
+// [1:0]=00: hold Rd, sample at Rd>>1. [1:0]=01 (INW): stall until pin1
+// changes, shift in the new level, then hold Rd from that clock.
 module datapath (
     input  wire        clk,
     input  wire        rst_n,
@@ -48,6 +51,7 @@ module datapath (
   localparam logic [3:0] OP_REL  = 4'h5;
   localparam logic [3:0] OP_JL   = 4'h6;
   localparam logic [3:0] OP_LD   = 4'h7;
+  localparam logic [3:0] OP_IN   = 4'h8;
 
   logic [7:0]  shown;
   logic        issue_q;
@@ -83,6 +87,16 @@ module datapath (
   logic [7:0]  oe_q;
   logic [7:0]  uio_s0;
   logic [7:0]  uio_s1;
+  logic        in_wait;
+  logic        in_ref;
+  logic [3:0]  in_pin;
+  logic [2:0]  in_rs;
+  logic [7:0]  in_val;
+  logic [7:0]  in_dur;
+  logic        in_samp_v;
+  logic [7:0]  in_samp_at;
+  logic        in_wr_v;
+  logic [7:0]  in_wr_val;
 
   logic        issue;
   logic [7:0]  issue_addr;
@@ -115,6 +129,19 @@ module datapath (
   logic [7:0]  uo_n;
   logic [7:0]  uio_n;
   logic [7:0]  oe_n;
+  logic        in_wait_n;
+  logic        in_ref_n;
+  logic [3:0]  in_pin_n;
+  logic [2:0]  in_rs_n;
+  logic [7:0]  in_val_n;
+  logic [7:0]  in_dur_n;
+  logic        in_samp_v_n;
+  logic [7:0]  in_samp_at_n;
+  logic        in_wr_v_n;
+  logic [7:0]  in_wr_val_n;
+  logic        in_fire;
+  logic [2:0]  in_fire_rs;
+  logic [7:0]  in_fire_val;
 
   logic        rf_clear;
   logic        rf_we;
@@ -162,7 +189,9 @@ module datapath (
   );
 
   function automatic logic is_pin(input logic [3:0] op);
-    is_pin = (op == OP_PSET) || (op == OP_OUT) || (op == OP_REL);
+    // Timed ops: issue through do_start/do_defer, own the hold.
+    is_pin = (op == OP_PSET) || (op == OP_OUT) || (op == OP_REL)
+          || (op == OP_IN);
   endfunction
 
   function automatic logic [2:0] field_rp(input logic [15:0] w);
@@ -170,12 +199,14 @@ module datapath (
   endfunction
 
   function automatic logic [2:0] field_rs(input logic [15:0] w);
-    field_rs = (w[15:12] == OP_OUT || w[15:12] == OP_LD) ? w[8:6] : w[10:8];
+    field_rs = (w[15:12] == OP_OUT || w[15:12] == OP_LD || w[15:12] == OP_IN)
+             ? w[8:6] : w[10:8];
   endfunction
 
   function automatic logic [2:0] field_rd(input logic [15:0] w);
     case (w[15:12])
       OP_OUT:  field_rd = w[5:3];
+      OP_IN:   field_rd = w[5:3];
       OP_PSET: field_rd = w[7:5];
       OP_REL:  field_rd = w[8:6];
       default: field_rd = 3'd0;
@@ -186,13 +217,18 @@ module datapath (
     pin_low = pin[3] && !uio_s1[pin[2:0]];
   endfunction
 
+  // Synced level of a pin. uo pins read 1 (same as JL).
+  function automatic logic pin_lvl(input logic [3:0] pin);
+    pin_lvl = pin[3] ? uio_s1[pin[2:0]] : 1'b1;
+  endfunction
+
   // Read-port addresses. Separate from execute so rdata_* see this address
   // before the decode body uses them.
   always_comb begin
     rf_raddr_p = 3'd0;
     rf_raddr_s = 3'd0;
     rf_raddr_d = 3'd0;
-    if (!running || halted) begin
+    if (!running || halted || in_wait) begin
     end else if (defer_v) begin
       rf_raddr_p = field_rp(defer_word);
       rf_raddr_s = field_rs(defer_word);
@@ -251,6 +287,19 @@ module datapath (
     uo_n         = uo_q;
     uio_n        = uio_q;
     oe_n         = oe_q;
+    in_wait_n    = in_wait;
+    in_ref_n     = in_ref;
+    in_pin_n     = in_pin;
+    in_rs_n      = in_rs;
+    in_val_n     = in_val;
+    in_dur_n     = in_dur;
+    in_samp_v_n  = in_samp_v;
+    in_samp_at_n = in_samp_at;
+    in_wr_v_n    = in_wr_v;
+    in_wr_val_n  = in_wr_val;
+    in_fire      = 1'b0;
+    in_fire_rs   = in_rs;
+    in_fire_val  = 8'h00;
     rf_clear     = 1'b0;
     rf_we        = 1'b0;
     rf_waddr     = 3'd0;
@@ -302,6 +351,16 @@ module datapath (
       uo_n         = 8'hFF;
       uio_n        = 8'h00;
       oe_n         = 8'h00;
+      in_wait_n    = 1'b0;
+      in_ref_n     = 1'b0;
+      in_pin_n     = 4'd0;
+      in_rs_n      = 3'd0;
+      in_val_n     = 8'h00;
+      in_dur_n     = 8'h00;
+      in_samp_v_n  = 1'b0;
+      in_samp_at_n = 8'h00;
+      in_wr_v_n    = 1'b0;
+      in_wr_val_n  = 8'h00;
     end else if (ld_pend) begin
       rf_we       = 1'b1;
       rf_waddr    = ld_dest;
@@ -311,6 +370,21 @@ module datapath (
       issue       = 1'b1;
       issue_addr  = next_addr_n;
     end else if (halted) begin
+    end else if (in_wait) begin
+      // INW stall. Keep the prefetched word like a hold would.
+      if (asked && !buf_v) begin
+        buf_v_n    = 1'b1;
+        buf_n      = instr;
+        buf_addr_n = asked_addr;
+      end
+      if (pin_lvl(in_pin) != in_ref) begin
+        in_wait_n   = 1'b0;
+        // Rd=1 acts as 2 so a buffered word is consumed at hold==1.
+        hold_n      = (in_dur == 8'd1) ? 8'd1 : in_dur - 8'd1;
+        in_fire     = 1'b1;
+        in_fire_rs  = in_rs;
+        in_fire_val = {pin_lvl(in_pin), in_val[7:1]};
+      end
     end else if (defer_v) begin
       do_start     = 1'b1;
       op_word      = defer_word;
@@ -457,14 +531,17 @@ module datapath (
             bitcnt_n = bitcnt + 3'd1;
         end
       end else if (op_word[15:12] == OP_PSET) begin
+        // [8]=L1 → pin1; [4]=L2 → pin2. Same pin twice: L1 only.
         level  = op_word[8];
-        level2 = op_word[8];
+        level2 = two ? op_word[4] : op_word[8];
       end else begin
         level  = 1'b0;
         level2 = 1'b0;
       end
 
-      if (op_word[15:12] == OP_REL) begin
+      if (op_word[15:12] == OP_IN) begin
+        // Listen only. No uo/uio/oe change.
+      end else if (op_word[15:12] == OP_REL) begin
         if (pin_i[3] == 1'b1) begin
           uio_n[pin_i[2:0]] = 1'b0;
           oe_n[pin_i[2:0]]  = 1'b0;
@@ -499,6 +576,27 @@ module datapath (
       issue       = 1'b1;
       issue_addr  = next_addr_n;
 
+      in_samp_v_n = 1'b0;
+      if (op_word[15:12] == OP_IN) begin
+        in_pin_n = pin_i;
+        in_rs_n  = op_word[8:6];
+        in_val_n = rf_rdata_s;
+        if (op_word[1:0] == 2'b01) begin
+          // INW: wait for pin1 to differ from its level now.
+          in_wait_n = 1'b1;
+          in_ref_n  = pin_lvl(pin_i);
+          in_dur_n  = dur;
+          hold_n    = 8'h00;
+        end else if (dur == 8'd1) begin
+          in_fire     = 1'b1;
+          in_fire_rs  = op_word[8:6];
+          in_fire_val = {pin_lvl(pin_i), rf_rdata_s[7:1]};
+        end else begin
+          in_samp_v_n  = 1'b1;
+          in_samp_at_n = (dur == 8'h00) ? 8'd128 : {1'b0, dur[7:1]};
+        end
+      end
+
       man_v_n = 1'b0;
       if (op_word[15:12] == OP_OUT && op_word[2]) begin
         man_at_n = (dur == 8'h00) ? 8'd128 : {1'b0, dur[7:1]};
@@ -524,6 +622,31 @@ module datapath (
       uo_n    = uo_q ^ man_uo;
       uio_n   = uio_q ^ man_uio;
       man_v_n = 1'b0;
+    end
+
+    // IN mid-hold sample. Same clock as the OUTM flip point.
+    if (running && in_samp_v && hold == in_samp_at && !do_start) begin
+      in_samp_v_n = 1'b0;
+      in_fire     = 1'b1;
+      in_fire_rs  = in_rs;
+      in_fire_val = {pin_lvl(in_pin), in_val[7:1]};
+    end
+    // 1W: if execute already writes this clock, write the sample next clock.
+    if (running && in_wr_v && !rf_we) begin
+      rf_we     = 1'b1;
+      rf_waddr  = in_rs;
+      rf_wdata  = in_wr_val;
+      in_wr_v_n = 1'b0;
+    end
+    if (running && in_fire) begin
+      if (!rf_we) begin
+        rf_we    = 1'b1;
+        rf_waddr = in_fire_rs;
+        rf_wdata = in_fire_val;
+      end else begin
+        in_wr_v_n   = 1'b1;
+        in_wr_val_n = in_fire_val;
+      end
     end
 
     // OUTM stream refill lives in leftover hold. 1W: shift already wrote
@@ -611,6 +734,16 @@ module datapath (
       uo_q       <= 8'hFF;
       uio_q      <= 8'h00;
       oe_q       <= 8'h00;
+      in_wait    <= 1'b0;
+      in_ref     <= 1'b0;
+      in_pin     <= 4'd0;
+      in_rs      <= 3'd0;
+      in_val     <= 8'h00;
+      in_dur     <= 8'h00;
+      in_samp_v  <= 1'b0;
+      in_samp_at <= 8'h00;
+      in_wr_v    <= 1'b0;
+      in_wr_val  <= 8'h00;
     end else begin
       buf_v      <= buf_v_n;
       buf_word   <= buf_n;
@@ -639,6 +772,16 @@ module datapath (
       uo_q       <= uo_n;
       uio_q      <= uio_n;
       oe_q       <= oe_n;
+      in_wait    <= in_wait_n;
+      in_ref     <= in_ref_n;
+      in_pin     <= in_pin_n;
+      in_rs      <= in_rs_n;
+      in_val     <= in_val_n;
+      in_dur     <= in_dur_n;
+      in_samp_v  <= in_samp_v_n;
+      in_samp_at <= in_samp_at_n;
+      in_wr_v    <= in_wr_v_n;
+      in_wr_val  <= in_wr_val_n;
     end
   end
 

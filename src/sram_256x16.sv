@@ -32,19 +32,16 @@ module RM_IHPSG13_1P_256x16_c2_bm_bist (
 );
 
   logic [15:0] mem [0:255];
-  logic [7:0]  rd_addr_q;
-  logic        rd_pend;
   logic [15:0] dout_q;
 
   assign A_DOUT = dout_q;
 
+  // One-clock read, same as the IHP behavioral model (dr_r) and sram_256x8.
   always_ff @(posedge A_CLK) begin
     if (A_MEN && A_WEN && A_BM == 16'hFFFF)
       mem[A_ADDR] <= A_DIN;
-    rd_addr_q <= A_ADDR;
-    rd_pend   <= A_MEN && A_REN && !A_WEN;
-    if (rd_pend)
-      dout_q <= mem[rd_addr_q];
+    if (A_MEN && A_REN && !A_WEN)
+      dout_q <= mem[A_ADDR];
   end
 
   wire _unused = &{1'b0, A_DLY, A_BIST_CLK, A_BIST_EN, A_BIST_MEN, A_BIST_WEN,

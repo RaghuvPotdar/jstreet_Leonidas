@@ -1,4 +1,6 @@
-# Programmability notes
+# Programmability notes (historical)
+
+**Stale.** This file is from the fixed one-byte UART transmitter (`ff_uart` / `uart.sv`). The chip is now the 16-bit pin machine. Current docs: `docs/README.md`.
 
 Written after the fixed UART transmitter passed RTL, gate-level, and GDS.
 Nothing in this file is a commitment to build it now. The current design

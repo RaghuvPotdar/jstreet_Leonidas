@@ -59,6 +59,12 @@ def payload(dut):
         return None
 
 
+async def bus_settle(dut):
+    """The host bus is synchronized in leonidas.sv: a byte lands 3 clocks after its strobe."""
+    for _ in range(3):
+        await clock_edge(dut)
+
+
 async def load_dmem(dut, data):
     for byte in data:
         await byte_strobe(dut, 0b11, byte)
@@ -92,6 +98,7 @@ async def test_uart_program(dut):
     await byte_strobe(dut, 0b01, 0xAB)
     await byte_strobe(dut, 0b01, 0x34)
     await byte_strobe(dut, 0b01, 0x12)
+    await bus_settle(dut)
     assert int(dut.uo_out.value) == 0xFF
     if imem is not None:
         assert int(imem.running.value) == 0
@@ -108,6 +115,7 @@ async def test_uart_program(dut):
     await clock_edge(dut)
     await clock_edge(dut)
     await clock_edge(dut)
+    await bus_settle(dut)
     assert int(dut.uo_out.value) == 0xFF
     if imem is not None:
         assert int(imem.half.value) == 1
@@ -119,6 +127,7 @@ async def test_uart_program(dut):
     await clock_edge(dut)
     dut.uio_in.value = 0
     await clock_edge(dut)
+    await bus_settle(dut)
     assert int(dut.uo_out.value) == 0xFF
     if imem is not None:
         assert int(imem.half.value) == 1
@@ -488,12 +497,36 @@ async def test_ldi_then_out(dut):
 
 
 @cocotb.test()
+async def test_pset_two_levels(dut):
+    """PSET L1/L2: pin0=0, pin1=1 on descriptor 0x10."""
+    from assemble import OP_HALT, OP_LDI, encode, encode_pset, reg_field
+
+    await reset_dut(dut)
+    words = [
+        encode(OP_LDI, reg_field(1), 0x10),
+        encode(OP_LDI, reg_field(3), 8),
+        encode_pset(1, 0, 3, 1),
+        encode(OP_HALT, 0, 0),
+    ]
+    await load_program(dut, words)
+    for _ in range(24):
+        await clock_edge(dut)
+        if engine(dut) is not None and int(engine(dut).halted.value) == 1:
+            break
+    uo = int(dut.uo_out.value)
+    assert (uo & 1) == 0, f"pin0 want 0, uo={uo:#04x}"
+    assert (uo >> 1) & 1 == 1, f"pin1 want 1, uo={uo:#04x}"
+    assert (uo & 0xFC) == 0xFC
+
+
+@cocotb.test()
 async def test_dmem_ld(dut):
     """Strobe 11 fills dmem; LD Rn, [Rm] reads it and post-increments Rm."""
     from assemble import OP_HALT, OP_LDI, encode, encode_ld, encode_out, reg_field
 
     await reset_dut(dut)
     await load_dmem(dut, [0x5A, 0x3C])
+    await bus_settle(dut)
     mem = payload(dut)
     if mem is not None:
         assert int(mem.wptr.value) == 2
@@ -679,3 +712,135 @@ async def test_eth_10t_loop(dut):
         assert rf_at(dp, 4) == 0
         # Last OUTM prefetches one byte past the frame into R0 / R5.
         assert rf_at(dp, 5) == len(WIRE) + 1
+
+
+# ---------------------------------------------------------------- IN / INW
+
+CLK_NS = 10_000  # 10 us clock (matches reset_dut)
+
+
+async def load_program_idle(dut, words, idle):
+    """load_program, but keep `idle` on uio_in[7:2] so RX pins never glitch."""
+    for index, word in enumerate(words):
+        last = index == len(words) - 1
+        for code, data in ((0b01, word & 0xFF),
+                           (0b10 if last else 0b01, (word >> 8) & 0xFF)):
+            dut.ui_in.value = data
+            dut.uio_in.value = idle | code
+            await clock_edge(dut)
+            dut.uio_in.value = idle
+            await clock_edge(dut)
+
+
+async def uart_send(dut, bit_idx, byte, bit_ns, delay_ns):
+    """Drive one 8N1 frame on uio_in[bit_idx], asynchronous to clk."""
+    await Timer(delay_ns, unit="ns")
+    for level in [0] + [(byte >> i) & 1 for i in range(8)] + [1]:
+        dut.uio_in.value = level << bit_idx
+        await Timer(bit_ns, unit="ns")
+
+
+async def uart_recv_uo(dut, pin, bit_clocks, timeout=4000):
+    """Decode one 8N1 frame on uo_out[pin]. Checks IN never drives uio."""
+    for _ in range(timeout):
+        await clock_edge(dut)
+        assert int(dut.uio_oe.value) == 0, "IN drove a uio pin"
+        if not (int(dut.uo_out.value) >> pin) & 1:
+            break
+    else:
+        raise AssertionError("echo start bit never came")
+    for _ in range(bit_clocks // 2):
+        await clock_edge(dut)
+    assert not (int(dut.uo_out.value) >> pin) & 1, "start bit too short"
+    byte = 0
+    for i in range(8):
+        for _ in range(bit_clocks):
+            await clock_edge(dut)
+        byte |= ((int(dut.uo_out.value) >> pin) & 1) << i
+    for _ in range(bit_clocks):
+        await clock_edge(dut)
+    assert (int(dut.uo_out.value) >> pin) & 1, "stop bit not high"
+    return byte
+
+
+@cocotb.test()
+async def test_in_uart_echo(dut):
+    """IN/INW: UART RX at odd phases and +/-3% baud, echoed back on uo[1]."""
+    await reset_dut(dut)
+    rx = 2
+    idle = 1 << rx
+    dut.uio_in.value = idle
+    words = assemble((ASM / "uart_rx_echo.asm").read_text(encoding="utf-8"))
+    await load_program_idle(dut, words, idle)
+
+    # (byte, baud error, start phase as a fraction of a clock)
+    cases = [(0xB1, 0.0, 0.37), (0x5A, +0.03, 0.81), (0x0F, -0.03, 0.12)]
+    for byte, err, phase in cases:
+        for _ in range(40):
+            await clock_edge(dut)
+        bit_ns = round(16 * CLK_NS * (1 + err))
+        tx = cocotb.start_soon(
+            uart_send(dut, rx, byte, bit_ns, round(phase * CLK_NS)))
+        got = await uart_recv_uo(dut, 1, 16)
+        await tx
+        assert got == byte, f"sent {byte:#04x} err {err:+} got {got:#04x}"
+
+    for _ in range(40):
+        await clock_edge(dut)
+    dp = engine(dut)
+    if dp is not None:
+        assert int(dp.halted.value) == 1
+
+
+async def manchester_send(dut, bit_idx, data, half_ns, delay_ns):
+    """IEEE 802.3: 1 = low then high, 0 = high then low. LSB first."""
+    await Timer(delay_ns, unit="ns")
+    for byte in data:
+        for i in range(8):
+            b = (byte >> i) & 1
+            for level in ((0, 1) if b else (1, 0)):
+                dut.uio_in.value = level << bit_idx
+                await Timer(half_ns, unit="ns")
+    dut.uio_in.value = 0
+
+
+@cocotb.test()
+async def test_inw_manchester_relock(dut):
+    """INW re-locks every bit: 64 Manchester bits at 6 clk/bit, +/-3% skew."""
+    rx = 6
+    # 6x preamble, SFD, then one payload byte the echo must match.
+    frame = [0x55] * 6 + [0xD5, 0xA3]
+    words = assemble((ASM / "eth_10t_rx_echo.asm").read_text(encoding="utf-8"))
+    for err, phase in ((0.0, 0.5), (+0.03, 0.2), (-0.03, 0.9)):
+        await reset_dut(dut)
+        await load_program_idle(dut, words, 0)
+        for _ in range(20):
+            await clock_edge(dut)
+        half_ns = round(3 * CLK_NS * (1 + err))
+        tx = cocotb.start_soon(
+            manchester_send(dut, rx, frame, half_ns, round(phase * CLK_NS)))
+        got = await uart_recv_uo(dut, 1, 16)
+        await tx
+        # A missed or extra edge either hangs the 64-bit loop (no echo)
+        # or shifts R0 off the payload byte.
+        assert got == 0xA3, f"skew {err:+}: got {got:#04x}, want 0xa3"
+
+
+@cocotb.test()
+async def test_strobe_skew_goes_to_dmem(dut):
+    """Pin skew on a 00->11 dmem strobe (one clock of 01) must not write imem."""
+    await reset_dut(dut)
+    dut.ui_in.value = 0x77
+    dut.uio_in.value = 0b01
+    await clock_edge(dut)
+    dut.uio_in.value = 0b11
+    await clock_edge(dut)
+    dut.uio_in.value = 0
+    await clock_edge(dut)
+    await bus_settle(dut)
+    imem, mem = loader(dut), payload(dut)
+    if imem is not None:
+        assert int(imem.half.value) == 0, "skewed dmem strobe was taken as an imem byte"
+    if mem is not None:
+        assert int(mem.wptr.value) == 1
+        assert int(mem.sram.mem[0].value) == 0x77

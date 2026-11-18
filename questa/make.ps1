@@ -30,7 +30,7 @@ function Resolve-Asm([string]$name) {
 
 switch ($Target) {
     "help" {
-        Write-Host ".\make gui              # all 5 listings, watch test_id"
+        Write-Host ".\make gui              # all 7 listings, watch test_id"
         Write-Host ".\make sim eth_10t.asm"
         Write-Host ".\make gui eth_10t.asm"
         Write-Host ".\make asm uart.asm"

@@ -71,7 +71,7 @@ compile: $(WORK) tb.sv $(PROJECT_SOURCES)
 # One listing → program.hex. This is not the cocotb suite.
 #   make sim eth_10t.asm
 #   make gui eth_10t.asm
-SUITE_NAMES := uart spi usb_ls_ack usb_fs_ack eth_10t
+SUITE_NAMES := uart spi usb_ls_ack usb_fs_ack eth_10t uart_rx_echo eth_10t_rx_echo
 
 suite:
 	mkdir -p suite
@@ -89,7 +89,7 @@ asm:
 
 PLUS :=
 ifneq ($(ASM),)
-  PLUS += +PROGRAM=$(PROGRAM)
+  PLUS += +PROGRAM=$(PROGRAM) +TESTNAME=$(basename $(notdir $(ASM)))
   ifneq ($(wildcard $(DMEM)),)
     PLUS += +DMEM=$(DMEM)
   endif

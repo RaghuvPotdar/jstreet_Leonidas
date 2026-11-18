@@ -31,7 +31,7 @@ $examples = Join-Path (Split-Path $PSScriptRoot -Parent) "asm\examples"
 
 if ($Suite -or -not $Asm) {
     New-Item -ItemType Directory -Force suite | Out-Null
-    foreach ($n in @("uart", "spi", "usb_ls_ack", "usb_fs_ack", "eth_10t")) {
+    foreach ($n in @("uart", "spi", "usb_ls_ack", "usb_fs_ack", "eth_10t", "uart_rx_echo", "eth_10t_rx_echo")) {
         & python $assemble (Join-Path $examples "$n.asm") -o (Join-Path $PSScriptRoot "suite\$n.hex")
         if ($LASTEXITCODE -ne 0) { throw "assemble $n failed" }
     }

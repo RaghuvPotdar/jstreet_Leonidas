@@ -2,6 +2,8 @@
 
 Leonidas is a dumb pin machine. The opcode is a verb. The protocol is the program. Load a different listing to change protocol.
 
+Doc map: [README.md](README.md). Silicon ISA: [isa.md](isa.md). Listings: [listings.md](listings.md). Drafts, roadmap, rejected ideas: [future.md](future.md).
+
 ## Split of responsibility
 
 | In the chip | In the compiler / host |
@@ -37,7 +39,7 @@ L:   LD   R0, [R5]   ; 2 clocks, post-inc R5
      DJNZ R4, L
 ```
 
-UART, SPI, and USB data differ in the descriptor, `R3`, and the dmem image, not the opcode. 10BASE-T TX is `OUTM` with `R3=6` on **one** pin (IEEE Manchester). Complement is off-chip. A `LD` into the shifter arms `OUTM` to refill from dmem every 8 bits during leftover hold, so the listing is `OUTM`+`DJNZ` on **bits** with the first `LD` in idle. `OUT` is unchanged (one bit from a register). `PSET Rp, 0, Rd` with two different pins is both lines low (USB SE0). Sticky pins plus a later `PSET`/`OUT` restore idle J. `LDI` after a timed op does not move the old pin.
+UART, SPI, and USB data differ in the descriptor, `R3`, and the dmem image, not the opcode. 10BASE-T TX is `OUTM` with `R3=6` on **one** pin (IEEE Manchester). Complement is off-chip. A `LD` into the shifter arms `OUTM` to refill from dmem every 8 bits during leftover hold, so the listing is `OUTM`+`DJNZ` on **bits** with the first `LD` in idle. `OUT` is unchanged (one bit from a register). `PSET Rp, 0, Rd` with two different pins is both lines low (USB SE0). `PSET Rp, L1, L2, Rd` sets the two pins independently. Sticky pins plus a later `PSET`/`OUT` restore idle J. `LDI` after a timed op does not move the old pin.
 
 ## Dmem
 
@@ -66,7 +68,7 @@ Fill **dmem before** the `10` that starts the program. Both macros are 1-port: n
 
 ## FS
 
-**TX** at 5 clocks/bit is required. **RX** at 5 will not be software-sampled.
+**TX** at 5 clocks/bit is required. **RX** at 5 is a limitation (not software-sampled).
 
 ## Compiler pipeline (planned)
 
@@ -79,7 +81,20 @@ Two artifacts: instruction words and payload bytes. The listing contains address
 ## What we do not do
 
 - Protocol-named opcodes, XOR/MOV, PID hardware, auto detect.
-- Spending `1000`–`1111` for foresight. Next slot is RX verbs that unblock a program.
+- Spending `1000`–`1111` for foresight. Next slot is `IN` then `EXT` ([future.md](future.md)).
+
+## Pin output — degrees of freedom
+
+What a pin output already is (do not add a third grammar):
+
+- Which pad(s): two nibbles in the descriptor.
+- Level: `PSET` `L1`/`L2`, or `OUT` `Rs[0]` (and `~Rs[0]` on the other nibble).
+- How long: `Rd`. Leftover is `Rd−1` (non-pin ops only).
+- Halfway: `OUTM` XOR at `Rd>>1` (Manchester).
+- Sticky: after hold, the level stays until that pin is written again.
+- Release: `REL` (uio `oe` off).
+
+Not committed: more than two pins in one op, combo (unflopped) pads, a third leftover meaning.
 
 ## Pin input — when you take a bit
 
@@ -97,17 +112,20 @@ Not a UART opcode: start = change-to-0, bits = duration. SPI = other-pin rise. 1
 
 I2C START is change-on-data **while** the clock pin is high. Two waits (level on `pin2`, then change on `pin1`) before adding a fourth strobe.
 
-**Strobe 3 is not “SCK samples MOSI/MISO.”** The chip does not know those names. If this core’s timed op **drives `pin2`**, that execute can also sample `pin1`. Same issue loop. No waiter, no matched `pc`, no protocol. The listing picks the two pin numbers.
+**Strobe 3 is not “SCK samples MOSI/MISO.”** The chip does not know those names. `IN` is listen-only. If we also drive the clock, `PSET` first (sticky), then `IN`. No waiter, no matched `pc`, no protocol. The listing picks the pin numbers.
 
 Two cores are for **independent timebases** (two `Rd`s, two pads). Each core locks to **its** pins. Do not lock two `pc`s. Do not wait on the other core.
 
 Idle “wait for start” on a receive-only listing is a pin lock, not inter-core sync. Clock-gate later if power matters. Not a barrier opcode.
 
+**Two sources later.** One `IN` = one pin. Two pins on the same read is later.
+
+Locked `IN` / RX SRAM / `EXT` encodings, RX-pending table, two-core rule, and the rejected list: **[future.md](future.md)**. Not silicon.
+
 ## Open (next)
 
-- More protocol listings on the verbs we have. Refine the ISA after that.
+- JTAG, SWD, PS/2, CAN TX listings on the verbs we have. JTAG TDO is a sample — do not pretend TDO can wait.
+- Then RX (`IN` as drafted). Then details (NLP, real eth size). Then optimize.
 - Compiler (protocol → asm + dmem).
 - USB dummy packets via dmem + `LD` instead of unrolled `LDI`.
-- 10BASE-T listing (NLP + frame via `OUTM`); RX later.
-- RX deferred. Three strobes only (see Pin input). Clocked capture = this core drives `pin2` and samples `pin1` on that execute. Not leftover `IN`, not core1 spinning, not a protocol block.
-- Two cores (`core0` / `core1` named in the assembly) for independent timebases. Not lockstep, not matched `pc`s.
+- Two cores (`core0` / `core1`) only for independent timebases.

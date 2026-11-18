@@ -1,8 +1,12 @@
 ![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg) ![](../../workflows/fpga/badge.svg)
 
-# Tiny Tapeout Verilog Project Template
+# Leonidas
 
-- [Read the documentation for project](docs/info.md)
+Tiny Tapeout IHP pin machine. Top `tt_um_RaghuvPotdar_Leonidas`. Opcode = verb. Protocol = program.
+
+**Docs (start here):** [docs/README.md](docs/README.md) — ISA, listings, programmability, future/RX draft, how to run Questa and cocotb.
+
+- [Tiny Tapeout project page text](docs/info.md)
 
 ## What is Tiny Tapeout?
 

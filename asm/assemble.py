@@ -19,6 +19,7 @@ OP_HALT = 0x4
 OP_REL = 0x5
 OP_JL = 0x6
 OP_LD = 0x7
+OP_IN = 0x8
 
 
 def parse_number(token: str, symbols: dict[str, int]) -> int:
@@ -49,7 +50,14 @@ def strip_comment(line: str) -> str:
     return line.strip()
 
 
+def byte_operand(value: int) -> int:
+    if not 0 <= value <= 0xFF:
+        raise ValueError(f"operand must be 0..255, got {value}")
+    return value
+
+
 def encode(opcode: int, field: int, payload: int) -> int:
+    byte_operand(payload)
     return ((opcode & 0xF) << 12) | ((field & 0xF) << 8) | (payload & 0xFF)
 
 
@@ -68,12 +76,16 @@ def pin_desc(pin1: int, pin2: int | None = None) -> int:
     return ((pin2 & 0xF) << 4) | (pin1 & 0xF)
 
 
-def encode_pset(rp: int, level: int, rd: int) -> int:
+def encode_pset(rp: int, level: int, rd: int, level2: int | None = None) -> int:
     if level not in (0, 1):
-        raise ValueError(f"PSET level must be 0 or 1, got {level}")
-    # [11:9]=Rp, [8]=L, [7:5]=Rd
+        raise ValueError(f"PSET L1 must be 0 or 1, got {level}")
+    if level2 is None:
+        level2 = level
+    if level2 not in (0, 1):
+        raise ValueError(f"PSET L2 must be 0 or 1, got {level2}")
+    # [11:9]=Rp, [8]=L1, [7:5]=Rd, [4]=L2
     field = ((rp & 7) << 1) | (level & 1)
-    payload = (rd & 7) << 5
+    payload = ((rd & 7) << 5) | ((level2 & 1) << 4)
     return encode(OP_PSET, field, payload)
 
 
@@ -92,12 +104,20 @@ def encode_rel(rp: int, rd: int) -> int:
 
 def encode_jl(rp: int, target: int) -> int:
     # [11:9]=Rp, [7:0]=target
-    return (OP_JL << 12) | ((rp & 7) << 9) | (target & 0xFF)
+    return (OP_JL << 12) | ((rp & 7) << 9) | byte_operand(target)
 
 
 def encode_ld(rn: int, rm: int) -> int:
     # [11:9]=Rn dest, [8:6]=Rm addr (post-inc)
     return (OP_LD << 12) | ((rn & 7) << 9) | ((rm & 7) << 6)
+
+
+def encode_in(rp: int, rs: int, rd: int, wait: bool = False) -> int:
+    # [11:9]=Rp, [8:6]=Rs dest, [5:3]=Rd, [1:0]=00 mid-sample / 01 wait-change
+    word = (OP_IN << 12) | ((rp & 7) << 9) | ((rs & 7) << 6) | ((rd & 7) << 3)
+    if wait:
+        word |= 0b01
+    return word
 
 
 def parse_mem_reg(token: str, symbols: dict[str, int]) -> int:
@@ -123,6 +143,8 @@ def assemble(text: str) -> list[int]:
             name = raw[:-1].strip()
             if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", name):
                 raise ValueError(f"bad label: {name}")
+            if name in symbols:
+                raise ValueError(f"duplicate label: {name}")
             symbols[name] = addr
             continue
         addr += 1
@@ -144,15 +166,25 @@ def assemble(text: str) -> list[int]:
             imm = parse_number(args[1], symbols)
             words.append(encode(OP_LDI, reg_field(rn), imm))
         elif mnemonic == "PSET":
-            if len(args) != 3:
-                raise ValueError(f"PSET needs Rp, level, Rd: {raw}")
-            words.append(
-                encode_pset(
-                    parse_reg(args[0], symbols),
-                    parse_number(args[1], symbols),
-                    parse_reg(args[2], symbols),
+            if len(args) == 3:
+                words.append(
+                    encode_pset(
+                        parse_reg(args[0], symbols),
+                        parse_number(args[1], symbols),
+                        parse_reg(args[2], symbols),
+                    )
                 )
-            )
+            elif len(args) == 4:
+                words.append(
+                    encode_pset(
+                        parse_reg(args[0], symbols),
+                        parse_number(args[1], symbols),
+                        parse_reg(args[3], symbols),
+                        parse_number(args[2], symbols),
+                    )
+                )
+            else:
+                raise ValueError(f"PSET needs Rp, L, Rd or Rp, L1, L2, Rd: {raw}")
         elif mnemonic == "LOW":
             if len(args) != 2:
                 raise ValueError(f"LOW needs Rp, Rd: {raw}")
@@ -174,6 +206,17 @@ def assemble(text: str) -> list[int]:
                     parse_reg(args[1], symbols),
                     parse_reg(args[2], symbols),
                     invert=(mnemonic == "OUTM"),
+                )
+            )
+        elif mnemonic in ("IN", "INW"):
+            if len(args) != 3:
+                raise ValueError(f"{mnemonic} needs Rp, Rs, Rd: {raw}")
+            words.append(
+                encode_in(
+                    parse_reg(args[0], symbols),
+                    parse_reg(args[1], symbols),
+                    parse_reg(args[2], symbols),
+                    wait=(mnemonic == "INW"),
                 )
             )
         elif mnemonic == "REL":

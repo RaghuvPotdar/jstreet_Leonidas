@@ -23,14 +23,36 @@ module tt_um_RaghuvPotdar_Leonidas (
     logic        dmem_ren;
     logic [7:0]  dmem_dout;
 
+    // The host bus is asynchronous to clk. Strobe goes through 3 flops, the
+    // byte through 2. A strobe that leaves 00 is reported as the OR of the two
+    // oldest samples, so pin skew on 00->11 cannot show up as 01 or 10.
+    // The byte is taken one sample after the strobe edge: hold ui_in until
+    // the next strobe. shortcut: assumes strobe pin skew < 1 clock.
+    logic [1:0] strobe_s1, strobe_s2, strobe_s3;
+    logic [7:0] byte_s1, byte_s2;
+    always_ff @(posedge clk) begin
+        if (!rst_n) begin
+            strobe_s1 <= 2'b00;
+            strobe_s2 <= 2'b00;
+            strobe_s3 <= 2'b00;
+        end else begin
+            strobe_s1 <= uio_in[1:0];
+            strobe_s2 <= strobe_s1;
+            strobe_s3 <= strobe_s2;
+        end
+        byte_s1 <= ui_in;
+        byte_s2 <= byte_s1;
+    end
+    wire [1:0] strobe = (strobe_s3 == 2'b00) ? 2'b00 : (strobe_s3 | strobe_s2);
+
     // ui_in is one byte. uio_in[1:0]: 00 idle, 01 imem byte, 10 imem byte
     // and start, 11 dmem byte. After start, datapath fetches imem through
     // pc and reads dmem with LD.
     imem imem (
         .clk    (clk),
         .rst_n  (rst_n),
-        .byte_in(ui_in),
-        .strobe (uio_in[1:0]),
+        .byte_in(byte_s2),
+        .strobe (strobe),
         .pc     (pc),
         .running(running),
         .dout   (dout)
@@ -40,8 +62,8 @@ module tt_um_RaghuvPotdar_Leonidas (
         .clk    (clk),
         .rst_n  (rst_n),
         .running(running),
-        .byte_in(ui_in),
-        .strobe (uio_in[1:0]),
+        .byte_in(byte_s2),
+        .strobe (strobe),
         .raddr  (dmem_addr),
         .ren    (dmem_ren),
         .dout   (dmem_dout)

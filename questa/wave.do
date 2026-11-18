@@ -11,6 +11,17 @@ add wave -noupdate -radix hexadecimal -childformat {{{/tb/uio_in[7]} -radix hexa
 add wave -noupdate -color Cyan -radix hexadecimal -childformat {{{/tb/uo_out[7]} -radix hexadecimal} {{/tb/uo_out[6]} -radix hexadecimal} {{/tb/uo_out[5]} -radix hexadecimal} {{/tb/uo_out[4]} -radix hexadecimal} {{/tb/uo_out[3]} -radix hexadecimal} {{/tb/uo_out[2]} -radix hexadecimal} {{/tb/uo_out[1]} -radix hexadecimal} {{/tb/uo_out[0]} -radix hexadecimal}} -expand -subitemconfig {{/tb/uo_out[7]} {-color Cyan -height 15 -radix hexadecimal} {/tb/uo_out[6]} {-color Cyan -height 15 -radix hexadecimal} {/tb/uo_out[5]} {-color Cyan -height 15 -radix hexadecimal} {/tb/uo_out[4]} {-color Cyan -height 15 -radix hexadecimal} {/tb/uo_out[3]} {-color Cyan -height 15 -radix hexadecimal} {/tb/uo_out[2]} {-color Cyan -height 15 -radix hexadecimal} {/tb/uo_out[1]} {-color Cyan -height 15 -radix hexadecimal} {/tb/uo_out[0]} {-color Cyan -height 15 -radix hexadecimal}} /tb/uo_out
 add wave -noupdate -color Cyan -radix hexadecimal /tb/uio_out
 add wave -noupdate -radix hexadecimal /tb/uio_oe
+add wave -noupdate -divider rx
+add wave -noupdate -color Yellow /tb/rx_line
+add wave -noupdate -radix hexadecimal /tb/rx_byte
+add wave -noupdate -radix hexadecimal /tb/echo_byte
+add wave -noupdate /tb/DUT/datapath/in_wait
+add wave -noupdate /tb/DUT/datapath/in_ref
+add wave -noupdate /tb/DUT/datapath/in_samp_v
+add wave -noupdate -radix unsigned /tb/DUT/datapath/in_samp_at
+add wave -noupdate /tb/DUT/datapath/in_fire
+add wave -noupdate -radix hexadecimal /tb/DUT/datapath/in_fire_val
+add wave -noupdate -radix hexadecimal /tb/DUT/datapath/in_val
 add wave -noupdate -divider datapath
 add wave -noupdate -radix hexadecimal /tb/DUT/datapath/pc
 add wave -noupdate -radix hexadecimal /tb/DUT/datapath/instr
