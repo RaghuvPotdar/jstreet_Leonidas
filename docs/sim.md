@@ -103,7 +103,14 @@ make clean
 make
 ```
 
-Gate-level: copy the GL netlist to `test/gate_level_netlist.v`, then `make -B GATES=yes` (needs `PDK_ROOT` for IHP cells). Functional stdcell rewrite is `test/make_functional_stdcells.py`.
+For gate-level simulation, copy the unpowered `.nl.v` netlist to `test/gate_level_netlist.v`. Set `PDK_ROOT` to the directory containing `ihp-sg13cmos5l` and run these commands from `test/`.
+
+```bash
+make -B GATES=yes PDK=ihp-sg13cmos5l
+python -m cocotb_tools.check_results results.xml
+```
+
+Gate-level tests use functional standard-cell models produced by `make_functional_stdcells.py` and behavioral models for the two SRAMs. They check observable protocol behavior through the synthesized logic. Post-route static timing analysis checks the 16.667 ns clock constraint.
 
 Waves: `tb.fst` (GTKWave / Surfer). `make -B FST=` for VCD.
 

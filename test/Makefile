@@ -30,11 +30,14 @@ COMPILE_ARGS    += -DFUNCTIONAL
 # instance and does not contain its body, so the model has to be compiled
 # beside it or Icarus stops with "Unknown module type".
 COMPILE_ARGS    += -DSIM
-STDCELL_SRC     := $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v
-UDP_SRC         := $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_udp.v
-FUNCTIONAL_STDCELLS := $(SIM_BUILD)/sg13g2_stdcell_functional.v
+PDK             ?= ihp-sg13cmos5l
+IHP_TECH        := $(patsubst ihp-%,%,$(PDK))
+PDK_LIBS        := $(PDK_ROOT)/$(PDK)/libs.ref
+STDCELL_SRC     := $(PDK_LIBS)/$(IHP_TECH)_stdcell/verilog/$(IHP_TECH)_stdcell.v
+UDP_SRC         := $(PDK_LIBS)/$(IHP_TECH)_stdcell/verilog/$(IHP_TECH)_udp.v
+FUNCTIONAL_STDCELLS := $(SIM_BUILD)/$(IHP_TECH)_stdcell_functional.v
 
-VERILOG_SOURCES += $(PDK_ROOT)/ihp-sg13g2/libs.ref/sg13g2_io/verilog/sg13g2_io.v
+VERILOG_SOURCES += $(PDK_LIBS)/$(IHP_TECH)_io/verilog/$(IHP_TECH)_io.v
 VERILOG_SOURCES += $(FUNCTIONAL_STDCELLS)
 CUSTOM_COMPILE_DEPS += $(FUNCTIONAL_STDCELLS)
 VERILOG_SOURCES += $(SRC_DIR)/sram_256x16.sv

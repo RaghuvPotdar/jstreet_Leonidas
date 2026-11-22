@@ -58,7 +58,7 @@ Tiny Tapeout cannot read SRAM. `ui_in` only goes in. Bytes leave on `uo_out` or 
 |---|---|---|
 | UART | `uart.asm` | change-to-0, then duration (mid-bit = `IN` `00`) |
 | SPI | `spi.asm` | sample MOSI/MISO pin on SCK; sticky `PSET` then `IN`, or other-edge |
-| I2C | inline `test.py` | SDA sample on SCL; START is change-on-data **while** clock high (two waits before a fourth strobe) |
+| I2C | `i2c_write.asm` (controller write and ACK) | Target START is change-on-data **while** clock high (two waits before a fourth strobe) |
 | USB LS | `usb_ls_ack.asm` | same 40-clock grid |
 | USB FS | `usb_fs_ack.asm` | **limitation** |
 | 10BASE-T | `eth_10t*.asm` | change (lock phase) then duration + halfway; NLP is TX detail |

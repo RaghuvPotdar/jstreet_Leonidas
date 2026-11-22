@@ -22,9 +22,12 @@ Hex: `0211 0310 00B1 1460 0108 2418 3105 1560 4000`.
 
 No MISO. Duplex needs `IN` (not silicon).
 
-## I2C master write — inline in `test/test.py`
+## I2C controller write — `asm/examples/i2c_write.asm`
 
-No `i2c.asm`. After UART+SPI in `test_uart_program`, the test loads a small listing: `PSET`/`REL`/`JL` on **SDA pin 10** (`uio[2]`) and **SCL pin 11** (`uio[3]`). TB pull-ups: `uio_in` looks like `0x0C` after load. That is the bench, not a pin default.
+- Assemble with `python asm/assemble.py asm/examples/i2c_write.asm -o i2c_write.hex`.
+- Connect SDA to `uio[2]` and SCL to `uio[3]`, each with an external pull-up. The program uses `PSET` to drive low and `REL` to release the line.
+- Writes `0xB1` to the 7-bit address `0x50`. On each ACK slot, `JL` polls SCL for clock stretching and branches on SDA. A NACK takes the STOP path.
+- The short holds match the cocotb fixture. It checks START, the transmitted bytes, clock stretching, the ACK slots, and STOP. A second case NACKs the address and checks that the controller stops before sending the data byte. For a slow bench test with a physical target, start with a 1 MHz core clock.
 
 ## USB LS ACK — `asm/examples/usb_ls_ack.asm`
 

@@ -12,3 +12,8 @@ test/sim_build
 test/__pycache__/
 test/results.xml
 test/gate_level_netlist.v
+__pycache__/
+graphify-out/
+questa/work/
+questa/vsim.wlf
+questa/transcript

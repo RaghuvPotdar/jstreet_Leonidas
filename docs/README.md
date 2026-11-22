@@ -4,7 +4,7 @@ Leonidas is a dumb pin machine on Tiny Tapeout (IHP). Top module `tt_um_RaghuvPo
 
 Target clock **60 MHz** (STA period 16.667 ns). Questa TB uses 20 ns. Pins `uo_out` idle `8'hFF`. `ui_in` is the host byte, not a pin. Jane Street question we want: **what else can this chip do?** not a catalog of extra opcodes.
 
-**Silicon now:** eight opcodes (`LDI` `PSET` `OUT`/`OUTM` `DJNZ` `HALT` `REL` `JL` `LD`), 3R1W RF, imem `256x16`, dmem `256x8`. TX listings for UART, SPI, I2C (inline test), USB LS/FS ACK, 10BASE-T. **No RX in silicon.** `IN` / RX SRAM / `EXT` are drafted, not built.
+The RTL implements nine opcodes (`LDI` `PSET` `OUT`/`OUTM` `DJNZ` `HALT` `REL` `JL` `LD` `IN`/`INW`), a 3R1W register file, 256×16 instruction SRAM, and 256×8 data SRAM. Examples cover UART, SPI, I2C, USB LS/FS ACK transmission, and Manchester TX and RX. RX SRAM and `EXT` are future work.
 
 Consult before ISA, RTL, or listing changes. Do not spend opcodes `1000`–`1111` until RX. Do not revert unsolicited work without asking.
 
@@ -27,6 +27,6 @@ Old UART-only notes in `notes/programmability.md` are **historical**. They do no
 |---|---|
 | `src/` | RTL (`leonidas.sv` top wrapper) |
 | `asm/assemble.py` | Assembler → hex |
-| `asm/examples/` | TX listings |
+| `asm/examples/` | Protocol programs |
 | `test/` | cocotb + Icarus (WSL) |
 | `questa/` | RTL sim + WLF (Windows Questa) |

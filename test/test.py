@@ -80,7 +80,7 @@ def rf_at(dp, index):
 
 @cocotb.test()
 async def test_uart_program(dut):
-    """UART, SPI, then I2C on the compressed ISA (R0-R7, PSET, OUT, …)."""
+    """UART and SPI on the compressed ISA (R0-R7, PSET, OUT, …)."""
     dut.ena.value = 1
     dut.ui_in.value = 0
     dut.uio_in.value = 0
@@ -228,64 +228,34 @@ async def test_uart_program(dut):
         assert rf_at(dp, 0) == 0
         assert rf_at(dp, 1) == 0
 
-    # I2C master write: PSET/REL/JL on uio[2]/uio[3].
+
+@cocotb.test()
+@cocotb.parametrize(ack_address=[True, False])
+async def test_i2c_write(dut, ack_address):
+    """A target stretches SCL and either accepts or rejects the address."""
+    dut.ena.value = 1
+    dut.ui_in.value = 0
+    dut.clk.value = 0
     dut.rst_n.value = 0
     dut.uio_in.value = 0
+    await Timer(1, unit="ns")
+    Clock(dut.clk, 10, unit="us").start()
     await clock_edge(dut)
     dut.rst_n.value = 1
     await clock_edge(dut)
 
-    # R1=SDA pin10, R2=SCL pin11, R3=4, R4=8, R5=1
-    lines = [
-        "LDI R1, 0xAA",
-        "LDI R2, 0xBB",
-        "LDI R3, 4",
-        "LDI R4, 8",
-        "LDI R5, 1",
-        "PSET R1, 0, R4",
-        "PSET R2, 0, R4",
-    ]
-
-    def add_byte(value, ok):
-        for shift in range(7, -1, -1):
-            if (value >> shift) & 1:
-                lines.append("REL R1, R3")
-            else:
-                lines.append("PSET R1, 0, R3")
-            lines.append("REL R2, R4")
-            lines.append("PSET R2, 0, R4")
-        lines.append("REL R1, R3")
-        lines.append(f"stretch_{ok}:")
-        lines.append("REL R2, R5")
-        lines.append(f"JL R2, stretch_{ok}")
-        lines.append(f"JL R1, {ok}")
-        lines.append("PSET R2, 0, R3")
-        lines.append("PSET R1, 0, R3")
-        lines.append("REL R2, R4")
-        lines.append("REL R1, R3")
-        lines.append("HALT")
-
-    add_byte(0xA0, "data")
-    lines.append("data:")
-    lines.append("PSET R2, 0, R4")
-    add_byte(0xB1, "stop")
-    lines.append("stop:")
-    lines.append("PSET R2, 0, R4")
-    lines.append("PSET R1, 0, R3")
-    lines.append("REL R2, R4")
-    lines.append("REL R1, R3")
-    lines.append("HALT")
-
-    await load_program(dut, assemble("\n".join(lines)))
+    await load_program(dut, assemble((ASM / "i2c_write.asm").read_text()))
 
     dut.uio_in.value = 0b1100
 
+    expected_bytes = [0xA0, 0xB1] if ack_address else [0xA0]
     bits = []
     byte_bits = 0
     prev_sda, prev_scl = 1, 1
     saw_start = False
     saw_stop = False
     ack_phase = False
+    sampled_bit = None
     bytes_done = 0
     stretch_left = 0
     stretched = 0
@@ -312,36 +282,43 @@ async def test_uart_program(dut):
             and bytes_done < 2
         ):
             if byte_bits < 8:
-                bits.append(sda)
+                sampled_bit = sda
+            elif oe_sda == 0:
+                ack_phase = True
+        if prev_scl == 1 and scl == 0:
+            if ack_phase:
+                ack_phase = False
+                byte_bits = 0
+                bytes_done += 1
+            elif sampled_bit is not None:
+                # Commit a bit only when its clock pulse finishes. A STOP
+                # raises SCL with SDA held low, then releases SDA while high.
+                bits.append(sampled_bit)
+                sampled_bit = None
                 byte_bits += 1
                 if byte_bits == 8 and bytes_done == 0:
                     stretch_left = 250
-            elif oe_sda == 0:
-                ack_phase = True
-        if ack_phase and prev_scl == 1 and scl == 0:
-            ack_phase = False
-            byte_bits = 0
-            bytes_done += 1
         if byte_bits == 8 and bytes_done == 0 and oe_scl == 0 and scl == 0:
             stretched += 1
 
         prev_sda, prev_scl = sda, scl
-        drive_sda = 0 if ack_phase or byte_bits == 8 else 1
+        drive_sda = 0 if ack_address and (ack_phase or byte_bits == 8) else 1
         drive_scl = 0 if stretch_left else 1
         if stretch_left:
             stretch_left -= 1
         dut.uio_in.value = (drive_sda << 2) | (drive_scl << 3)
         await clock_edge(dut)
-        if saw_stop and bytes_done >= 2:
+        if saw_stop and bytes_done >= len(expected_bytes):
             break
 
     for _ in range(30):
         await clock_edge(dut)
 
     assert saw_start, "no START"
-    assert bits == [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1], f"I2C bits {bits}"
+    expected_bits = [(byte >> shift) & 1 for byte in expected_bytes for shift in range(7, -1, -1)]
+    assert bits == expected_bits, f"I2C bits {bits}"
     assert stretched >= 5, f"SCL not stretched ({stretched})"
-    assert saw_stop and bytes_done == 2, f"stop={saw_stop} acks={bytes_done}"
+    assert saw_stop and bytes_done == len(expected_bytes), f"stop={saw_stop} bytes={bytes_done}"
 
     dp = engine(dut)
     if dp is not None:

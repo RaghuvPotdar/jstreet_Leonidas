@@ -1,11 +1,5 @@
-# LibreLane's scripts/openroad/common/pdn_cfg.tcl from 3.0.5, with the
-# macro grid pointed at Metal4 instead of the unused horizontal strap.
-#
-# FP_PDN_MULTILAYER is 0, so the only straps are on PDN_VERTICAL_LAYER
-# (TopMetal1 for ihp-sg13g2). The stock macro grid vias that layer to
-# PDN_HORIZONTAL_LAYER and therefore draws nothing, which OpenROAD reports
-# as PDN-0232 and then fails as PDN-0233. The 256x16 supplies are vertical
-# Metal4 columns, so the macro grid vias Metal4 up to the strap layer.
+# LibreLane's PDN script adapted for CMOS5L same-layer SRAM supplies.
+# Rejoin the four Metal4 stripes that pdngen clips at each SRAM.
 # Copyright 2025 LibreLane Contributors
 #
 # Adapted from OpenLane
@@ -190,13 +184,90 @@ if { $::env(PDN_CORE_RING) == 1 } {
     }
 }
 
-define_pdn_grid \
-    -macro \
-    -default \
-    -name macro \
-    -starts_with POWER \
-    -halo "$::env(PDN_HORIZONTAL_HALO) $::env(PDN_VERTICAL_HALO)"
+proc merge_stitched_ports {block net_name columns} {
+    set terminal [$block findBTerm $net_name]
+    foreach pin [$terminal getBPins] {
+        dict for {column layer} $columns {
+            lassign $column x1 x2
+            set segments {}
+            foreach box [$pin getBoxes] {
+                if {[$box getTechLayer] eq $layer && [$box xMin] == $x1 && [$box xMax] == $x2} {
+                    lappend segments $box
+                }
+            }
+            if {[llength $segments] < 2} {
+                continue
+            }
+            set y1 [[lindex $segments 0] yMin]
+            set y2 [[lindex $segments 0] yMax]
+            foreach box $segments {
+                set y1 [expr {min($y1, [$box yMin])}]
+                set y2 [expr {max($y2, [$box yMax])}]
+                odb::dbBox_destroy $box
+            }
+            odb::dbBox_create $pin $layer $x1 $y1 $x2 $y2
+        }
+    }
+}
 
-add_pdn_connect \
-    -grid macro \
-    -layers "Metal4 $::env(PDN_VERTICAL_LAYER)"
+proc stitch_sram_stripes {command code result op} {
+    if {$code != 0} {
+        return
+    }
+
+    set block [ord::get_db_block]
+    set tolerance [$block getDbUnitsPerMicron]
+    set stitched_columns [dict create]
+    foreach name {imem.sram dmem.sram} {
+        set bounds [[$block findInst $name] getBBox]
+        set macro_bottom [$bounds yMin]
+        set macro_top [$bounds yMax]
+        foreach net_name {VPWR VGND} {
+            set net [$block findNet $net_name]
+            set below [dict create]
+            set above [dict create]
+            foreach wire [$net getSWires] {
+                foreach shape [$wire getWires] {
+                    if {[$shape isVia]} {
+                        continue
+                    }
+                    set layer [$shape getTechLayer]
+                    set x1 [$shape xMin]
+                    set x2 [$shape xMax]
+                    if {[$layer getName] ne "Metal4" || $x1 < [$bounds xMin] || $x2 > [$bounds xMax]} {
+                        continue
+                    }
+                    set y1 [$shape yMin]
+                    set y2 [$shape yMax]
+                    set column [list $x1 $x2]
+                    if {$y2 <= $macro_bottom && $macro_bottom - $y2 <= $tolerance} {
+                        dict set below $column $y2
+                    }
+                    if {$y1 >= $macro_top && $y1 - $macro_top <= $tolerance} {
+                        dict set above $column [list $wire $layer $y1]
+                    }
+                }
+            }
+
+            # Touch the existing ends at their exact edges. The pitch and
+            # phase in config.json place these rectangles on the LEF rails.
+            if {[dict size $below] != 2 || [dict size $above] != 2} {
+                error "Expected two aligned $net_name stripes across $name"
+            }
+            dict for {column y1} $below {
+                lassign $column x1 x2
+                lassign [dict get $above $column] wire layer y2
+                odb::dbSBox_create $wire $layer $x1 $y1 $x2 $y2 STRIPE
+                dict set stitched_columns $net_name $column $layer
+            }
+        }
+    }
+
+    # The stitched metal is continuous. Export one full-height port per
+    # column so the harness LEF sees the same connected stripe.
+    dict for {net_name columns} $stitched_columns {
+        merge_stitched_ports $block $net_name $columns
+    }
+}
+
+trace add execution pdngen leave stitch_sram_stripes

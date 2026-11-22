@@ -2,45 +2,36 @@
 
 # Leonidas
 
-Tiny Tapeout IHP pin machine. Top `tt_um_RaghuvPotdar_Leonidas`. Opcode = verb. Protocol = program.
+Leonidas is a programmable pin machine for the Jane Street protocol emulator ASIC competition. The host loads 16-bit instructions and optional payload bytes through the Tiny Tapeout pins. To change protocols, reset and load a different program.
 
-**Docs (start here):** [docs/README.md](docs/README.md) — ISA, listings, programmability, future/RX draft, how to run Questa and cocotb.
+Timed instructions set, release, shift to, or sample a pin. Branches and register operations can use the remaining clocks of a timed instruction. `INW` waits on a synchronized pin transition, which lets a Manchester receiver lock to each bit. Instruction and payload bytes live in separate SRAMs.
 
-- [Tiny Tapeout project page text](docs/info.md)
+- [ISA and instruction timing](docs/isa.md)
+- [Example programs](docs/listings.md), including I²C write with ACK and clock-stretch handling
+- [Pinout and host loading](docs/info.md)
+- [Simulation and gate-level commands](docs/sim.md)
 
-## What is Tiny Tapeout?
+The cocotb regressions exercise the host loading strobes, SRAM reads, protocol timing, and RX across input phase and clock skew. The Questa suite provides waveforms and checks UART and Manchester echo data, stop bits, and completion. Codex implemented the RX review fixes and the flow migration. Claude Code reviewed prefetch timing and helped identify SRAM power connectivity as a migration risk.
 
-Tiny Tapeout is an educational project that aims to make it easier and cheaper than ever to get your digital and analog designs manufactured on a real chip.
+## Reproduce the demos
 
-To learn more and get started, visit https://tinytapeout.com.
+Run these commands from the repository root.
 
-## Set up your Verilog project
+```bash
+python asm/assemble.py asm/examples/i2c_write.asm -o i2c_write.hex
+python -m pip install -r test/requirements.txt
+python -m pytest -q asm
+cd test
+make
+python -m cocotb_tools.check_results results.xml
+```
 
-1. Add your Verilog files to the `src` folder.
-2. Edit the [info.yaml](info.yaml) and update information about your project, paying special attention to the `source_files` and `top_module` properties. If you are upgrading an existing Tiny Tapeout project, check out our [online info.yaml migration tool](https://tinytapeout.github.io/tt-yaml-upgrade-tool/).
-3. Edit [docs/info.md](docs/info.md) and add a description of your project.
-4. Adapt the testbench to your design. See [test/README.md](test/README.md) for more information.
+The I²C regression models a target, including clock stretching and both an ACK and a NACK at the address phase. The UART and Manchester RX regressions check the echoed bytes at multiple input phases and clock rates.
 
-The GitHub action will automatically build the ASIC files using [LibreLane](https://www.zerotoasiccourse.com/terminology/librelane/).
+## ASIC build
 
-## Enable GitHub actions to build the results page
+The [GDS workflow](.github/workflows/gds.yaml) targets the Tiny Tapeout 8×4 IHP CMOS5L template. It builds with a 16.667 ns clock constraint and runs Tiny Tapeout precheck and the functional gate-level suite on the resulting netlist.
 
-- [Enabling GitHub Pages](https://tinytapeout.com/faq/#my-github-action-is-failing-on-the-pages-part)
+The local routed baseline passed all 15 RTL and 15 functional gate-level tests. At the 60 MHz target, extracted worst setup slack was +2.84 ns at the slow corner and worst hold slack was +0.11 ns at the fast corner. Netgen LVS matched. The flow still reports maximum transition and capacitance warnings.
 
-## Resources
-
-- [FAQ](https://tinytapeout.com/faq/)
-- [Digital design lessons](https://tinytapeout.com/digital_design/)
-- [Learn how semiconductors work](https://tinytapeout.com/siliwiz/)
-- [Join the community](https://tinytapeout.com/discord)
-- [Build your design locally](https://www.tinytapeout.com/guides/local-hardening/)
-
-## What next?
-
-- [Submit your design to the next shuttle](https://app.tinytapeout.com/).
-- Edit [this README](README.md) and explain your design, how it works, and how to test it.
-- Share your project on your social network of choice:
-  - LinkedIn [#tinytapeout](https://www.linkedin.com/search/results/content/?keywords=%23tinytapeout) [@TinyTapeout](https://www.linkedin.com/company/100708654/)
-  - Mastodon [#tinytapeout](https://chaos.social/tags/tinytapeout) [@matthewvenn](https://chaos.social/@matthewvenn)
-  - X (formerly Twitter) [#tinytapeout](https://twitter.com/hashtag/tinytapeout) [@tinytapeout](https://twitter.com/tinytapeout)
-  - Bluesky [@tinytapeout.com](https://bsky.app/profile/tinytapeout.com)
+Both SRAMs connect to the tile power grid on Metal4. OpenROAD checks connectivity after the stripes are stitched across the macro boundaries. Magic's DEF/LEF extraction reports eight overlaps at the abstract obstructions crossed by the VDD stitches. The build retains these as warnings and Tiny Tapeout precheck checks the streamed GDS.
