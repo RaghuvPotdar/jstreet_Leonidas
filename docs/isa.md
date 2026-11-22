@@ -153,6 +153,7 @@ Release every distinct pin in `Rp`. Wait `Rd` clocks.
 ```
 
 If `pin1` of `Rp` reads 0 on `uio`, jump; else fall through. `uo_out` reads as 1. Sample is **two flops** behind the pad.
+When a buffered `JL` prefetches its destination at `hold == 2`, that sample determines the branch.
 
 ## LD — `0111`
 
@@ -176,7 +177,7 @@ Listen on `pin1` of `Rp`. Never drives, never sets `oe`. Shift `Rs ← {bit, Rs[
 |---|---|---|
 | `00` | `IN Rp, Rs, Rd` | Timed op, hold `Rd`. Sample at the `Rd>>1` point (same clock as the `OUTM` flip). `Rd=1` samples on issue. |
 | `01` | `INW Rp, Rs, Rd` | Stall until `pin1` differs from its level at issue. Shift in the **new** level. Then hold `Rd` from that clock, like a timed op issued at the edge. `Rd=1` acts as 2. Waits forever. |
-| `1x` | — | Reserved. |
+| `1x` | — | Reserved. Executes as a no-op. |
 
 `Rs` is read at issue and written at the sample. Do not write `Rs` with a hidden op between. If a hidden op writes the RF on the sample clock, the sample lands one clock later (`IN` with `Rd` 2–3 and a hidden op after it).
 

@@ -24,6 +24,9 @@ module tb;
   localparam int MAX_WORDS  = 256;
   localparam int RUN_LIMIT  = 20000;
   localparam int SUITE_N    = 7;
+  localparam logic [7:0] UART_RX_BYTES [0:2] = '{8'hB1, 8'h5A, 8'h0F};
+  localparam logic [7:0] ETH_RX_FRAME [0:7] =
+      '{8'h55, 8'h55, 8'h55, 8'h55, 8'h55, 8'h55, 8'hD5, 8'hA3};
 
   logic        clk;
   logic        rst_n;
@@ -163,35 +166,44 @@ module tb;
   task automatic drive_rx(input string name);
     if (name == "uart_rx_echo") begin
       // byte, baud error, start phase (fraction of a clock)
-      logic [7:0] bytes [3] = '{8'hB1, 8'h5A, 8'h0F};
       real        errs  [3] = '{0.0, 0.03, -0.03};
       real        phs   [3] = '{0.37, 0.81, 0.12};
-      for (int k = 0; k < 3; k++) begin
+      for (int k = 0; k < $size(UART_RX_BYTES); k++) begin
         repeat (40) @(posedge clk);
         #(phs[k] * CLK_NS);
-        uart_send(2, bytes[k], 16.0 * CLK_NS * (1.0 + errs[k]));
+        uart_send(2, UART_RX_BYTES[k], 16.0 * CLK_NS * (1.0 + errs[k]));
         repeat (200) @(posedge clk);   // echo is in flight
       end
     end else if (name == "eth_10t_rx_echo") begin
-      logic [7:0] frame [8] = '{8'h55, 8'h55, 8'h55, 8'h55, 8'h55, 8'h55, 8'hD5, 8'hA3};
       repeat (20) @(posedge clk);
       #(0.2 * CLK_NS);
-      foreach (frame[k]) manchester_send(6, frame[k], 3.0 * CLK_NS * 1.03);
+      foreach (ETH_RX_FRAME[k]) manchester_send(6, ETH_RX_FRAME[k], 3.0 * CLK_NS * 1.03);
       uio_in[6] = 0; rx_line = 0;
     end
   endtask
 
   // Decode 8N1 frames on uo_out[1] at 16 clocks/bit.
-  task automatic echo_mon;
+  task automatic echo_mon(input string name, input int expected_count, ref int echo_count);
+    logic [7:0] expected_byte;
     forever begin
       @(negedge uo_out[1]);
       repeat (8) @(posedge clk);
       if (uo_out[1] == 1'b0) begin
+        if (expected_count != 0 && echo_count >= expected_count)
+          $fatal(1, "%s: unexpected extra echo", name);
         for (int i = 0; i < 8; i++) begin
           repeat (16) @(posedge clk);
           echo_byte[i] = uo_out[1];
         end
         repeat (16) @(posedge clk);
+        if (expected_count != 0) begin
+          expected_byte = (name == "uart_rx_echo") ? UART_RX_BYTES[echo_count] :
+                          ETH_RX_FRAME[$high(ETH_RX_FRAME)];
+          if (echo_byte !== expected_byte || uo_out[1] !== 1'b1)
+            $fatal(1, "%s: echo %0d expected %02h and stop=1, got %02h and stop=%0b",
+                   name, echo_count, expected_byte, echo_byte, uo_out[1]);
+          echo_count++;
+        end
         $display("  echo %02h  (sent %02h)  stop=%0b uio_oe=%02h",
                  echo_byte, rx_byte, uo_out[1], uio_oe);
       end
@@ -199,6 +211,14 @@ module tb;
   endtask
 
   task automatic run_listing(input int id, input string name, input string path);
+    int expected_count;
+    int echo_count;
+    expected_count = 0;
+    echo_count = 0;
+    if (name == "uart_rx_echo")
+      expected_count = $size(UART_RX_BYTES);
+    else if (name == "eth_10t_rx_echo")
+      expected_count = 1;
     test_id   = 0;
     test_name = "load";
     load_hex(path);
@@ -241,7 +261,7 @@ module tb;
 
     fork
       drive_rx(name);
-      echo_mon();
+      echo_mon(name, expected_count, echo_count);
     join_none
 
     clocks = 0;
@@ -252,6 +272,13 @@ module tb;
         break;
     end
     disable fork;
+
+    if (expected_count != 0) begin
+      if (DUT.datapath.halted !== 1'b1)
+        $fatal(1, "%s: did not halt within %0d clocks", name, RUN_LIMIT);
+      if (echo_count != expected_count)
+        $fatal(1, "%s: expected %0d echoes, got %0d", name, expected_count, echo_count);
+    end
 
     $display("test %0d %s: %0d clocks halted=%0b uo=%02h",
              id, name, clocks, DUT.datapath.halted, uo_out);

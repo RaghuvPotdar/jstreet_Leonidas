@@ -1,10 +1,3 @@
-# ** Note: (vsim-220) 'modelsim.ini' is used as the ini file.
-# vsim -c -voptargs="+acc" work.tb -wlf vsim.wlf -do "log -r /*; run -all; quit -f" 
-# Start time: 19:51:19 on Nov 17,2026
-# ** Note: (vsim-3812) Design is being optimized...
-# ** Warning: (vopt-10908) Some optimizations are turned off because the +acc switch is in effect.
-# ** Note: (vopt-220) 'modelsim.ini' is used as the ini file.
-# ** Note: (vsim-12126) Error and warning message counts have been restored: Errors=0, Warnings=1.
 # //  Questa Altera Starter FPGA Edition-64
 # //  Version 2025.3 win64 Sep 15 2025
 # //
@@ -19,6 +12,13 @@
 # // of the Customer's facilities without the express written permission of SISW,
 # // and may not be used in any way not expressly authorized by SISW.
 # //
+# ** Note: (vsim-220) 'modelsim.ini' is used as the ini file.
+# vsim -voptargs="+acc" work.tb -do "onfinish stop; log -r /*; view wave; do wave.do; run -all" "+PROGRAM=program.hex" "+TESTNAME=eth_10t_loop" "+DMEM=program.dmem" 
+# Start time: 20:41:45 on Nov 17,2026
+# ** Note: (vsim-3812) Design is being optimized...
+# ** Warning: (vopt-10908) Some optimizations are turned off because the +acc switch is in effect.
+# ** Note: (vopt-220) 'modelsim.ini' is used as the ini file.
+# ** Note: (vsim-12126) Error and warning message counts have been restored: Errors=0, Warnings=1.
 # Loading sv_std.std
 # Loading work.tb(fast)
 # Loading work.tt_um_RaghuvPotdar_Leonidas(fast)
@@ -28,49 +28,17 @@
 # Loading work.RM_IHPSG13_1P_256x8_c3_bm_bist(fast)
 # Loading work.datapath(fast)
 # Loading work.rf(fast)
-# log -r /*
+# onfinish stop
+#  log -r /*
+#  view wave
+# .main_pane.wave.interior.cs.body.pw.wf
+#  do wave.do
 #  run -all
-# loaded 9 words from suite/uart.hex
-# ** Warning: (vsim-3534) [FOFIR] - Failed to open file "suite/uart.dmem" for reading.
-# No such file or directory. (errno = ENOENT)    : tb.sv(100)
-#    Time: 31 ns  Iteration: 0  Instance: /tb
-#   echo b1  (sent 00)  stop=1 uio_oe=00
-# test 1 uart: 170 clocks halted=1 uo=ff
-# loaded 17 words from suite/spi.hex
-# ** Warning: (vsim-3534) [FOFIR] - Failed to open file "suite/spi.dmem" for reading.
-# No such file or directory. (errno = ENOENT)    : tb.sv(100)
-#    Time: 4191 ns  Iteration: 0  Instance: /tb
-# test 2 spi: 160 clocks halted=1 uo=f7
-# loaded 27 words from suite/usb_ls_ack.hex
-# ** Warning: (vsim-3534) [FOFIR] - Failed to open file "suite/usb_ls_ack.dmem" for reading.
-# No such file or directory. (errno = ENOENT)    : tb.sv(100)
-#    Time: 8791 ns  Iteration: 0  Instance: /tb
-# test 3 usb_ls_ack: 812 clocks halted=1 uo=ef
-# loaded 28 words from suite/usb_fs_ack.hex
-# ** Warning: (vsim-3534) [FOFIR] - Failed to open file "suite/usb_fs_ack.dmem" for reading.
-# No such file or directory. (errno = ENOENT)    : tb.sv(100)
-#    Time: 27231 ns  Iteration: 0  Instance: /tb
-# test 4 usb_fs_ack: 114 clocks halted=1 uo=df
-# loaded 246 words from suite/eth_10t.hex
-# ** Warning: (vsim-3534) [FOFIR] - Failed to open file "suite/eth_10t.dmem" for reading.
-# No such file or directory. (errno = ENOENT)    : tb.sv(100)
-#    Time: 31791 ns  Iteration: 0  Instance: /tb
-# test 5 eth_10t: 1306 clocks halted=1 uo=bf
-# loaded 15 words from suite/uart_rx_echo.hex
-# ** Warning: (vsim-3534) [FOFIR] - Failed to open file "suite/uart_rx_echo.dmem" for reading.
-# No such file or directory. (errno = ENOENT)    : tb.sv(100)
-#    Time: 77631 ns  Iteration: 0  Instance: /tb
-#   echo b1  (sent b1)  stop=1 uio_oe=00
-#   echo 5a  (sent 5a)  stop=1 uio_oe=00
-#   echo 0f  (sent 0f)  stop=1 uio_oe=00
-# test 6 uart_rx_echo: 1154 clocks halted=1 uo=ff
-# loaded 13 words from suite/eth_10t_rx_echo.hex
-# ** Warning: (vsim-3534) [FOFIR] - Failed to open file "suite/eth_10t_rx_echo.dmem" for reading.
-# No such file or directory. (errno = ENOENT)    : tb.sv(100)
-#    Time: 101951 ns  Iteration: 0  Instance: /tb
-#   echo a3  (sent a3)  stop=1 uio_oe=00
-# test 7 eth_10t_rx_echo: 580 clocks halted=1 uo=ff
+# loaded 8 words from program.hex
+# loaded 27 dmem bytes from program.dmem
+# test 1 eth_10t_loop: 1312 clocks halted=1 uo=bf
 # ** Note: $finish    : tb.sv(300)
-#    Time: 114591 ns  Iteration: 0  Instance: /tb
-# End time: 19:51:27 on Nov 17,2026, Elapsed time: 0:00:08
-# Errors: 0, Warnings: 8
+#    Time: 27991 ns  Iteration: 0  Instance: /tb
+# Break in Module tb at tb.sv line 300
+# End time: 20:50:50 on Nov 17,2026, Elapsed time: 0:09:05
+# Errors: 0, Warnings: 1

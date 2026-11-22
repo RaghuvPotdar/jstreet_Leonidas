@@ -188,10 +188,12 @@ module datapath (
       .rdata_d (rf_rdata_d)
   );
 
-  function automatic logic is_pin(input logic [3:0] op);
+  function automatic logic is_pin(input logic [15:0] word);
+    logic [3:0] op;
+    op = word[15:12];
     // Timed ops: issue through do_start/do_defer, own the hold.
     is_pin = (op == OP_PSET) || (op == OP_OUT) || (op == OP_REL)
-          || (op == OP_IN);
+              || (op == OP_IN && !word[1]);
   endfunction
 
   function automatic logic [2:0] field_rp(input logic [15:0] w);
@@ -247,7 +249,7 @@ module datapath (
         rf_raddr_s = field_rs(buf_word);
         rf_raddr_d = field_rd(buf_word);
       end
-    end else if (hold == 8'd2 && buf_v && !is_pin(buf_word[15:12])
+    end else if (hold == 8'd2 && buf_v && !is_pin(buf_word)
                  && buf_word[15:12] != OP_HALT
                  && buf_word[15:12] != OP_LD) begin
       rf_raddr_p = field_rp(buf_word);
@@ -393,7 +395,7 @@ module datapath (
     end else if (asked && hold == 8'h00 && !buf_v) begin
       op_word = instr;
       op_addr = asked_addr;
-      if (is_pin(instr[15:12]))
+      if (is_pin(instr))
         do_start = 1'b1;
       else
         do_one = 1'b1;
@@ -410,7 +412,7 @@ module datapath (
         hold_n  = 8'h00;
         if (!asked)
           fetched = 1'b1;
-        if (is_pin(op_word[15:12]))
+        if (is_pin(op_word))
           do_defer = 1'b1;
         else
           do_one = 1'b1;
@@ -419,7 +421,7 @@ module datapath (
         buf_n      = instr;
         buf_addr_n = asked_addr;
         hold_n     = hold - 8'd1;
-      end else if (hold == 8'd2 && buf_v && !is_pin(buf_word[15:12])
+      end else if (hold == 8'd2 && buf_v && !is_pin(buf_word)
                    && buf_word[15:12] != OP_HALT
                    && buf_word[15:12] != OP_LD) begin
         hold_n = hold - 8'd1;
@@ -476,11 +478,11 @@ module datapath (
           issue = !fetched;
         end
         OP_JL: begin
-          if (pin_low(rf_rdata_p[3:0]))
-            next_addr_n = op_word[7:0];
-          else
-            next_addr_n = op_addr + 8'd1;
-          issue = !fetched;
+          // Keep the decision made at hold==2 if its fetch is in flight.
+          if (!(fetched && issue_q)) begin
+            next_addr_n = pin_low(rf_rdata_p[3:0]) ? op_word[7:0] : op_addr + 8'd1;
+            issue = !fetched;
+          end
         end
         OP_LD: begin
           dmem_ren    = 1'b1;
@@ -498,6 +500,7 @@ module datapath (
           bitcnt_n    = 3'd0;
         end
         OP_HALT: halted_n = 1'b1;
+        // Reserved IN modes use the same sequencing as other unused opcodes.
         default: begin
           next_addr_n = op_addr + 8'd1;
           issue       = !fetched;
