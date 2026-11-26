@@ -40,7 +40,9 @@ Clocked duplex is **sticky `PSET` then `IN`**, not a sample bit on `PSET`. TMS+T
 
 `[1:0] = 00` is the expansion joint. Spend it on a missing *when* (halfway), never on a protocol name.
 
-## RX SRAM + EXT (draft, not silicon)
+## RX SRAM + EXT (draft, not silicon) — superseded
+
+Superseded by RX Stage 1 in [isa.md](isa.md): `CAP`/`SMP` fill one receive byte, the host pulls it with `HCFG` over a program-chosen pin mask, a toggle strobe and a toggle request. The RX SRAM (256x8) is Stage 2. The text below is history.
 
 TX already owns dmem (`LD` / `OUTM`). A 1-port cannot store incoming bytes and fetch payload at the same time. **Third SRAM**, same `256x8` IHP macro. After 8 bits, dest is written there (`rptr++` on the fill side).
 
@@ -125,8 +127,8 @@ Two artifacts: instruction words and payload bytes. Listing holds **addresses** 
 - Sample fused onto `PSET` (`PSET S`) as the main RX. Listen must stand alone.
 - Leftover `IN` after every `OUT`. TX OUT is not the RX bit. RX bit is `uio_in[k]`.
 - Lockstep cores / matched `pc`s.
-- Dump all of `uo_out` as the extract path while the program is running.
-- Packed 3-immediate-pin extract with no `Rd` and a `uio` valid strobe. Last-minute. `EXT` looks like `OUT`.
+- Dump all of `uo_out` as the extract path while the program is running. **Superseded** by RX Stage 1: `HCFG` lets the program pick the host pins (n=8 allowed), and unmasked pins keep core values.
+- Packed 3-immediate-pin extract with no `Rd` and a `uio` valid strobe. Last-minute. `EXT` looks like `OUT`. **Superseded** by RX Stage 1: a program-chosen strobe pin and a host request toggle (pull model), see [isa.md](isa.md).
 - Illegal / malformed packets as a “wow” feature. True programmability is the wow.
 - Spending `1000`–`1111` for foresight.
 - Hardware NRZI. Listings store levels.

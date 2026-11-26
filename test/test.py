@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: © 2024 Tiny Tapeout
 # SPDX-License-Identifier: Apache-2.0
 
+import functools
+import os
 import sys
 from pathlib import Path
 
@@ -14,6 +16,53 @@ from eth_tx import ETH_TX, WIRE, expect_runs  # noqa: E402
 from usb_tx import DUMMY_PACKETS, USB_DM, USB_DP, build_dummy_tx  # noqa: E402
 
 ASM = Path(__file__).resolve().parents[1] / "asm" / "examples"
+GOLDEN = Path(__file__).resolve().parent / "golden"
+GL = os.environ.get("GATES") == "yes"
+
+
+def _hex(sig):
+    v = sig.value
+    return format(int(v), "02x") if v.is_resolvable else str(v)
+
+
+def golden(func):
+    """Record pins (and pc/halted in RTL) every clock; diff against test/golden.
+
+    Row i is the state at RisingEdge+ReadOnly of the test's i-th clock edge.
+    GOLDEN_WRITE=1 rewrites the file and then fails the test (a write is never a pass).
+    """
+    @functools.wraps(func)
+    async def wrapper(dut, **kwargs):
+        name = func.__name__ + "".join(f"_{k}={v}" for k, v in sorted(kwargs.items()))
+        rows = []
+
+        async def record():
+            while True:
+                await RisingEdge(dut.clk)
+                await ReadOnly()
+                row = [_hex(s) for s in (dut.uo_out, dut.uio_out, dut.uio_oe, dut.ui_in, dut.uio_in)]
+                dp = engine(dut)
+                if dp is not None:
+                    row += [_hex(dp.pc), str(dp.halted.value)]
+                rows.append(" ".join(row))
+
+        task = cocotb.start_soon(record())
+        await func(dut, **kwargs)
+        task.cancel()
+        path = GOLDEN / f"{name}.txt"
+        if os.environ.get("GOLDEN_WRITE"):
+            GOLDEN.mkdir(exist_ok=True)
+            path.write_text("\n".join(rows) + "\n", encoding="utf-8")
+            raise AssertionError(f"golden {name} written; rerun without GOLDEN_WRITE to check")
+        want = path.read_text(encoding="utf-8").splitlines()
+        width = 5 if GL else 7
+        got = [" ".join(r.split()[:width]) for r in rows]
+        want = [" ".join(r.split()[:width]) for r in want]
+        for i, (g, w) in enumerate(zip(got, want)):
+            assert g == w, f"golden {name}: cycle {i} got '{g}' want '{w}'"
+        assert len(got) == len(want), f"golden {name}: {len(got)} cycles, want {len(want)}"
+
+    return wrapper
 
 
 async def clock_edge(dut):
@@ -79,6 +128,7 @@ def rf_at(dp, index):
 
 
 @cocotb.test()
+@golden
 async def test_uart_program(dut):
     """UART and SPI on the compressed ISA (R0-R7, PSET, OUT, …)."""
     dut.ena.value = 1
@@ -231,6 +281,7 @@ async def test_uart_program(dut):
 
 @cocotb.test()
 @cocotb.parametrize(ack_address=[True, False])
+@golden
 async def test_i2c_write(dut, ack_address):
     """A target stretches SCL and either accepts or rejects the address."""
     dut.ena.value = 1
@@ -340,14 +391,21 @@ def usb_runs(samples):
     return runs
 
 
+_clock = []
+
+
 async def reset_dut(dut):
+    # One clock driver only: a second Clock on clk corrupts the period.
+    while _clock:
+        _clock.pop().stop()
     dut.ena.value = 1
     dut.ui_in.value = 0
     dut.uio_in.value = 0
     dut.clk.value = 0
     dut.rst_n.value = 0
     await Timer(1, unit="ns")
-    Clock(dut.clk, 10, unit="us").start()
+    _clock.append(Clock(dut.clk, 10, unit="us"))
+    _clock[0].start()
     await clock_edge(dut)
     dut.rst_n.value = 1
     await clock_edge(dut)
@@ -394,6 +452,7 @@ async def run_usb_words(dut, label, words, expect, bit_time, se0_time):
 
 
 @cocotb.test()
+@golden
 async def test_usb_ls_ack(dut):
     """Hand asm: USB LS ACK handshake on D+/D-."""
     await reset_dut(dut)
@@ -403,6 +462,7 @@ async def test_usb_ls_ack(dut):
 
 
 @cocotb.test()
+@golden
 async def test_usb_fs_ack(dut):
     """Hand asm: USB FS ACK handshake on D+/D-."""
     await reset_dut(dut)
@@ -412,6 +472,7 @@ async def test_usb_fs_ack(dut):
 
 
 @cocotb.test()
+@golden
 async def test_usb_dummy_packets(dut):
     """Dummy TOKEN/DATA/handshake/SOF packets, LS and FS (fake CRC, no stuffing)."""
     await reset_dut(dut)
@@ -431,6 +492,7 @@ async def test_usb_dummy_packets(dut):
 
 
 @cocotb.test()
+@golden
 async def test_ldi_then_out(dut):
     """LDI R0 immediately before OUT must be visible (1-cycle write/read)."""
     from assemble import OP_HALT, OP_LDI, encode, encode_out, encode_pset, reg_field
@@ -474,6 +536,7 @@ async def test_ldi_then_out(dut):
 
 
 @cocotb.test()
+@golden
 async def test_pset_two_levels(dut):
     """PSET L1/L2: pin0=0, pin1=1 on descriptor 0x10."""
     from assemble import OP_HALT, OP_LDI, encode, encode_pset, reg_field
@@ -497,6 +560,7 @@ async def test_pset_two_levels(dut):
 
 
 @cocotb.test()
+@golden
 async def test_dmem_ld(dut):
     """Strobe 11 fills dmem; LD Rn, [Rm] reads it and post-increments Rm."""
     from assemble import OP_HALT, OP_LDI, encode, encode_ld, encode_out, reg_field
@@ -546,6 +610,7 @@ async def test_dmem_ld(dut):
 
 
 @cocotb.test()
+@golden
 async def test_outm_mid_invert(dut):
     """OUTM IEEE: Rs[0]=1 → 3 clocks low then 3 high; two-pin stays complementary."""
     from assemble import OP_HALT, OP_LDI, encode, encode_out, pin_desc, reg_field
@@ -646,6 +711,7 @@ def assert_eth_runs(samples, expect, name):
 
 
 @cocotb.test()
+@golden
 async def test_eth_10t(dut):
     """Hand asm: 10BASE-T TX, IEEE Manchester on one pin."""
     await reset_dut(dut)
@@ -668,6 +734,7 @@ async def test_eth_10t(dut):
 
 
 @cocotb.test()
+@golden
 async def test_eth_10t_loop(dut):
     """Same runt frame as eth_10t: first LD in idle, then OUTM+DJNZ bits."""
     await reset_dut(dut)
@@ -741,6 +808,7 @@ async def uart_recv_uo(dut, pin, bit_clocks, timeout=4000):
 
 
 @cocotb.test()
+@golden
 async def test_in_uart_echo(dut):
     """IN/INW: UART RX at odd phases and +/-3% baud, echoed back on uo[1]."""
     await reset_dut(dut)
@@ -782,6 +850,7 @@ async def manchester_send(dut, bit_idx, data, half_ns, delay_ns):
 
 
 @cocotb.test()
+@golden
 async def test_inw_manchester_relock(dut):
     """INW re-locks every bit: 64 Manchester bits at 6 clk/bit, +/-3% skew."""
     rx = 6
@@ -804,6 +873,7 @@ async def test_inw_manchester_relock(dut):
 
 
 @cocotb.test()
+@golden
 async def test_strobe_skew_goes_to_dmem(dut):
     """Pin skew on a 00->11 dmem strobe (one clock of 01) must not write imem."""
     await reset_dut(dut)

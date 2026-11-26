@@ -20,6 +20,11 @@ OP_REL = 0x5
 OP_JL = 0x6
 OP_LD = 0x7
 OP_IN = 0x8
+OP_CAP = 0x9
+OP_SMP = 0xA
+OP_HCFG = 0xB
+OP_LDH = 0xC
+OP_ODO = 0xD
 
 
 def parse_number(token: str, symbols: dict[str, int]) -> int:
@@ -118,6 +123,26 @@ def encode_in(rp: int, rs: int, rd: int, wait: bool = False) -> int:
     if wait:
         word |= 0b01
     return word
+
+
+def encode_cap(rs: int) -> int:
+    # [10:8]=Rs
+    return (OP_CAP << 12) | ((rs & 7) << 8)
+
+
+def encode_smp(rp: int, rd: int) -> int:
+    # [11:9]=Rp source, [5:3]=Rd period
+    return (OP_SMP << 12) | ((rp & 7) << 9) | ((rd & 7) << 3)
+
+
+def encode_hcfg(rp: int, rs: int, rd: int) -> int:
+    # [11:9]=Rp uo mask, [8:6]=Rs uio mask, [5:3]=Rd strobe/request
+    return (OP_HCFG << 12) | ((rp & 7) << 9) | ((rs & 7) << 6) | ((rd & 7) << 3)
+
+
+def encode_odo(rp: int, rd: int) -> int:
+    # [11:9]=Rp, [8:6]=Rd (REL layout)
+    return (OP_ODO << 12) | ((rp & 7) << 9) | ((rd & 7) << 6)
 
 
 def parse_mem_reg(token: str, symbols: dict[str, int]) -> int:
@@ -225,6 +250,28 @@ def assemble(text: str) -> list[int]:
             words.append(
                 encode_rel(parse_reg(args[0], symbols), parse_reg(args[1], symbols))
             )
+        elif mnemonic == "CAP":
+            if len(args) != 1:
+                raise ValueError(f"CAP needs Rs: {raw}")
+            words.append(encode_cap(parse_reg(args[0], symbols)))
+        elif mnemonic == "SMP":
+            if len(args) != 2:
+                raise ValueError(f"SMP needs Rp, Rd: {raw}")
+            words.append(encode_smp(parse_reg(args[0], symbols), parse_reg(args[1], symbols)))
+        elif mnemonic == "HCFG":
+            if len(args) != 3:
+                raise ValueError(f"HCFG needs Rp, Rs, Rd: {raw}")
+            words.append(
+                encode_hcfg(*(parse_reg(a, symbols) for a in args))
+            )
+        elif mnemonic == "LDH":
+            if args:
+                raise ValueError(f"LDH takes no operand: {raw}")
+            words.append(OP_LDH << 12)
+        elif mnemonic == "ODO":
+            if len(args) != 2:
+                raise ValueError(f"ODO needs Rp, Rd: {raw}")
+            words.append(encode_odo(parse_reg(args[0], symbols), parse_reg(args[1], symbols)))
         elif mnemonic == "DJNZ":
             if len(args) != 2:
                 raise ValueError(f"DJNZ needs Rn, target: {raw}")

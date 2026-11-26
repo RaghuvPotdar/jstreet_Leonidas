@@ -28,12 +28,16 @@
 // IN (1000) listens on pin1 of Rp, never drives. Rs <= {bit, Rs[7:1]}.
 // [1:0]=00: hold Rd, sample at Rd>>1. [1:0]=01 (INW): stall until pin1
 // changes, shift in the new level, then hold Rd from that clock.
+// RX Stage 1 (docs/isa.md): CAP/SMP/HCFG/LDH are non-timed (LDI path),
+// ODO is timed. rxp holds one received byte. The host-read overlay acts
+// on the next-state pin values that feed the pad flops pad_*.
 module datapath (
     input  wire        clk,
     input  wire        rst_n,
     input  wire        running,
     input  wire [15:0] instr,
     input  wire [7:0]  uio_in,
+    input  wire [7:0]  byte_s2,
     output logic [7:0] pc,
     output wire [7:0]  uo_out,
     output wire [7:0]  uio_out,
@@ -52,6 +56,46 @@ module datapath (
   localparam logic [3:0] OP_JL   = 4'h6;
   localparam logic [3:0] OP_LD   = 4'h7;
   localparam logic [3:0] OP_IN   = 4'h8;
+  localparam logic [3:0] OP_CAP  = 4'h9;
+  localparam logic [3:0] OP_SMP  = 4'hA;
+  localparam logic [3:0] OP_HCFG = 4'hB;
+  localparam logic [3:0] OP_LDH  = 4'hC;
+  localparam logic [3:0] OP_ODO  = 4'hD;
+
+  localparam logic [1:0] SMP_IDLE = 2'd0;  // wait level == idle
+  localparam logic [1:0] SMP_EDGE = 2'd1;  // wait level != idle
+  localparam logic [1:0] SMP_RUN  = 2'd2;  // half, then 8 samples
+
+  // RX Stage 1 state. None of it writes the RF.
+  logic [7:0]  rxp, rxp_n;
+  logic        rxp_v, rxp_v_n;
+  logic        rx_ovf, rx_ovf_n;
+  logic        smp_on, smp_on_n;
+  logic        smp_ui, smp_ui_n;
+  logic [2:0]  smp_idx, smp_idx_n;
+  logic [7:0]  smp_b, smp_b_n;
+  logic        smp_idle, smp_idle_n;
+  logic [1:0]  smp_st, smp_st_n;
+  logic        smp_ph, smp_ph_n;
+  logic [7:0]  smp_t, smp_t_n;
+  logic [2:0]  smp_k, smp_k_n;
+  logic [7:0]  smp_sh, smp_sh_n;
+  logic [15:0] hm, hm_n;
+  logic [3:0]  hr_stb, hr_stb_n;
+  logic [2:0]  hr_req, hr_req_n;
+  logic        hr_rsvd_bad, hr_rsvd_bad_n;
+  logic        hr_valid, hr_valid_n;
+  logic        hr_req_last, hr_req_last_n;
+  logic [1:0]  hr_blank, hr_blank_n;
+  logic        hr_stb_q, hr_stb_q_n;
+  logic [2:0]  hr_chunk, hr_chunk_n;
+  logic [7:0]  hr_dout, hr_dout_n;
+  logic        serve_d, serve_d_n;
+  logic        hold_tx, hold_tx_n;
+  logic [7:0]  txr, txr_n;
+  logic [7:0]  pad_uo, pad_uo_n;
+  logic [7:0]  pad_uio, pad_uio_n;
+  logic [7:0]  pad_oe, pad_oe_n;
 
   logic [7:0]  shown;
   logic        issue_q;
@@ -169,9 +213,9 @@ module datapath (
   logic [3:0]  pin2_i;
   logic        two;
 
-  assign uo_out  = uo_q;
-  assign uio_out = uio_q;
-  assign uio_oe  = oe_q;
+  assign uo_out  = pad_uo;
+  assign uio_out = pad_uio;
+  assign uio_oe  = pad_oe;
 
   rf regs (
       .clk     (clk),
@@ -193,7 +237,7 @@ module datapath (
     op = word[15:12];
     // Timed ops: issue through do_start/do_defer, own the hold.
     is_pin = (op == OP_PSET) || (op == OP_OUT) || (op == OP_REL)
-              || (op == OP_IN && !word[1]);
+              || (op == OP_IN && !word[1]) || (op == OP_ODO);
   endfunction
 
   function automatic logic [2:0] field_rp(input logic [15:0] w);
@@ -201,8 +245,8 @@ module datapath (
   endfunction
 
   function automatic logic [2:0] field_rs(input logic [15:0] w);
-    field_rs = (w[15:12] == OP_OUT || w[15:12] == OP_LD || w[15:12] == OP_IN)
-             ? w[8:6] : w[10:8];
+    field_rs = (w[15:12] == OP_OUT || w[15:12] == OP_LD || w[15:12] == OP_IN
+                || w[15:12] == OP_HCFG) ? w[8:6] : w[10:8];
   endfunction
 
   function automatic logic [2:0] field_rd(input logic [15:0] w);
@@ -211,17 +255,47 @@ module datapath (
       OP_IN:   field_rd = w[5:3];
       OP_PSET: field_rd = w[7:5];
       OP_REL:  field_rd = w[8:6];
+      OP_SMP:  field_rd = w[5:3];
+      OP_HCFG: field_rd = w[5:3];
+      OP_ODO:  field_rd = w[8:6];
       default: field_rd = 3'd0;
     endcase
   endfunction
 
-  function automatic logic pin_low(input logic [3:0] pin);
-    pin_low = pin[3] && !uio_s1[pin[2:0]];
+  // Synced level of a pin. uo pins read 1 (same as JL), except the
+  // status pins: 7 reads 0 while rxp holds a byte, 6 reads 0 after overflow.
+  function automatic logic pin_lvl(input logic [3:0] pin);
+    if (pin[3])
+      pin_lvl = uio_s1[pin[2:0]];
+    else if (pin[2:0] == 3'd7)
+      pin_lvl = !rxp_v;
+    else if (pin[2:0] == 3'd6)
+      pin_lvl = !rx_ovf;
+    else
+      pin_lvl = 1'b1;
   endfunction
 
-  // Synced level of a pin. uo pins read 1 (same as JL).
-  function automatic logic pin_lvl(input logic [3:0] pin);
-    pin_lvl = pin[3] ? uio_s1[pin[2:0]] : 1'b1;
+  function automatic logic pin_low(input logic [3:0] pin);
+    pin_low = !pin_lvl(pin);
+  endfunction
+
+  function automatic logic [4:0] popcount16(input logic [15:0] m);
+    popcount16 = 5'd0;
+    for (int i = 0; i < 16; i++)
+      popcount16 = popcount16 + {4'd0, m[i]};
+  endfunction
+
+  // §4.2: host-read config is legal. Pin-table rules that hardware cannot
+  // see (open-drain pads, LDH ready, sampler ui_in bit) are program rules.
+  function automatic logic hr_ok(input logic [15:0] m, input logic [3:0] stb,
+                                 input logic [2:0] req, input logic rsvd,
+                                 input logic son, input logic sui,
+                                 input logic [2:0] sidx);
+    logic [4:0] n;
+    n = popcount16(m);
+    hr_ok = (n == 5'd1 || n == 5'd2 || n == 5'd4 || n == 5'd8)
+            && !m[stb] && !m[{1'b1, req}] && stb != {1'b1, req} && !rsvd
+            && !(son && !sui && (m[{1'b1, sidx}] || stb == {1'b1, sidx}));
   endfunction
 
   // Read-port addresses. Separate from execute so rdata_* see this address
@@ -544,6 +618,12 @@ module datapath (
 
       if (op_word[15:12] == OP_IN) begin
         // Listen only. No uo/uio/oe change.
+      end else if (op_word[15:12] == OP_ODO) begin
+        // Open-drain txr[7] on pin1 (uio only): 1 releases, 0 drives low.
+        if (pin_i[3]) begin
+          uio_n[pin_i[2:0]] = 1'b0;
+          oe_n[pin_i[2:0]]  = !txr[7];
+        end
       end else if (op_word[15:12] == OP_REL) begin
         if (pin_i[3] == 1'b1) begin
           uio_n[pin_i[2:0]] = 1'b0;
@@ -679,6 +759,286 @@ module datapath (
 
     if (issue)
       asked_addr_n = issue_addr;
+  end
+
+  // ---------------------------------------------------------------- RX Stage 1
+  // Runs every clock, outside the execute if-chain. Commits come from do_one.
+  logic       cap_cmt, smp_cmt, hcfg_cmt, ldh_cmt;
+  logic [7:0] cap_val;
+  logic       smp_lvl, smp_new_lvl, smp_sample, smp_fire;
+  logic [7:0] smp_half;
+  logic [2:0] smp_kcur;
+  logic [4:0] hr_n;
+  logic       hr_pending, hr_serve, tx_busy;
+  logic [7:0] hr_chunk_bits;
+  logic       hr_last;
+  logic [3:0] hr_j;
+
+  always_comb begin
+    cap_cmt  = do_one && op_word[15:12] == OP_CAP;
+    smp_cmt  = do_one && op_word[15:12] == OP_SMP;
+    hcfg_cmt = do_one && op_word[15:12] == OP_HCFG;
+    ldh_cmt  = do_one && op_word[15:12] == OP_LDH;
+
+    // CAP forwards a same-clock or pending write of Rs.
+    if (in_fire && in_fire_rs == op_word[10:8])
+      cap_val = in_fire_val;
+    else if (in_wr_v && in_rs == op_word[10:8])
+      cap_val = in_wr_val;
+    else if (refill_pend && stream_rs == op_word[10:8])
+      cap_val = dmem_rdata;
+    else
+      cap_val = rf_rdata_s;
+
+    // TX ops (PSET, OUT/OUTM, ODO) block a serve while their hold runs.
+    if (do_start)
+      hold_tx_n = (op_word[15:12] == OP_PSET || op_word[15:12] == OP_OUT
+                   || op_word[15:12] == OP_ODO) && hold_n != 8'h00;
+    else
+      hold_tx_n = (hold_n == 8'h00) ? 1'b0 : hold_tx;
+    tx_busy = (hold != 8'h00) && hold_tx;
+
+    txr_n = txr;
+    if (ldh_cmt)
+      txr_n = byte_s2;
+    else if (do_start && op_word[15:12] == OP_ODO)
+      txr_n = {txr[6:0], 1'b0};
+
+    // Sampler. Sample k is in the clock that ends at edge E + half + B*(k+1).
+    smp_on_n   = smp_on;
+    smp_ui_n   = smp_ui;
+    smp_idx_n  = smp_idx;
+    smp_b_n    = smp_b;
+    smp_idle_n = smp_idle;
+    smp_st_n   = smp_st;
+    smp_ph_n   = smp_ph;
+    smp_t_n    = smp_t;
+    smp_k_n    = smp_k;
+    smp_sh_n   = smp_sh;
+    smp_lvl    = smp_ui ? byte_s2[smp_idx] : uio_s1[smp_idx];
+    smp_new_lvl = rf_rdata_p[7] ? byte_s2[rf_rdata_p[2:0]] : uio_s1[rf_rdata_p[2:0]];
+    smp_half   = (smp_b == 8'h00) ? 8'd128 : {1'b0, smp_b[7:1]};
+    smp_sample = 1'b0;
+    smp_fire   = 1'b0;
+    smp_kcur   = smp_k;
+    if (smp_cmt) begin
+      smp_on_n   = rf_rdata_p[7] || rf_rdata_p[3];
+      smp_ui_n   = rf_rdata_p[7];
+      smp_idx_n  = rf_rdata_p[2:0];
+      smp_b_n    = rf_rdata_d;
+      smp_idle_n = smp_new_lvl;
+      smp_st_n   = SMP_EDGE;
+      smp_k_n    = 3'd0;               // a re-arm mid-byte restarts at sample 0
+    end else if (smp_on) begin
+      case (smp_st)
+        SMP_IDLE: if (smp_lvl == smp_idle) smp_st_n = SMP_EDGE;
+        SMP_EDGE: if (smp_lvl != smp_idle) begin
+          // This clock is the first one after E.
+          smp_st_n = SMP_RUN;
+          smp_kcur = 3'd0;
+          smp_k_n  = 3'd0;
+          if (smp_half == 8'd0)
+            smp_sample = 1'b1;          // B=1: sample 0 is this clock
+          else if (smp_half == 8'd1) begin
+            smp_ph_n = 1'b1;
+            smp_t_n  = smp_b - 8'd1;
+          end else begin
+            smp_ph_n = 1'b0;
+            smp_t_n  = smp_half - 8'd2;
+          end
+        end
+        SMP_RUN: begin
+          if (smp_t != 8'h00)
+            smp_t_n = smp_t - 8'd1;
+          else if (!smp_ph) begin
+            smp_ph_n = 1'b1;
+            smp_t_n  = smp_b - 8'd1;    // B=0: 255 means 256 clocks
+          end else
+            smp_sample = 1'b1;
+        end
+        default: smp_st_n = SMP_IDLE;
+      endcase
+      if (smp_sample) begin
+        smp_sh_n = {smp_lvl, smp_sh[7:1]};
+        smp_ph_n = 1'b1;
+        smp_t_n  = smp_b - 8'd1;
+        smp_k_n  = smp_kcur + 3'd1;
+        if (smp_kcur == 3'd7) begin
+          smp_fire = 1'b1;
+          smp_st_n = SMP_IDLE;
+        end
+      end
+    end
+
+    // Capture into rxp. Accept only while rxp is empty; sampler wins a tie.
+    rxp_n    = rxp;
+    rxp_v_n  = rxp_v;
+    rx_ovf_n = rx_ovf;
+    if (smp_fire) begin
+      if (!rxp_v) begin
+        rxp_n   = smp_sh_n;
+        rxp_v_n = 1'b1;
+      end else
+        rx_ovf_n = 1'b1;
+      if (cap_cmt)
+        rx_ovf_n = 1'b1;
+    end else if (cap_cmt) begin
+      if (!rxp_v) begin
+        rxp_n   = cap_val;
+        rxp_v_n = 1'b1;
+      end else
+        rx_ovf_n = 1'b1;
+    end
+
+    // Host-read config and validity.
+    hm_n          = hm;
+    hr_stb_n      = hr_stb;
+    hr_req_n      = hr_req;
+    hr_rsvd_bad_n = hr_rsvd_bad;
+    hr_valid_n    = hr_valid;
+    if (hcfg_cmt) begin
+      hm_n          = {rf_rdata_s, rf_rdata_p};
+      hr_stb_n      = rf_rdata_d[7:4];
+      hr_req_n      = rf_rdata_d[2:0];
+      hr_rsvd_bad_n = rf_rdata_d[3];
+    end
+    if (hcfg_cmt || smp_cmt)
+      hr_valid_n = hr_ok(hm_n, hr_stb_n, hr_req_n, hr_rsvd_bad_n,
+                         smp_on_n, smp_ui_n, smp_idx_n);
+
+    // Chunk handshake.
+    hr_n = popcount16(hm);
+    case (hr_n)
+      5'd1:    begin hr_chunk_bits = {7'd0, rxp[hr_chunk]};                   hr_last = hr_chunk == 3'd7; end
+      5'd2:    begin hr_chunk_bits = {6'd0, rxp[{hr_chunk[1:0], 1'b0} +: 2]}; hr_last = hr_chunk == 3'd3; end
+      5'd4:    begin hr_chunk_bits = {4'd0, rxp[{hr_chunk[0], 2'b00} +: 4]};  hr_last = hr_chunk == 3'd1; end
+      default: begin hr_chunk_bits = rxp;                                     hr_last = 1'b1; end
+    endcase
+    hr_pending = hr_valid && hr_blank == 2'd0 && uio_s1[hr_req] != hr_req_last;
+    hr_serve   = hr_pending && rxp_v && !tx_busy && !serve_d && hr_valid_n;
+
+    hr_req_last_n = hr_req_last;
+    hr_blank_n    = hr_blank;
+    hr_stb_q_n    = hr_stb_q;
+    hr_chunk_n    = hr_chunk;
+    hr_dout_n     = hr_dout;
+    serve_d_n     = serve_d;
+    if (hcfg_cmt || hr_valid_n != hr_valid) begin
+      // HCFG commit or validity change. Wins over a pending E+1 serve:
+      // the chunk is not consumed and rxp_v does not change.
+      hr_chunk_n    = 3'd0;
+      hr_dout_n     = 8'h00;
+      hr_stb_q_n    = hr_stb_n[3] ? pad_uio[hr_stb_n[2:0]] : pad_uo[hr_stb_n[2:0]];
+      hr_req_last_n = uio_s1[hr_req_n];
+      hr_blank_n    = 2'd3;
+      serve_d_n     = 1'b0;
+    end else begin
+      if (hr_blank != 2'd0) begin
+        hr_blank_n    = hr_blank - 2'd1;
+        hr_req_last_n = uio_s1[hr_req];
+      end
+      if (hr_serve) begin                // edge E: strobe
+        hr_stb_q_n    = !hr_stb_q;
+        hr_req_last_n = uio_s1[hr_req];
+        serve_d_n     = 1'b1;
+      end
+      if (serve_d) begin                 // edge E+1: data
+        hr_dout_n  = hr_chunk_bits;
+        hr_chunk_n = hr_last ? 3'd0 : hr_chunk + 3'd1;
+        if (hr_last)
+          rxp_v_n = 1'b0;
+        serve_d_n  = 1'b0;
+      end
+    end
+
+    // Pad next state: core values, overlaid while the config is valid.
+    pad_uo_n  = uo_n;
+    pad_uio_n = uio_n;
+    pad_oe_n  = oe_n;
+    hr_j      = 4'd0;
+    if (hr_valid_n) begin
+      for (int p = 0; p < 8; p++)
+        if (hm_n[p]) begin
+          pad_uo_n[p] = hr_dout_n[hr_j[2:0]];
+          hr_j = hr_j + 4'd1;
+        end
+      for (int p = 0; p < 8; p++)
+        if (hm_n[8 + p]) begin
+          pad_uio_n[p] = hr_dout_n[hr_j[2:0]];
+          pad_oe_n[p]  = 1'b1;
+          hr_j = hr_j + 4'd1;
+        end
+      if (hr_stb_n[3]) begin
+        pad_uio_n[hr_stb_n[2:0]] = hr_stb_q_n;
+        pad_oe_n[hr_stb_n[2:0]]  = 1'b1;
+      end else
+        pad_uo_n[hr_stb_n[2:0]] = hr_stb_q_n;
+      pad_oe_n[hr_req_n] = 1'b0;
+    end
+  end
+
+  always_ff @(posedge clk) begin
+    if (!rst_n) begin
+      rxp         <= 8'h00;
+      rxp_v       <= 1'b0;
+      rx_ovf      <= 1'b0;
+      smp_on      <= 1'b0;
+      smp_ui      <= 1'b0;
+      smp_idx     <= 3'd0;
+      smp_b       <= 8'h00;
+      smp_idle    <= 1'b0;
+      smp_st      <= SMP_IDLE;
+      smp_ph      <= 1'b0;
+      smp_t       <= 8'h00;
+      smp_k       <= 3'd0;
+      smp_sh      <= 8'h00;
+      hm          <= 16'h0000;
+      hr_stb      <= 4'd0;
+      hr_req      <= 3'd0;
+      hr_rsvd_bad <= 1'b0;
+      hr_valid    <= 1'b0;
+      hr_req_last <= 1'b0;
+      hr_blank    <= 2'd0;
+      hr_stb_q    <= 1'b0;
+      hr_chunk    <= 3'd0;
+      hr_dout     <= 8'h00;
+      serve_d     <= 1'b0;
+      hold_tx     <= 1'b0;
+      txr         <= 8'h00;
+      pad_uo      <= 8'hFF;
+      pad_uio     <= 8'h00;
+      pad_oe      <= 8'h00;
+    end else begin
+      rxp         <= rxp_n;
+      rxp_v       <= rxp_v_n;
+      rx_ovf      <= rx_ovf_n;
+      smp_on      <= smp_on_n;
+      smp_ui      <= smp_ui_n;
+      smp_idx     <= smp_idx_n;
+      smp_b       <= smp_b_n;
+      smp_idle    <= smp_idle_n;
+      smp_st      <= smp_st_n;
+      smp_ph      <= smp_ph_n;
+      smp_t       <= smp_t_n;
+      smp_k       <= smp_k_n;
+      smp_sh      <= smp_sh_n;
+      hm          <= hm_n;
+      hr_stb      <= hr_stb_n;
+      hr_req      <= hr_req_n;
+      hr_rsvd_bad <= hr_rsvd_bad_n;
+      hr_valid    <= hr_valid_n;
+      hr_req_last <= hr_req_last_n;
+      hr_blank    <= hr_blank_n;
+      hr_stb_q    <= hr_stb_q_n;
+      hr_chunk    <= hr_chunk_n;
+      hr_dout     <= hr_dout_n;
+      serve_d     <= serve_d_n;
+      hold_tx     <= hold_tx_n;
+      txr         <= txr_n;
+      pad_uo      <= pad_uo_n;
+      pad_uio     <= pad_uio_n;
+      pad_oe      <= pad_oe_n;
+    end
   end
 
   always_comb begin

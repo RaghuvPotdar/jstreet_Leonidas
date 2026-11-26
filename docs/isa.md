@@ -22,7 +22,12 @@ The first byte stored for a word is bits 7 through 0. The second byte is bits 15
 | `0110` | `JL` | `Rp`(3) ‖ `0` ‖ target(8) |
 | `0111` | `LD` | `Rn`(3) ‖ `Rm`(3) ‖ 0 |
 | `1000` | `IN` | `Rp`(3) ‖ `Rs`(3) ‖ `Rd`(3) ‖ 0 ‖ `W` ‖ `M` |
-| `1001`–`1111` | unused | ignored |
+| `1001` | `CAP` | `0` ‖ `Rs`(3) ‖ 0 |
+| `1010` | `SMP` | `Rp`(3) ‖ 0(3) ‖ `Rd`(3) ‖ 0 |
+| `1011` | `HCFG` | `Rp`(3) ‖ `Rs`(3) ‖ `Rd`(3) ‖ 0 |
+| `1100` | `LDH` | ignored |
+| `1101` | `ODO` | `Rp`(3) ‖ `Rd`(3) ‖ 0 |
+| `1110`–`1111` | unused | ignored |
 
 ## Register file
 
@@ -152,7 +157,7 @@ Release every distinct pin in `Rp`. Wait `Rd` clocks.
 | 0110  |  Rp |0|   target   |
 ```
 
-If `pin1` of `Rp` reads 0 on `uio`, jump; else fall through. `uo_out` reads as 1. Sample is **two flops** behind the pad.
+If `pin1` of `Rp` reads 0 on `uio`, jump; else fall through. `uo_out` reads as 1, except the status pins 6 and 7 (RX Stage 1). Sample is **two flops** behind the pad.
 When a buffered `JL` prefetches its destination at `hold == 2`, that sample determines the branch.
 
 ## LD — `0111`
@@ -171,7 +176,7 @@ When a buffered `JL` prefetches its destination at `hold == 2`, that sample dete
 | 1000  |  Rp |  Rs |  Rd |0|mode|
 ```
 
-Listen on `pin1` of `Rp`. Never drives, never sets `oe`. Shift `Rs ← {bit, Rs[7:1]}` (LSB first, same as `OUT`). `uo` pins read 1. Sample is the 2-flop synced `uio`, same as `JL`.
+Listen on `pin1` of `Rp`. Never drives, never sets `oe`. Shift `Rs ← {bit, Rs[7:1]}` (LSB first, same as `OUT`). `uo` pins read 1, except the status pins 6 and 7 (RX Stage 1). Sample is the 2-flop synced `uio`, same as `JL`.
 
 | `[1:0]` | Asm | Behaviour |
 |---|---|---|
@@ -183,9 +188,102 @@ Listen on `pin1` of `Rp`. Never drives, never sets `oe`. Shift `Rs ← {bit, Rs[
 
 UART RX: `INW` on the start edge with `Rd = bit`, then eight `IN …, bit` (`asm/examples/uart_rx_echo.asm`). Manchester RX: `INW` with `Rd` ≈ ¾ bit, looped. Each mid-bit edge re-locks, so sender clock error does not accumulate (`asm/examples/eth_10t_rx_echo.asm`).
 
-## Unused opcodes — `1001` through `1111`
+## RX Stage 1 — receive byte and host read
 
-Seven free opcodes. No-op: next word. Next spend is **`EXT`** ([future.md](future.md)). Do not spend these for foresight. `JL` stays until a listing proves it is not enough.
+One receive byte `rxp` with a valid flag and a sticky overflow flag `rx_ovf`. `CAP` or the sampler (`SMP`) fills `rxp`. The host pulls `rxp` in chunks over a program-chosen set of pins (`HCFG`). `LDH` and `ODO` send a live host byte open-drain. None of these ops writes the RF. TX encodings and timing do not change.
+
+### CAP — `1001`
+
+```
+15    12 11 10   8 7          0
+| 1001  | 0 |  Rs |     0      |
+```
+
+Non-timed (same path as `LDI`, can hide in a hold). If `rxp` is empty: `rxp ← Rs`, valid ← 1. Else the new byte is dropped and `rx_ovf ← 1` (sticky until reset). `CAP` forwards a write of `Rs` in the same clock or still pending (`IN` sample, deferred `IN` write, `OUTM` refill), so `IN` then a hidden `CAP` captures the full byte. If the sampler captures in the same clock, the sampler wins and the `CAP` counts as overflow. A capture in the clock before `rxp` empties (data edge of the last chunk) is dropped.
+
+### SMP — `1010`
+
+```
+15    12 11  9 8   6 5   3 2  0
+| 1010  |  Rp |  0  |  Rd | 0  |
+```
+
+Non-timed. Arms the 8-bit sampler. `Rp[7]=1`: source `ui_in[Rp[2:0]]`. `Rp[7]=0`, `Rp[3]=1`: source `uio[Rp[2:0]]`. Else (also `Rp=0`): disarm. Both sources are 2-flop synced. `Rd` = period `B` in clocks, 0 = 256.
+
+Arm latches the current level as idle, then waits for an edge. `E` = the edge where the synced level first differs from idle. An input change at `e0`+1 ns gives `E = e0+2`. Sample `k` (0..7) reads the synced level just before edge `E + half + B·(k+1)`, with `half = B>>1` (128 for `B=0`). Shift is LSB first. After sample 7: capture (same rules as `CAP`), wait for idle, wait for the next edge. The sampler runs every clock, also during holds, `INW`, `LD` and `HALT`. `B=1` has `half=0`: sample 0 reads the clock after `E`, which is the start level. UART reception needs `B ≥ 2`.
+
+### HCFG — `1011`
+
+```
+15    12 11  9 8   6 5   3 2  0
+| 1011  |  Rp |  Rs |  Rd | 0  |
+```
+
+Non-timed. Mask = `{Rs, Rp}`: `Rp` = uo pins 0–7, `Rs` = uio pins 8–15. `Rd[7:4]` = strobe pin (0–15). `Rd[2:0]` = request uio index. `Rd[3]` is reserved and must be 0. `n` = number of mask pins.
+
+The config is valid only if all are true: `n` is 1, 2, 4 or 8; the strobe pin is not in the mask; the request pad is not in the mask; strobe pin ≠ request pad; `Rd[3]=0`; if the sampler is armed on a uio pad, that pad is not in the mask and is not the strobe pin. Validity is computed again at each `HCFG` and `SMP`. Invalid or mask 0: the path is off and every pin shows its core value.
+
+On each `HCFG` and each change to valid: chunk ← 0, data ← 0, strobe level ← the pad value of the strobe pin now (so no strobe edge), request reference ← request pad now, then 3 clocks with no request detection (the reference follows the pad).
+
+While valid: mask uio pads and a uio strobe pad have `oe=1`, the request pad has `oe=0`. Chunk bit `i` drives the `i`-th mask pin in ascending pin number. Core writes to owned pins still update the core state and show again when the path is off. Outputs stay flopped: the overlay feeds the pad flops.
+
+### Handshake
+
+1. The host toggles the request pad once.
+2. Pending = valid, no blank, synced request ≠ reference. A pending request is served at edge `E` if `rxp` is valid, no TX op holds the pins (`tx_busy=0`), and the previous serve is complete.
+3. At `E`: the strobe pin toggles. At `E+1`: the data pins show the next chunk, `rxp[chunk·n +: n]`. After the last chunk (`8/n` chunks), `rxp` is empty.
+
+Idle core: a toggle at `E0`+1 ns gives the strobe after `E3` and the data after `E4`. A request while `rxp` is empty waits. When a byte lands at edge `Ec`, the strobe comes after `Ec+1` and the data after `Ec+2`. An `HCFG` commit on the data edge of a serve wins: that chunk is not used, and the byte starts again at chunk 0. A validity change (for example by `SMP`) acts the same way, and no serve occurs in the clock where the config turns invalid.
+
+`tx_busy` = a `PSET`, `OUT`/`OUTM` or `ODO` hold is running (`hold ≠ 0`). `REL`, `IN`, `INW`, `LD`, `HALT` and `Rd=1` ops never block. Every timed op starts in a clock with `hold = 0`, so gapless TX leaves a serve window at each op start. Worst-case wait = longest TX op (`Rd=0`: 256) + 2 sync + 1.
+
+### LDH — `1100`
+
+Non-timed, no operand. `txr ← ui_in` (2-flop synced). Host rule: hold `ui_in` stable at least 2 clocks before the ready signal that the program polls.
+
+### ODO — `1101`
+
+```
+15    12 11  9 8   6 5        0
+| 1101  |  Rp |  Rd |    0     |
+```
+
+Timed, same hold path and length as `OUT` with the same `Rd`. Acts on `pin1` of `Rp` only (uio pins only). `txr[7]=1`: release (`oe=0`). `txr[7]=0`: drive low (`oe=1`). The pin output is always 0, so `ODO` never drives high. Then `txr ← {txr[6:0], 0}` (MSB first). On a uo pin: no pin change, but the hold and the shift still occur.
+
+### Status pins
+
+In `JL`, `IN` and `INW`, pin number 7 reads 0 while `rxp` is valid, and pin number 6 reads 0 after an overflow. The other uo pins read 1.
+
+### Pin roles
+
+| Role | Allowed pins | Direction while active | Before HCFG / reset | Must not overlap |
+|---|---|---|---|---|
+| Mask (n=1,2,4,8) | 0..15 | out; uio oe=1 | core values | strobe, request, sampler pad, open-drain pads, uio[1:0] unless host tri-states |
+| Strobe (toggle) | 0..15 | out; uio oe=1 | core value, loaded at HCFG | mask, request, sampler pad |
+| Request (toggle) | uio 0..7 | oe forced 0; 2-flop synced | input | mask, strobe, LDH ready |
+| LDH ready | uio, program-chosen | input (JL) | input | request, mask |
+| LDH byte | ui_in[7:0] | input | loader byte before run | sampler ui_in bit |
+| Sampler source | uio or ui_in[k] | input | — | mask, strobe |
+| Loader strobes | uio[1:0] | host until start, ignored while running | input | mask/strobe unless host tri-states |
+| Status (virtual) | pin numbers 6, 7 in JL/IN/INW | internal | reads 1 | none |
+
+Hardware checks only the rules in `HCFG`. The other rules in this table are program rules.
+
+### Host rules
+
+- Toggle the request once for each chunk. Do not toggle again until the strobe answers (a second toggle cancels the first).
+- Latch the data 2 or more clocks after the strobe toggle.
+- Do not drive mask or strobe uio pads while the config is valid. If `uio[0]`/`uio[1]` are mask or strobe pads, tri-state them after the start strobe.
+- After reset or `HCFG`, count chunks from chunk 0. Toggles in the first 3 clocks after `HCFG` are lost. Start after the config is live.
+- Stage 1 has no host-visible empty or overflow flag. Use a timeout.
+- Turning the path off returns the strobe and mask pins to core values. This can make a strobe edge that the host must ignore.
+- Throughput: per chunk = `op · ceil((T_host + 4) / op)`, worst case plus one `op`. `T_host` starts at the strobe toggle and includes the 2-clock latch rule. No overflow if `(8/n) · per chunk ≤` RX byte time. Example: `n=1`, 16 clk/bit, `T_host=2`: 128 clocks per byte ≤ 160.
+
+Listings: `uart_duplex.asm`, `spi_duplex.asm`, `i2c_read.asm`, `i2c_target_rt.asm` in `asm/examples`.
+
+## Unused opcodes — `1110` and `1111`
+
+Two free opcodes. No-op: next word. RX Stage 1 spent `1001`–`1101`; the `EXT` draft in [future.md](future.md) is superseded. Do not spend these for foresight. `JL` stays until a listing proves it is not enough.
 
 ## Scope notes
 

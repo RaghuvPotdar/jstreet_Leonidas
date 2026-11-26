@@ -75,6 +75,7 @@ module tt_um_RaghuvPotdar_Leonidas (
         .running   (running),
         .instr     (dout),
         .uio_in    (uio_in),
+        .byte_s2   (byte_s2),
         .pc        (pc),
         .uo_out    (uo_out),
         .uio_out   (uio_out),
